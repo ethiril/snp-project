@@ -1,2 +1,3 @@
-# snp-project
-Implementing Genetic Algorithms on an SN-P network
+# University 3rd year project
+
+## Implementing Genetic Algorithms on an SN-P network
