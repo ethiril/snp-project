@@ -11,8 +11,9 @@ namespace SNP_First_Test
         static SNP_Network evenNumbers = new SNP_Network() {
             new List<Neuron>() {
                 new Neuron(new List<Rule>() {
-                    new Rule() { new Regex() },
-                    new Rule() { new Regex() }}, 0),
+                    new Rule(),
+                    new Rule()
+                }, 0),
             },
             new Object()
         };
