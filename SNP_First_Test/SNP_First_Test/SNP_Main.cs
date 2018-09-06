@@ -8,16 +8,37 @@ namespace SNP_First_Test
 {
     class SNP_Main
     {
-        static SNP_Network evenNumbers = new SNP_Network() {
-            new List<Neuron>() {
+        // test network (tutorial figure 1)
+        // This can really be done in a better way. 
+        SNP_Network evenNumbers = new SNP_Network(new List<Neuron>() {
                 new Neuron(new List<Rule>() {
-                    new Rule(),
-                    new Rule()
-                }, 0),
-            },
-            new Object()
-        };
-   
+                    new Rule(2,0,true),
+                    new Rule(1,0,null)
+                }, 2, new List<Neuron>() { }, false),
+                 new Neuron(new List<Rule>() {
+                    new Rule(2,0,true),
+                    new Rule(1,0,null)
+                }, 2, new List<Neuron>() { }, false),
+                 new Neuron(new List<Rule>() {
+                    new Rule(2,0,true),
+                    new Rule(1,0,null)
+                }, 2, new List<Neuron>() { }, false),
+                  new Neuron(new List<Rule>() {
+                    new Rule(1,0,true),
+                    new Rule(1,1,null)
+                }, 0, new List<Neuron>() { }, false),
+                   new Neuron(new List<Rule>() {
+                    new Rule(1,0,true),
+                }, 0, new List<Neuron>() { }, false),
+                   new Neuron(new List<Rule>() {
+                    new Rule(1,0,true),
+                }, 0, new List<Neuron>() { }, false),
+                   new Neuron(new List<Rule>() {
+                    new Rule(2,0,true),
+                    new Rule(3,0,null)
+                }, 2, new List<Neuron>() { }, false),
+            }, new Object());
+
 
         static void Main(string[] args)
         {
