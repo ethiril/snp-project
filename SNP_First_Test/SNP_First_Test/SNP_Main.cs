@@ -8,6 +8,14 @@ namespace SNP_First_Test
 {
     class SNP_Main
     {
+
+        /* TODO 
+         * 1.) Implement step through function (slow) to simulate the network
+         * 2.) Make the Rules non-deterministic
+         * 3.) Change the code in rules to simply show false rather than null
+         * 4.) Change network creation to use JSON for now (easier import/export larger networks)
+         * 5.) Move onto implementing a genetic algorithm solution
+         */
         // test network (tutorial figure 1)
         // This can really be done in a better way. 
         SNP_Network evenNumbers = new SNP_Network(new List<Neuron>() {
