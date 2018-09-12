@@ -9,28 +9,31 @@ namespace SNP_First_Test.Network
     public class Rule
     {
         public int SpikeAmount { get; set; }
+        public int DelayAmount { get; set; }
         public int Delay { get; set; }
         public bool? Fire { get; set; }
 
-        public Rule(int spikeAmount, int delay, bool? fire)
+        public Rule(int spikeAmount, int delayAmount, bool? fire)
         {
             SpikeAmount = spikeAmount;
-            Delay = delay;
+            DelayAmount = delayAmount;
             Fire = fire;
+            Delay = delayAmount;
         }
 
         public bool? isMatched(int currentSpikeAmount)
         {
-            if (this.SpikeAmount == currentSpikeAmount)
+            if (this.SpikeAmount >= currentSpikeAmount)
             {
                 if (this.Fire == true)
                 {
-                    if (this.Delay > 0)
+                    if (this.DelayAmount > 0)
                     {
-                        this.Delay -= 1;
+                        this.Delay--;
                         return false;
 
                     }
+                    this.Delay = this.DelayAmount;
                     return true;
                 }
                 else

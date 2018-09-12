@@ -24,6 +24,7 @@ namespace SNP_First_Test
                     new Rule(1,0,null)
                 }, 2, new List<int>() {4}, false),
                  new Neuron(new List<Rule>() {
+
                     new Rule(2,0,true),
                     new Rule(1,0,null)
                 }, 2, new List<int>() {5}, false),
@@ -54,6 +55,7 @@ namespace SNP_First_Test
             Console.WriteLine("Press enter to start the test.");
             Console.ReadLine();
             Console.WriteLine("----------- Test Started -----------");
+            Random random = new Random();
             Console.WriteLine("Initial state of the network: ");
             int count = 0;
             foreach(Neuron neuron in evenNumbers.Neurons)

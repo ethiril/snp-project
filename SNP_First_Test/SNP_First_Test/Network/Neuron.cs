@@ -18,7 +18,7 @@ namespace SNP_First_Test
         public int SpikeCount { get; set; }
         // List of connections for this neuron
         public List<int> Connections { get; set; }
-        
+
         public bool IsOutput { get; set; }
 
         // Constructor
@@ -33,42 +33,51 @@ namespace SNP_First_Test
         // Temp code for sending a spike across to another neuron
         // http://bezensek.com/blog/2015/04/12/non-deterministic-finite-state-machine-implementation-in-c-number/
         // Will need the above for a non-deterministic approach to this implementation
-        public bool? FireSpike(SNP_Network networkRef, List<int>Connections)
+        public bool? FireSpike(SNP_Network networkRef, List<int> Connections)
         {
             // Attempt at non-deterministic code
             // int ActiveSpikeCount = 0;
             // Go through every rule in the Rules list
+            /* 
+             * If List has more than one rule
+             * Check if the neuron has enough spike to satisfy some or all of the rules
+             * If only one rule can proceed, complete that spike
+             * If more than one rule can proceed at any one time use the Random() function to determine which will fire
+             * Fire the spike on that chosen rule definition
+             */
+            Random random = new Random();
+            int matchedCount = 0;
             foreach (Rule rule in this.Rules)
             {
                 // if the code for isMatched returns true (Rule has been fullfilled)
                 // this whole piece of logic can be changed to not use nulls, the ones in the rules class
                 // aren't really used. Only this method output needs them.
-                if ((rule.isMatched(this.SpikeCount) == true) || (rule.isMatched(this.SpikeCount) == null))
+                if ((rule.isMatched(this.SpikeCount) == null) || (rule.isMatched(this.SpikeCount) == true))
                 {
-                    if (rule.isMatched(this.SpikeCount) == null)
-                    {
-                        this.SpikeCount = this.SpikeCount - rule.SpikeAmount;
-                        return null;
-                    }
-                    else
-                    {
-                        this.SpikeCount = this.SpikeCount-rule.SpikeAmount;
-
-                        for (int i = 0 ; i < Connections.Count; i++)
-                        {
-                            networkRef.Neurons[i].SpikeCount++;
-                            Console.WriteLine("Neuron connections: " + networkRef.Neurons[i].Connections.Count);
-                        }
-                        Console.WriteLine("Rules matched, spiked");
-                        return true;
-                    }
+                    matchedCount++;
                 }
-                Console.WriteLine("No Rules matched.");
-                return false;
             }
-            // default
-            return false;
-        }
+            // if there is just one rule that is fullfilled then the random will always just 0, hence no need to check.
+            // otherwise if more rules are matched it will be chosen at random
+            int index = random.Next(0, matchedCount);
+            if (this.Rules[index].isMatched(this.SpikeCount) == null)
+            {
+                this.SpikeCount = this.SpikeCount - this.Rules[index].SpikeAmount;
 
+                return null;
+            }
+            else
+            {
+                this.SpikeCount = this.SpikeCount - this.Rules[index].SpikeAmount;
+
+                for (int i = 0; i < Connections.Count; i++)
+                {
+                    networkRef.Neurons[i].SpikeCount++;
+                    Console.WriteLine("Neuron connections: " + networkRef.Neurons[i].Connections.Count);
+                }
+                Console.WriteLine("Rules matched, spiked");
+                return true;
+            }
+        }
     }
 }
