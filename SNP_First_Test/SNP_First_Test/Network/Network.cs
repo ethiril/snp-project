@@ -9,18 +9,28 @@ namespace SNP_First_Test.Network
      *   A network is made up of multiple neurons, this can be edited to contain as many or as little
      *   neurons as you would like. 
      */
-    class Network
+    public class Network
     {
-        List<Neuron> Neurons { get; set; }
-        Object Output { get; set; }
+        public List<Neuron> Neurons { get; set; }
+        public Object Output { get; set; }
 
         public Network(List<Neuron> neurons, Object output) {
             Neurons = neurons;
             Output = output;
         }
+
+        public void Spike(Network networkRef)
+        {
+            int count = 0;
+            foreach (Neuron neuron in Neurons)
+            {
+                count++;
+                Console.WriteLine("Neuron " + count  + ", Amount of spikes: " + neuron.SpikeCount);
+                neuron.FireSpike(networkRef, neuron.Connections);
+            }
+        }
     }
 }
-
 
 /* 
  *  Type myType = myObject.GetType();

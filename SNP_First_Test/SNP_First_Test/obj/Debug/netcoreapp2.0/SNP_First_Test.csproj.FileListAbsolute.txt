@@ -9,3 +9,14 @@ E:\Projects\SN-P Systems\SNP_First_Test\SNP_First_Test\obj\Debug\netcoreapp2.0\S
 E:\Projects\SN-P Systems\SNP_First_Test\SNP_First_Test\obj\Debug\netcoreapp2.0\SNP_First_Test.AssemblyInfo.cs
 E:\Projects\SN-P Systems\SNP_First_Test\SNP_First_Test\obj\Debug\netcoreapp2.0\SNP_First_Test.dll
 E:\Projects\SN-P Systems\SNP_First_Test\SNP_First_Test\obj\Debug\netcoreapp2.0\SNP_First_Test.pdb
+E:\Projects\snp-project\SNP_First_Test\SNP_First_Test\bin\Debug\netcoreapp2.0\SNP_First_Test.deps.json
+E:\Projects\snp-project\SNP_First_Test\SNP_First_Test\bin\Debug\netcoreapp2.0\SNP_First_Test.runtimeconfig.json
+E:\Projects\snp-project\SNP_First_Test\SNP_First_Test\bin\Debug\netcoreapp2.0\SNP_First_Test.runtimeconfig.dev.json
+E:\Projects\snp-project\SNP_First_Test\SNP_First_Test\bin\Debug\netcoreapp2.0\SNP_First_Test.dll
+E:\Projects\snp-project\SNP_First_Test\SNP_First_Test\bin\Debug\netcoreapp2.0\SNP_First_Test.pdb
+E:\Projects\snp-project\SNP_First_Test\SNP_First_Test\obj\Debug\netcoreapp2.0\SNP_First_Test.csprojResolveAssemblyReference.cache
+E:\Projects\snp-project\SNP_First_Test\SNP_First_Test\obj\Debug\netcoreapp2.0\SNP_First_Test.csproj.CoreCompileInputs.cache
+E:\Projects\snp-project\SNP_First_Test\SNP_First_Test\obj\Debug\netcoreapp2.0\SNP_First_Test.AssemblyInfoInputs.cache
+E:\Projects\snp-project\SNP_First_Test\SNP_First_Test\obj\Debug\netcoreapp2.0\SNP_First_Test.AssemblyInfo.cs
+E:\Projects\snp-project\SNP_First_Test\SNP_First_Test\obj\Debug\netcoreapp2.0\SNP_First_Test.dll
+E:\Projects\snp-project\SNP_First_Test\SNP_First_Test\obj\Debug\netcoreapp2.0\SNP_First_Test.pdb

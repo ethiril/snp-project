@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using SNP_First_Test.Network;
+using SNP_Network = SNP_First_Test.Network.Network;
 
 namespace SNP_First_Test
 {
@@ -12,16 +13,16 @@ namespace SNP_First_Test
     public class Neuron
     {
         // List of rules that will determine whether a neuron will spike
-        List<Rule> Rules { get; set; }
+        public List<Rule> Rules { get; set; }
         // Current spike count
-        int SpikeCount { get; set; }
+        public int SpikeCount { get; set; }
         // List of connections for this neuron
-        List<Neuron> Connections { get; set; }
-
-        bool IsOutput { get; set; }
+        public List<int> Connections { get; set; }
+        
+        public bool IsOutput { get; set; }
 
         // Constructor
-        public Neuron(List<Rule> rules, int spikeCount, List<Neuron> connections, bool isOutput)
+        public Neuron(List<Rule> rules, int spikeCount, List<int> connections, bool isOutput)
         {
             Rules = rules;
             SpikeCount = spikeCount;
@@ -32,7 +33,7 @@ namespace SNP_First_Test
         // Temp code for sending a spike across to another neuron
         // http://bezensek.com/blog/2015/04/12/non-deterministic-finite-state-machine-implementation-in-c-number/
         // Will need the above for a non-deterministic approach to this implementation
-        public bool? FireSpike(List<Neuron>Connections)
+        public bool? FireSpike(SNP_Network networkRef, List<int>Connections)
         {
             // Attempt at non-deterministic code
             // int ActiveSpikeCount = 0;
@@ -52,11 +53,13 @@ namespace SNP_First_Test
                     else
                     {
                         this.SpikeCount = this.SpikeCount-rule.SpikeAmount;
-                        
-                        foreach (Neuron neuron in this.Connections)
+
+                        for (int i = 0 ; i < Connections.Count; i++)
                         {
-                            neuron.SpikeCount++;
+                            networkRef.Neurons[i].SpikeCount++;
+                            Console.WriteLine("Neuron connections: " + networkRef.Neurons[i].Connections.Count);
                         }
+                        Console.WriteLine("Rules matched, spiked");
                         return true;
                     }
                 }
