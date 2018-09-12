@@ -17,7 +17,6 @@ namespace SNP_First_Test
          * 5.) Move onto implementing a genetic algorithm solution
          */
         // test network (tutorial figure 1)
-        // This can really be done in a better way. 
 
         public static SNP_Network evenNumbers = new SNP_Network(new List<Neuron>() {
                 new Neuron(new List<Rule>(){
