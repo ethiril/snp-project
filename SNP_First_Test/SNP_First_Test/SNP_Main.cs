@@ -9,10 +9,12 @@ namespace SNP_First_Test
     class SNP_Main
     {
 
-        /* TODO 
+        /* TODO
+         * 3.) Add binary output to solution.
          * 4.) Check whether no rules apply any more.  
          * 5.) Change network creation to use JSON for now (easier import/export larger networks)
          * 6.) Move onto implementing a genetic algorithm solution
+         * 
          */
         // test network (tutorial figure 1)
 
@@ -45,7 +47,7 @@ namespace SNP_First_Test
                 }, 2, new List<int>() { }, true),
             }, new Object(), false);
 
-        static int output;
+        static string output;
 
         static void Main(string[] args)
         {
@@ -79,8 +81,12 @@ namespace SNP_First_Test
             Console.WriteLine("Step: " + count + ", generating spike.");
             if (evenNumbers.Spike(evenNumbers) == true)
             {
-                output++;
-            };
+                output = output + 1;
+            } else
+            {
+                output = output + 0;
+            }
+            Console.WriteLine("Current output: " + output);
             Console.ReadLine();
 
 

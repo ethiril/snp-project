@@ -22,7 +22,7 @@ namespace SNP_First_Test.Network
             NetworkClear = networkClear;
         }
 
-        public bool? Spike(Network networkRef)
+        public bool Spike(Network networkRef)
         {
             int count = 0;
             foreach (Neuron neuron in Neurons)

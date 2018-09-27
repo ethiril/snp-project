@@ -76,6 +76,8 @@ namespace SNP_First_Test
             }
             else
             {
+                this.SpikeCount++;
+                this.SpikeCount = this.SpikeCount - this.Rules[index].SpikeAmount;
                 for (int i = 0; i < Connections.Count; i++)
                 {
                     networkRef.Neurons[i].SpikeCount++;
@@ -85,7 +87,10 @@ namespace SNP_First_Test
                         return true;
                     }
                 }
-  
+                if (this.IsOutput == true)
+                {
+                    return true;
+                }
                 Console.WriteLine("Rules matched, spiked");
                 return false;
             }
