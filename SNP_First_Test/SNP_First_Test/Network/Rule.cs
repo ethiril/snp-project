@@ -29,6 +29,7 @@ namespace SNP_First_Test.Network
                 {
                     if (this.DelayAmount > 0)
                     {
+                        Console.WriteLine("This rule has a delay of " + this.DelayAmount + " step(s), of which there are " + this.Delay + " step(s) left.");
                         this.Delay--;
                         return false;
 

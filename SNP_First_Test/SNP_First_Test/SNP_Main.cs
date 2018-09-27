@@ -10,11 +10,9 @@ namespace SNP_First_Test
     {
 
         /* TODO 
-         * 1.) Implement step through function (slow) to simulate the network (x)
-         * 2.) Make the Rules non-deterministic
-         * 3.) Change the code in rules to simply show false rather than null
-         * 4.) Change network creation to use JSON for now (easier import/export larger networks)
-         * 5.) Move onto implementing a genetic algorithm solution
+         * 4.) Check whether no rules apply any more.  
+         * 5.) Change network creation to use JSON for now (easier import/export larger networks)
+         * 6.) Move onto implementing a genetic algorithm solution
          */
         // test network (tutorial figure 1)
 
@@ -24,7 +22,6 @@ namespace SNP_First_Test
                     new Rule(1,0,null)
                 }, 2, new List<int>() {4}, false),
                  new Neuron(new List<Rule>() {
-
                     new Rule(2,0,true),
                     new Rule(1,0,null)
                 }, 2, new List<int>() {5}, false),
@@ -46,8 +43,9 @@ namespace SNP_First_Test
                     new Rule(2,0,true),
                     new Rule(3,0,null)
                 }, 2, new List<int>() { }, true),
-            }, new Object());
+            }, new Object(), false);
 
+        static int output;
 
         static void Main(string[] args)
         {
@@ -58,25 +56,31 @@ namespace SNP_First_Test
             Random random = new Random();
             Console.WriteLine("Initial state of the network: ");
             int count = 0;
-            foreach(Neuron neuron in evenNumbers.Neurons)
+            foreach (Neuron neuron in evenNumbers.Neurons)
             {
                 count++;
                 Console.WriteLine("Neuron " + count + ", Amount of spikes: " + neuron.SpikeCount);
-               
+
             }
             Console.WriteLine("Press enter to continue");
             Console.ReadLine();
-            for (int i = 0; i < 20; i++)
+            int loopCounter = 0;
+            while (evenNumbers.NetworkClear != true)
             {
-                stepThrough(i);
+                stepThrough(++loopCounter);
             }
-            
+            Console.WriteLine("Final output: " + output);
+            Console.ReadLine();
+
         }
 
         static void stepThrough(int count)
         {
             Console.WriteLine("Step: " + count + ", generating spike.");
-            evenNumbers.Spike(evenNumbers);
+            if (evenNumbers.Spike(evenNumbers) == true)
+            {
+                output++;
+            };
             Console.ReadLine();
 
 

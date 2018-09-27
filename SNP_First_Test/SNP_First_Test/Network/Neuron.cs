@@ -33,7 +33,7 @@ namespace SNP_First_Test
         // Temp code for sending a spike across to another neuron
         // http://bezensek.com/blog/2015/04/12/non-deterministic-finite-state-machine-implementation-in-c-number/
         // Will need the above for a non-deterministic approach to this implementation
-        public bool? FireSpike(SNP_Network networkRef, List<int> Connections)
+        public bool FireSpike(SNP_Network networkRef, List<int> Connections)
         {
             // Attempt at non-deterministic code
             // int ActiveSpikeCount = 0;
@@ -59,24 +59,35 @@ namespace SNP_First_Test
             }
             // if there is just one rule that is fullfilled then the random will always just 0, hence no need to check.
             // otherwise if more rules are matched it will be chosen at random
+
+            /* 
+             * 
+             * This snippet is broken, connections for snippets need to be corrected. 
+             * 
+             */
             int index = random.Next(0, matchedCount);
+            Console.WriteLine("State: " + this.Rules[index].isMatched(this.SpikeCount));
             if (this.Rules[index].isMatched(this.SpikeCount) == null)
             {
+                Console.WriteLine("This one is null.");
+                Console.WriteLine("This.SpikeCount = " + this.SpikeCount + ", this.Rules.SpikeAmount = " + this.Rules[index].SpikeAmount);
                 this.SpikeCount = this.SpikeCount - this.Rules[index].SpikeAmount;
-
-                return null;
+                return false;
             }
             else
             {
-                this.SpikeCount = this.SpikeCount - this.Rules[index].SpikeAmount;
-
                 for (int i = 0; i < Connections.Count; i++)
                 {
                     networkRef.Neurons[i].SpikeCount++;
-                    Console.WriteLine("Neuron connections: " + networkRef.Neurons[i].Connections.Count);
+                    networkRef.Neurons[i].SpikeCount = networkRef.Neurons[i].SpikeCount - networkRef.Neurons[i].Rules[index].SpikeAmount;
+                    if (this.IsOutput == true)
+                    {
+                        return true;
+                    }
                 }
+  
                 Console.WriteLine("Rules matched, spiked");
-                return true;
+                return false;
             }
         }
     }
