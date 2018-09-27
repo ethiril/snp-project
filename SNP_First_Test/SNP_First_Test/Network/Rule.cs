@@ -23,7 +23,7 @@ namespace SNP_First_Test.Network
 
         public bool? isMatched(int currentSpikeAmount)
         {
-            if (this.SpikeAmount >= currentSpikeAmount)
+            if (currentSpikeAmount >= this.SpikeAmount)
             {
                 if (this.Fire == true)
                 {

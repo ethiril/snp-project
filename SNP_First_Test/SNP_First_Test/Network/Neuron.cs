@@ -66,6 +66,7 @@ namespace SNP_First_Test
              * 
              */
             int index = random.Next(0, matchedCount);
+            Console.WriteLine("Matched Count:" + matchedCount + ", Index chosen: " + index);
             Console.WriteLine("State: " + this.Rules[index].isMatched(this.SpikeCount));
             if (this.Rules[index].isMatched(this.SpikeCount) == null)
             {
@@ -77,18 +78,14 @@ namespace SNP_First_Test
             else
             {
                 this.SpikeCount++;
-                this.SpikeCount = this.SpikeCount - this.Rules[index].SpikeAmount;
                 for (int i = 0; i < Connections.Count; i++)
                 {
                     networkRef.Neurons[i].SpikeCount++;
                     networkRef.Neurons[i].SpikeCount = networkRef.Neurons[i].SpikeCount - networkRef.Neurons[i].Rules[index].SpikeAmount;
-                    if (this.IsOutput == true)
-                    {
-                        return true;
-                    }
                 }
                 if (this.IsOutput == true)
                 {
+                    this.SpikeCount = this.SpikeCount - this.Rules[index].SpikeAmount;
                     return true;
                 }
                 Console.WriteLine("Rules matched, spiked");
