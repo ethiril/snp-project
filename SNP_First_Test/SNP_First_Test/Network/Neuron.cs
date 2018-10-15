@@ -33,6 +33,7 @@ namespace SNP_First_Test
         // Temp code for sending a spike across to another neuron
         // http://bezensek.com/blog/2015/04/12/non-deterministic-finite-state-machine-implementation-in-c-number/
         // Will need the above for a non-deterministic approach to this implementation
+        // This method should also be rewritten to be synchronous
         public bool FireSpike(SNP_Network networkRef, List<int> Connections)
         {
             // Attempt at non-deterministic code
@@ -52,6 +53,7 @@ namespace SNP_First_Test
                 // if the code for isMatched returns true (Rule has been fullfilled)
                 // this whole piece of logic can be changed to not use nulls, the ones in the rules class
                 // aren't really used. Only this method output needs them.
+                // Neuron 7 returns 0 matched only sometimes?
                 if ((rule.isMatched(this.SpikeCount) == null) || (rule.isMatched(this.SpikeCount) == true))
                 {
                     matchedCount++;
@@ -75,18 +77,23 @@ namespace SNP_First_Test
                 this.SpikeCount = this.SpikeCount - this.Rules[index].SpikeAmount;
                 return false;
             }
+            else if (this.Rules[index].isMatched(this.SpikeCount) == false)
+            {
+                return false;
+            }
             else
             {
-                this.SpikeCount++;
-                for (int i = 0; i < Connections.Count; i++)
-                {
-                    networkRef.Neurons[i].SpikeCount++;
-                    networkRef.Neurons[i].SpikeCount = networkRef.Neurons[i].SpikeCount - networkRef.Neurons[i].Rules[index].SpikeAmount;
-                }
                 if (this.IsOutput == true)
                 {
                     this.SpikeCount = this.SpikeCount - this.Rules[index].SpikeAmount;
+                    Console.WriteLine(this.Rules[index].SpikeAmount + " spikes have been removed from the current count. " + this.SpikeCount + " spikes left within this neuron.");
+                    this.SpikeCount++;
                     return true;
+                }
+                foreach (int connection in Connections)
+                {
+                    Console.WriteLine("Sending spike to Neuron " + connection + ", current rule has a delay of: " + this.Rules[index].Delay);
+                    networkRef.Neurons[connection-1].SpikeCount++;
                 }
                 Console.WriteLine("Rules matched, spiked");
                 return false;

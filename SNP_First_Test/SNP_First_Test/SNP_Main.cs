@@ -45,7 +45,7 @@ namespace SNP_First_Test
                     new Rule(2,0,true),
                     new Rule(3,0,null)
                 }, 2, new List<int>() { }, true),
-            }, new Object(), false);
+            }, new String('a',0), false);
 
         static string output;
 
@@ -55,7 +55,6 @@ namespace SNP_First_Test
             Console.WriteLine("Press enter to start the test.");
             Console.ReadLine();
             Console.WriteLine("----------- Test Started -----------");
-            Random random = new Random();
             Console.WriteLine("Initial state of the network: ");
             int count = 0;
             foreach (Neuron neuron in evenNumbers.Neurons)
@@ -69,7 +68,7 @@ namespace SNP_First_Test
             int loopCounter = 0;
             while (evenNumbers.NetworkClear != true)
             {
-                stepThrough(++loopCounter);
+                stepThrough(loopCounter++);
             }
             Console.WriteLine("Final output: " + output);
             Console.ReadLine();
@@ -79,8 +78,9 @@ namespace SNP_First_Test
         static void stepThrough(int count)
         {
             Console.WriteLine("Step: " + count + ", generating spike.");
-            if (evenNumbers.Spike(evenNumbers) == true)
-            {
+            evenNumbers.Spike(evenNumbers);
+            Console.ReadLine();
+            /*{
                 output = output + 1;
             } else
             {
@@ -88,7 +88,7 @@ namespace SNP_First_Test
             }
             Console.WriteLine("Current output: " + output);
             Console.ReadLine();
-
+            */
 
 
 
