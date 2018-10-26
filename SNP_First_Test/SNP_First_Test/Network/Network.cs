@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SNP_First_Test.Network
 {
@@ -12,29 +13,53 @@ namespace SNP_First_Test.Network
     public class Network
     {
         public List<Neuron> Neurons { get; set; }
-        public Object Output { get; set; }
+        public String Output { get; set; }
         public bool NetworkClear { get; set; }
 
-        public Network(List<Neuron> neurons, Object output, bool networkClear)
+        public Network(List<Neuron> neurons, String output, bool networkClear)
         {
             Neurons = neurons;
             Output = output;
             NetworkClear = networkClear;
         }
 
-        public bool Spike(Network networkRef)
+        public void Spike(Network networkRef)
         {
             int count = 0;
-            foreach (Neuron neuron in Neurons)
+            List<Neuron> NeuronCopy = new List<Neuron>(this.Neurons);
+            /*
+             * Run through removing all of the spikes and recording an output
+             * then run through adding all of the spikes that are recorded to have a spike go out to their network
+             * Check if each spike sends spike across all axons or if it determines which to go through randomly.
+             */
+            foreach (Neuron neuron in this.Neurons)
             {
                 count++;
-                Console.WriteLine("Neuron " + count + ", Amount of spikes: " + neuron.SpikeCount);
-                if (neuron.FireSpike(networkRef, neuron.Connections) == true)
+                Console.WriteLine("Removing Spikes. Neuron " + count + ", Amount of spikes: " + neuron.SpikeCount);
+                if (neuron.RemoveSpikes(networkRef, neuron.Connections) == true)
                 {
-                    return true;
+                    if (neuron.IsOutput == true)
+                    {
+                        this.Output = this.Output + 1;
+                    }
                 }
-            }
-            return false;
+
+                else
+                {
+                    if (neuron.IsOutput == true)
+                    {
+                        this.Output = this.Output + 0;
+                    }
+                }
+            };
+            count = 0;
+            foreach (Neuron neuron in this.Neurons)
+            {
+                count++;
+                neuron.FireSpike(networkRef, neuron.Connections);
+            };
+            Console.WriteLine("The current output is: " + this.Output);
+
         }
     }
 }
