@@ -30,23 +30,18 @@ namespace SNP_First_Test
             IsOutput = isOutput;
         }
 
-        // Temp code for sending a spike across to another neuron
-        // http://bezensek.com/blog/2015/04/12/non-deterministic-finite-state-machine-implementation-in-c-number/
-        // Will need the above for a non-deterministic approach to this implementation
-        // This method should also be rewritten to be synchronous
-        public bool FireSpike(SNP_Network networkRef, List<int> Connections)
+
+        int indexOfSpike()
         {
-            // Attempt at non-deterministic code
-            // int ActiveSpikeCount = 0;
-            // Go through every rule in the Rules list
-            /* 
-             * If List has more than one rule
-             * Check if the neuron has enough spike to satisfy some or all of the rules
-             * If only one rule can proceed, complete that spike
-             * If more than one rule can proceed at any one time use the Random() function to determine which will fire
-             * Fire the spike on that chosen rule definition
-             */
+            // if there is just one rule that is fullfilled then the random will always just 0, hence no need to check.
+            // otherwise if more rules are matched it will be chosen at random
+
             Random random = new Random();
+            return random.Next(0, MatchRules());
+        }
+
+        int MatchRules()
+        {
             int matchedCount = 0;
             foreach (Rule rule in this.Rules)
             {
@@ -59,17 +54,15 @@ namespace SNP_First_Test
                     matchedCount++;
                 }
             }
-            // if there is just one rule that is fullfilled then the random will always just 0, hence no need to check.
-            // otherwise if more rules are matched it will be chosen at random
+            return matchedCount;
 
-            /* 
-             * 
-             * This snippet is broken, connections for snippets need to be corrected. 
-             * 
-             */
-            int index = random.Next(0, matchedCount);
-            Console.WriteLine("Matched Count:" + matchedCount + ", Index chosen: " + index);
-            Console.WriteLine("State: " + this.Rules[index].isMatched(this.SpikeCount));
+        }
+
+        
+        // This code will loop over the entire network and remove any spikes which match the correct rules.
+        public bool RemoveSpikes(SNP_Network networkRef, List<int> Connections)
+        {
+            int index = indexOfSpike();
             if (this.Rules[index].isMatched(this.SpikeCount) == null)
             {
                 Console.WriteLine("This one is null.");
@@ -90,14 +83,46 @@ namespace SNP_First_Test
                     this.SpikeCount++;
                     return true;
                 }
+            }
+            return true;
+        }
+
+
+        public void FireSpike(SNP_Network networkRef, List<int> Connections)
+        {
+            /* 
+             * If List has more than one rule
+             * Check if the neuron has enough spike to satisfy some or all of the rules
+             * If only one rule can proceed, complete that spike
+             * If more than one rule can proceed at any one time use the Random() function to determine which will fire
+             * Fire the spike on that chosen rule definition
+             * We do not need to worry about the removal of spikes as that is done in RemoveSpikes()
+             */
+            int index = indexOfSpike();
+            int matchedCount = MatchRules();
+            Console.WriteLine("Matched Count:" + matchedCount + ", Index chosen: " + index);
+            Console.WriteLine("State: " + this.Rules[index].isMatched(this.SpikeCount));
+            {
+
+                // just stagger this, do removal then addition. 
+                // Not sure how to do this in parallel, as all removals would have to be done independantly...
+                // Could split the two functions and simply make it a two-part func that starts from Network?
+                // I.e. Network -> Neuron.Fire() -> Neuron.Resolve() -> Output...
+                if (this.IsOutput == true)
+                {
+                    this.SpikeCount++;
+                }
                 foreach (int connection in Connections)
                 {
                     Console.WriteLine("Sending spike to Neuron " + connection + ", current rule has a delay of: " + this.Rules[index].Delay);
-                    networkRef.Neurons[connection-1].SpikeCount++;
+                    networkRef.Neurons[connection - 1].SpikeCount++;
                 }
                 Console.WriteLine("Rules matched, spiked");
-                return false;
             }
         }
+        // Temp code for sending a spike across to another neuron
+        // http://bezensek.com/blog/2015/04/12/non-deterministic-finite-state-machine-implementation-in-c-number/
+        // Will need the above for a non-deterministic approach to this implementation
+        // This method should also be rewritten to be synchronous
     }
 }
