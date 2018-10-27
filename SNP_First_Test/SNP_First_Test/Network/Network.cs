@@ -53,11 +53,25 @@ namespace SNP_First_Test.Network
                 }
             };
             count = 0;
+            Console.WriteLine("After spike removal: ");
+            foreach (Neuron neuron in this.Neurons)
+            {
+                count++;
+                Console.WriteLine("Neuron " + count + ", Amount of spikes: " + neuron.SpikeCount);
+            }
+            count = 0;
             foreach (Neuron neuron in this.Neurons)
             {
                 count++;
                 neuron.FireSpike(networkRef, neuron.Connections);
             };
+            count = 0;
+            Console.WriteLine("After Spike addition: ");
+            foreach (Neuron neuron in this.Neurons)
+            {
+                count++;
+                Console.WriteLine("Neuron " + count + ", Amount of spikes: " + neuron.SpikeCount);
+            }
             Console.WriteLine("The current output is: " + this.Output);
 
         }
