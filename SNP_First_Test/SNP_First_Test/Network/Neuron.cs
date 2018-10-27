@@ -68,7 +68,7 @@ namespace SNP_First_Test
                 Console.WriteLine("This one is null.");
                 Console.WriteLine("This.SpikeCount = " + this.SpikeCount + ", this.Rules.SpikeAmount = " + this.Rules[index].SpikeAmount);
                 this.SpikeCount = this.SpikeCount - this.Rules[index].SpikeAmount;
-                return false;
+                return true;
             }
             else if (this.Rules[index].isMatched(this.SpikeCount) == false)
             {
@@ -76,15 +76,10 @@ namespace SNP_First_Test
             }
             else
             {
-                if (this.IsOutput == true)
-                {
                     this.SpikeCount = this.SpikeCount - this.Rules[index].SpikeAmount;
                     Console.WriteLine(this.Rules[index].SpikeAmount + " spikes have been removed from the current count. " + this.SpikeCount + " spikes left within this neuron.");
-                    this.SpikeCount++;
                     return true;
-                }
             }
-            return true;
         }
 
 
