@@ -21,19 +21,19 @@ namespace SNP_First_Test
         public static SNP_Network evenNumbers = new SNP_Network(new List<Neuron>() {
                 new Neuron(new List<Rule>(){
                     new Rule(2,0,true),
-                    new Rule(1,0,null)
+                    new Rule(1,0,false)
                 }, 2, new List<int>() {4}, false),
                  new Neuron(new List<Rule>() {
                     new Rule(2,0,true),
-                    new Rule(1,0,null)
+                    new Rule(1,0,false)
                 }, 2, new List<int>() {5}, false),
                  new Neuron(new List<Rule>() {
                     new Rule(2,0,true),
-                    new Rule(1,0,null)
+                    new Rule(1,0,false)
                 }, 2, new List<int>() {6}, false),
                   new Neuron(new List<Rule>() {
                     new Rule(1,0,true),
-                    new Rule(1,1,null)
+                    new Rule(1,1,false)
                 }, 0, new List<int>() {1, 3, 7}, false),
                    new Neuron(new List<Rule>() {
                     new Rule(1,0,true),
@@ -43,11 +43,9 @@ namespace SNP_First_Test
                 }, 0, new List<int>() { 3, 7}, false),
                    new Neuron(new List<Rule>() {
                     new Rule(2,0,true),
-                    new Rule(3,0,null)
+                    new Rule(3,0,false)
                 }, 2, new List<int>() { }, true),
-            }, new String('a',0), false);
-
-        static string output;
+            }, new List<int>(), 0, false);
 
         static void Main(string[] args)
         {
@@ -70,7 +68,6 @@ namespace SNP_First_Test
             {
                 stepThrough(loopCounter++);
             }
-            Console.WriteLine("Final output: " + output);
             Console.ReadLine();
 
         }
@@ -80,18 +77,6 @@ namespace SNP_First_Test
             Console.WriteLine("Step: " + count + ", generating spike.");
             evenNumbers.Spike(evenNumbers);
             Console.ReadLine();
-            /*{
-                output = output + 1;
-            } else
-            {
-                output = output + 0;
-            }
-            Console.WriteLine("Current output: " + output);
-            Console.ReadLine();
-            */
-
-
-
         }
     }
 }

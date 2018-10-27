@@ -58,17 +58,18 @@ namespace SNP_First_Test
 
         }
 
-        
+
         // This code will loop over the entire network and remove any spikes which match the correct rules.
-        public bool RemoveSpikes(SNP_Network networkRef, List<int> Connections)
+        public bool? RemoveSpikes(SNP_Network networkRef, List<int> Connections)
         {
             int index = indexOfSpike();
             if (this.Rules[index].isMatched(this.SpikeCount) == null)
             {
+                // this state needs storing somehow, as the spike needs to realise that it was just nulled and should not then spike. 
                 Console.WriteLine("This one is null.");
                 Console.WriteLine("This.SpikeCount = " + this.SpikeCount + ", this.Rules.SpikeAmount = " + this.Rules[index].SpikeAmount);
                 this.SpikeCount = this.SpikeCount - this.Rules[index].SpikeAmount;
-                return true;
+                return null;
             }
             else if (this.Rules[index].isMatched(this.SpikeCount) == false)
             {
@@ -76,9 +77,9 @@ namespace SNP_First_Test
             }
             else
             {
-                    this.SpikeCount = this.SpikeCount - this.Rules[index].SpikeAmount;
-                    Console.WriteLine(this.Rules[index].SpikeAmount + " spikes have been removed from the current count. " + this.SpikeCount + " spikes left within this neuron.");
-                    return true;
+                this.SpikeCount = this.SpikeCount - this.Rules[index].SpikeAmount;
+                Console.WriteLine(this.Rules[index].SpikeAmount + " spikes have been removed from the current count. " + this.SpikeCount + " spikes left within this neuron.");
+                return true;
             }
         }
 
@@ -97,23 +98,27 @@ namespace SNP_First_Test
             int matchedCount = MatchRules();
             Console.WriteLine("Matched Count:" + matchedCount + ", Index chosen: " + index);
             Console.WriteLine("State: " + this.Rules[index].isMatched(this.SpikeCount));
+            // just stagger this, do removal then addition. 
+            // Not sure how to do this in parallel, as all removals would have to be done independantly...
+            // Could split the two functions and simply make it a two-part func that starts from Network?
+            // I.e. Network -> Neuron.Fire() -> Neuron.Resolve() -> Output...
+            if (this.IsOutput == true)
             {
-
-                // just stagger this, do removal then addition. 
-                // Not sure how to do this in parallel, as all removals would have to be done independantly...
-                // Could split the two functions and simply make it a two-part func that starts from Network?
-                // I.e. Network -> Neuron.Fire() -> Neuron.Resolve() -> Output...
-                if (this.IsOutput == true)
-                {
-                    this.SpikeCount++;
-                }
-                foreach (int connection in Connections)
+                this.SpikeCount++;
+            }
+            foreach (int connection in Connections)
+            {
+                if (this.Rules[index].Fire == true)
                 {
                     Console.WriteLine("Sending spike to Neuron " + connection + ", current rule has a delay of: " + this.Rules[index].Delay);
                     networkRef.Neurons[connection - 1].SpikeCount++;
                 }
-                Console.WriteLine("Rules matched, spiked");
+                else
+                {
+                    Console.WriteLine("Wiping spike from system on connection " + connection + ", current rule has a delay of: " + this.Rules[index].Delay);
+                }
             }
+            Console.WriteLine("Rules matched, spiked");
         }
         // Temp code for sending a spike across to another neuron
         // http://bezensek.com/blog/2015/04/12/non-deterministic-finite-state-machine-implementation-in-c-number/
