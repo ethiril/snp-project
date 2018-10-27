@@ -11,9 +11,9 @@ namespace SNP_First_Test.Network
         public int SpikeAmount { get; set; }
         public int DelayAmount { get; set; }
         public int Delay { get; set; }
-        public bool? Fire { get; set; }
+        public bool Fire { get; set; }
 
-        public Rule(int spikeAmount, int delayAmount, bool? fire)
+        public Rule(int spikeAmount, int delayAmount, bool fire)
         {
             SpikeAmount = spikeAmount;
             DelayAmount = delayAmount;
@@ -34,8 +34,11 @@ namespace SNP_First_Test.Network
                         return false;
 
                     }
-                    this.Delay = this.DelayAmount;
-                    return true;
+                    else
+                    {
+                        this.Delay = this.DelayAmount;
+                        return true;
+                    }
                 }
                 else
                 {

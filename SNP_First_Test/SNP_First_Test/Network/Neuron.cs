@@ -108,8 +108,15 @@ namespace SNP_First_Test
             }
             foreach (int connection in Connections)
             {
-                Console.WriteLine("Sending spike to Neuron " + connection + ", current rule has a delay of: " + this.Rules[index].Delay);
-                networkRef.Neurons[connection - 1].SpikeCount++;
+                if (this.Rules[index].Fire == true)
+                {
+                    Console.WriteLine("Sending spike to Neuron " + connection + ", current rule has a delay of: " + this.Rules[index].Delay);
+                    networkRef.Neurons[connection - 1].SpikeCount++;
+                }
+                else
+                {
+                    Console.WriteLine("Wiping spike from system on connection " + connection + ", current rule has a delay of: " + this.Rules[index].Delay);
+                }
             }
             Console.WriteLine("Rules matched, spiked");
         }

@@ -13,13 +13,15 @@ namespace SNP_First_Test.Network
     public class Network
     {
         public List<Neuron> Neurons { get; set; }
-        public String Output { get; set; }
+        public List<int> OutputSet { get; set; }
+        private int CurrentOutput { get; set; }
         public bool NetworkClear { get; set; }
 
-        public Network(List<Neuron> neurons, String output, bool networkClear)
+        public Network(List<Neuron> neurons, List<int> outputSet, int currentOutput, bool networkClear)
         {
             Neurons = neurons;
-            Output = output;
+            OutputSet = outputSet;
+            CurrentOutput = currentOutput;
             NetworkClear = networkClear;
         }
 
@@ -40,7 +42,9 @@ namespace SNP_First_Test.Network
                 {
                     if (neuron.IsOutput == true)
                     {
-                        this.Output = this.Output + 1;
+
+                        this.OutputSet.Add(CurrentOutput);
+                        this.CurrentOutput = 0;
                     }
                 }
 
@@ -48,7 +52,7 @@ namespace SNP_First_Test.Network
                 {
                     if (neuron.IsOutput == true)
                     {
-                        this.Output = this.Output + 0;
+                        this.CurrentOutput++;
                     }
                 }
             };
@@ -72,7 +76,8 @@ namespace SNP_First_Test.Network
                 count++;
                 Console.WriteLine("Neuron " + count + ", Amount of spikes: " + neuron.SpikeCount);
             }
-            Console.WriteLine("The current output is: " + this.Output);
+            Console.Write("The current output set is: ");
+            this.OutputSet.ForEach(i => Console.Write("{0}\t", i));
 
         }
     }
