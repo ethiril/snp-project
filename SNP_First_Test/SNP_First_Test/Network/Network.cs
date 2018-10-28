@@ -28,7 +28,6 @@ namespace SNP_First_Test.Network
         public void Spike(Network networkRef)
         {
             int count = 0;
-            List<Neuron> NeuronCopy = new List<Neuron>(this.Neurons);
             /*
              * Run through removing all of the spikes and recording an output
              * then run through adding all of the spikes that are recorded to have a spike go out to their network
@@ -42,7 +41,7 @@ namespace SNP_First_Test.Network
                 {
                     if (neuron.IsOutput == true)
                     {
-
+                        this.CurrentOutput++;
                         this.OutputSet.Add(CurrentOutput);
                         this.CurrentOutput = 0;
                     }
@@ -50,10 +49,7 @@ namespace SNP_First_Test.Network
 
                 else
                 {
-                    if (neuron.IsOutput == true)
-                    {
-                        this.CurrentOutput++;
-                    }
+                    this.CurrentOutput++;
                 }
             };
             count = 0;
@@ -68,14 +64,8 @@ namespace SNP_First_Test.Network
             {
                 count++;
                 neuron.FireSpike(networkRef, neuron.Connections);
-            };
-            count = 0;
-            Console.WriteLine("After Spike addition: ");
-            foreach (Neuron neuron in this.Neurons)
-            {
-                count++;
                 Console.WriteLine("Neuron " + count + ", Amount of spikes: " + neuron.SpikeCount);
-            }
+            };
             Console.Write("The current output set is: ");
             this.OutputSet.ForEach(i => Console.Write("{0}\t", i));
 
