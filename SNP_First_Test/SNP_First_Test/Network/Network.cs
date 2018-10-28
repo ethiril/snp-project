@@ -41,15 +41,16 @@ namespace SNP_First_Test.Network
                 {
                     if (neuron.IsOutput == true)
                     {
-                        this.CurrentOutput++;
-                        this.OutputSet.Add(CurrentOutput);
+                        this.OutputSet.Add(++this.CurrentOutput);
                         this.CurrentOutput = 0;
                     }
                 }
-
                 else
                 {
-                    this.CurrentOutput++;
+                    if (neuron.IsOutput == true)
+                    {
+                        this.CurrentOutput++;
+                    }
                 }
             };
             count = 0;
