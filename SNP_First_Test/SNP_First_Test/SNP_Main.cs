@@ -21,15 +21,15 @@ namespace SNP_First_Test
         public static SNP_Network evenNumbers = new SNP_Network(new List<Neuron>() {
                 new Neuron(new List<Rule>(){
                     new Rule(2,0,true),
-                    new Rule(1,0,false)
+                   // new Rule(1,0,false)
                 }, 2, new List<int>() {4}, false),
                  new Neuron(new List<Rule>() {
                     new Rule(2,0,true),
-                    new Rule(1,0,false)
+                  //  new Rule(1,0,false)
                 }, 2, new List<int>() {5}, false),
                  new Neuron(new List<Rule>() {
                     new Rule(2,0,true),
-                    new Rule(1,0,false)
+                 //   new Rule(1,0,false)
                 }, 2, new List<int>() {6}, false),
                   new Neuron(new List<Rule>() {
                     new Rule(1,0,true),

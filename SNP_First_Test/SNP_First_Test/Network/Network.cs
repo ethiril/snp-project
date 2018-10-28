@@ -33,10 +33,10 @@ namespace SNP_First_Test.Network
              * then run through adding all of the spikes that are recorded to have a spike go out to their network
              * Check if each spike sends spike across all axons or if it determines which to go through randomly.
              */
+            Console.WriteLine("After spike removal: ");
             foreach (Neuron neuron in this.Neurons)
             {
                 count++;
-                Console.WriteLine("Removing Spikes. Neuron " + count + ", Amount of spikes: " + neuron.SpikeCount);
                 if (neuron.RemoveSpikes(networkRef, neuron.Connections) == true)
                 {
                     if (neuron.IsOutput == true)
@@ -52,20 +52,16 @@ namespace SNP_First_Test.Network
                         this.CurrentOutput++;
                     }
                 }
+                Console.WriteLine("Removing Spikes. Neuron " + count + ", Amount of spikes: " + neuron.SpikeCount);
             };
-            count = 0;
-            Console.WriteLine("After spike removal: ");
-            foreach (Neuron neuron in this.Neurons)
-            {
-                count++;
-                Console.WriteLine("Neuron " + count + ", Amount of spikes: " + neuron.SpikeCount);
-            }
+            Console.WriteLine("After spike addition: ");
             count = 0;
             foreach (Neuron neuron in this.Neurons)
             {
                 count++;
                 neuron.FireSpike(networkRef, neuron.Connections);
-                Console.WriteLine("Neuron " + count + ", Amount of spikes: " + neuron.SpikeCount);
+                Console.WriteLine("Adding Spikes. Neuron " + count + ", Amount of spikes: " + neuron.SpikeCount);
+
             };
             Console.Write("The current output set is: ");
             this.OutputSet.ForEach(i => Console.Write("{0}\t", i));
