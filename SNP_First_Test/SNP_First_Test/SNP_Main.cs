@@ -47,6 +47,8 @@ namespace SNP_First_Test
                 }, 2, new List<int>() { }, true),
             }, new List<int>(), 0, false);
 
+        static int stepAmount = 100;
+
         static void Main(string[] args)
         {
             Console.WriteLine("Let's get started. //");
@@ -64,10 +66,15 @@ namespace SNP_First_Test
             Console.WriteLine("Press enter to continue");
             Console.ReadLine();
             int loopCounter = 0;
-            while (evenNumbers.NetworkClear != true)
+            while ((evenNumbers.NetworkClear != true) && evenNumbers.GlobalTimer < stepAmount) 
             {
                 stepThrough(loopCounter++);
             }
+            Console.ReadLine();
+            Console.WriteLine("Final output set: ");
+            evenNumbers.OutputSet.ForEach(i => Console.Write("{0}\t", i));
+            Console.WriteLine();
+            Console.WriteLine("Press any key to exit");
             Console.ReadLine();
 
         }

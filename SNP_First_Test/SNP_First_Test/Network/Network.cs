@@ -16,6 +16,7 @@ namespace SNP_First_Test.Network
         public List<int> OutputSet { get; set; }
         private int CurrentOutput { get; set; }
         public bool NetworkClear { get; set; }
+        public int GlobalTimer { get; set; }
 
         public Network(List<Neuron> neurons, List<int> outputSet, int currentOutput, bool networkClear)
         {
@@ -27,48 +28,58 @@ namespace SNP_First_Test.Network
 
         public void Spike(Network networkRef)
         {
-            int count = 0;
             /*
              * Run through removing all of the spikes and recording an output
              * then run through adding all of the spikes that are recorded to have a spike go out to their network
              * Check if each spike sends spike across all axons or if it determines which to go through randomly.
              */
             Console.WriteLine("After spike removal: ");
-            foreach (Neuron neuron in this.Neurons)
+            List<Neuron> NeuronCopy = new List<Neuron>(this.Neurons);
+            object sync = new object();
+            Parallel.ForEach(NeuronCopy, neuron =>
             {
-                count++;
-                if (neuron.RemoveSpikes(networkRef, neuron.Connections) == true)
-                {
-                    if (neuron.IsOutput == true)
+                    if (neuron.RemoveSpikes(networkRef, neuron.Connections) == true)
                     {
-                        this.OutputSet.Add(++this.CurrentOutput);
-                        this.CurrentOutput = 0;
+                        if (neuron.IsOutput == true)
+                        {
+                            this.OutputSet.Add(++this.CurrentOutput);
+                            this.CurrentOutput = 0;
+                        }
                     }
-                }
-                else
-                {
-                    if (neuron.IsOutput == true)
+                    else
                     {
-                        this.CurrentOutput++;
+                        if (neuron.IsOutput == true)
+                        {
+                            this.CurrentOutput++;
+                        }
                     }
-                }
-                Console.WriteLine("Removing Spikes. Neuron " + count + ", Amount of spikes: " + neuron.SpikeCount);
-            };
+            });
+            printNetwork(this.Neurons);
             Console.WriteLine("After spike addition: ");
-            count = 0;
-            foreach (Neuron neuron in this.Neurons)
+            NeuronCopy = new List<Neuron>(this.Neurons);
+            Parallel.ForEach(NeuronCopy, neuron =>
             {
-                count++;
-                neuron.FireSpike(networkRef, neuron.Connections);
-                Console.WriteLine("Adding Spikes. Neuron " + count + ", Amount of spikes: " + neuron.SpikeCount);
-
-            };
-            Console.Write("The current output set is: ");
+                    neuron.FireSpike(networkRef, neuron.Connections);
+            });
+            printNetwork(this.Neurons);
+            this.GlobalTimer++;
+            Console.Write("Global Timer: " + this.GlobalTimer + ", The current output set is: ");
             this.OutputSet.ForEach(i => Console.Write("{0}\t", i));
 
         }
+        private void printNetwork(List<Neuron> neurons)
+        {
+            int count = 0;
+            foreach (Neuron neuron in this.Neurons)
+            {
+                count++;
+                Console.WriteLine("Adding Spikes. Neuron " + count + ", Amount of spikes: " + neuron.SpikeCount);
+            }
+        }
     }
 }
+
+
 
 /* 
  *  Type myType = myObject.GetType();
