@@ -38,36 +38,36 @@ namespace SNP_First_Test.Network
             object sync = new object();
             Parallel.ForEach(NeuronCopy, neuron =>
             {
-                    if (neuron.RemoveSpikes(networkRef, neuron.Connections) == true)
+                if (neuron.RemoveSpikes(networkRef, neuron.Connections) == true)
+                {
+                    if (neuron.IsOutput == true)
                     {
-                        if (neuron.IsOutput == true)
-                        {
-                            this.OutputSet.Add(++this.CurrentOutput);
-                            this.CurrentOutput = 0;
-                        }
+                        this.OutputSet.Add(++this.CurrentOutput);
+                        this.CurrentOutput = 0;
                     }
-                    else
+                }
+                else
+                {
+                    if (neuron.IsOutput == true)
                     {
-                        if (neuron.IsOutput == true)
-                        {
-                            this.CurrentOutput++;
-                        }
+                        this.CurrentOutput++;
                     }
+                }
             });
-            printNetwork(this.Neurons);
+            PrintNetwork(this.Neurons);
             Console.WriteLine("After spike addition: ");
             NeuronCopy = new List<Neuron>(this.Neurons);
             Parallel.ForEach(NeuronCopy, neuron =>
             {
-                    neuron.FireSpike(networkRef, neuron.Connections);
+                neuron.FireSpike(networkRef, neuron.Connections);
             });
-            printNetwork(this.Neurons);
+            PrintNetwork(this.Neurons);
             this.GlobalTimer++;
             Console.Write("Global Timer: " + this.GlobalTimer + ", The current output set is: ");
             this.OutputSet.ForEach(i => Console.Write("{0}\t", i));
 
         }
-        private void printNetwork(List<Neuron> neurons)
+        private void PrintNetwork(List<Neuron> neurons)
         {
             int count = 0;
             foreach (Neuron neuron in this.Neurons)
@@ -78,18 +78,3 @@ namespace SNP_First_Test.Network
         }
     }
 }
-
-
-
-/* 
- *  Type myType = myObject.GetType();
- *  IList<PropertyInfo> props = new List<PropertyInfo>(myType.GetProperties());
- *  
- *  foreach (PropertyInfo prop in props)
- *  {
- *      object propValue = prop.GetValue(myObject, null);
- *  
- *      // Do something with propValue
- *  }
- *  
- */
