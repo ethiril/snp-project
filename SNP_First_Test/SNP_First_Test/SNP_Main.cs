@@ -3,6 +3,7 @@ using SNP_First_Test.Network;
 using SNP_Network = SNP_First_Test.Network.Network;
 using System.Collections.Generic;
 using System.Text;
+using System.Diagnostics;
 
 namespace SNP_First_Test
 {
@@ -21,15 +22,15 @@ namespace SNP_First_Test
         public static SNP_Network evenNumbers = new SNP_Network(new List<Neuron>() {
                 new Neuron(new List<Rule>(){
                     new Rule(2,0,true),
-                    new Rule(1,0,false)
+                   // new Rule(1,0,false)
                 }, 2, new List<int>() {4}, false),
                  new Neuron(new List<Rule>() {
                     new Rule(2,0,true),
-                    new Rule(1,0,false)
+                  //  new Rule(1,0,false)
                 }, 2, new List<int>() {5}, false),
                  new Neuron(new List<Rule>() {
                     new Rule(2,0,true),
-                    new Rule(1,0,false)
+                 //   new Rule(1,0,false)
                 }, 2, new List<int>() {6}, false),
                   new Neuron(new List<Rule>() {
                     new Rule(1,0,true),
@@ -47,11 +48,15 @@ namespace SNP_First_Test
                 }, 2, new List<int>() { }, true),
             }, new List<int>(), 0, false);
 
+        static int stepAmount = 100000;
+
         static void Main(string[] args)
         {
+            // Stopwatch stopWatch = new Stopwatch();
             Console.WriteLine("Let's get started. //");
             Console.WriteLine("Press enter to start the test.");
             Console.ReadLine();
+            // stopWatch.Start();
             Console.WriteLine("----------- Test Started -----------");
             Console.WriteLine("Initial state of the network: ");
             int count = 0;
@@ -64,10 +69,16 @@ namespace SNP_First_Test
             Console.WriteLine("Press enter to continue");
             Console.ReadLine();
             int loopCounter = 0;
-            while (evenNumbers.NetworkClear != true)
+            while ((evenNumbers.NetworkClear != true) && evenNumbers.GlobalTimer < stepAmount) 
             {
                 stepThrough(loopCounter++);
             }
+            Console.WriteLine("Final output set: ");
+            // stopWatch.Stop();
+            evenNumbers.OutputSet.ForEach(i => Console.Write("{0}\t", i));
+            Console.WriteLine();
+            Console.WriteLine("Press any key to exit");
+            // Console.WriteLine("Press any key to exit, time elapsed: " + stopWatch.Elapsed.ToString() + "s");
             Console.ReadLine();
 
         }

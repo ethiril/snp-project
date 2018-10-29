@@ -66,8 +66,7 @@ namespace SNP_First_Test
             if (this.Rules[index].isMatched(this.SpikeCount) == null)
             {
                 // this state needs storing somehow, as the spike needs to realise that it was just nulled and should not then spike. 
-                Console.WriteLine("This one is null.");
-                Console.WriteLine("This.SpikeCount = " + this.SpikeCount + ", this.Rules.SpikeAmount = " + this.Rules[index].SpikeAmount);
+                Console.WriteLine("This spike is null. This.SpikeCount = " + this.SpikeCount + ", this.Rules.SpikeAmount = " + this.Rules[index].SpikeAmount);
                 this.SpikeCount = this.SpikeCount - this.Rules[index].SpikeAmount;
                 return null;
             }
@@ -96,8 +95,8 @@ namespace SNP_First_Test
              */
             int index = indexOfSpike();
             int matchedCount = MatchRules();
-            Console.WriteLine("Matched Count:" + matchedCount + ", Index chosen: " + index);
-            Console.WriteLine("State: " + this.Rules[index].isMatched(this.SpikeCount));
+            //Console.WriteLine("Matched Count:" + matchedCount + ", Index chosen: " + index);
+            //Console.WriteLine("State: " + this.Rules[index].isMatched(this.SpikeCount));
             // just stagger this, do removal then addition. 
             // Not sure how to do this in parallel, as all removals would have to be done independantly...
             // Could split the two functions and simply make it a two-part func that starts from Network?
