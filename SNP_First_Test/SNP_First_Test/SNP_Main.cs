@@ -3,6 +3,7 @@ using SNP_First_Test.Network;
 using SNP_Network = SNP_First_Test.Network.Network;
 using System.Collections.Generic;
 using System.Text;
+using System.Diagnostics;
 
 namespace SNP_First_Test
 {
@@ -47,13 +48,15 @@ namespace SNP_First_Test
                 }, 2, new List<int>() { }, true),
             }, new List<int>(), 0, false);
 
-        static int stepAmount = 100;
+        static int stepAmount = 100000;
 
         static void Main(string[] args)
         {
+            // Stopwatch stopWatch = new Stopwatch();
             Console.WriteLine("Let's get started. //");
             Console.WriteLine("Press enter to start the test.");
             Console.ReadLine();
+            // stopWatch.Start();
             Console.WriteLine("----------- Test Started -----------");
             Console.WriteLine("Initial state of the network: ");
             int count = 0;
@@ -70,11 +73,12 @@ namespace SNP_First_Test
             {
                 stepThrough(loopCounter++);
             }
-            Console.ReadLine();
             Console.WriteLine("Final output set: ");
+            // stopWatch.Stop();
             evenNumbers.OutputSet.ForEach(i => Console.Write("{0}\t", i));
             Console.WriteLine();
             Console.WriteLine("Press any key to exit");
+            // Console.WriteLine("Press any key to exit, time elapsed: " + stopWatch.Elapsed.ToString() + "s");
             Console.ReadLine();
 
         }
