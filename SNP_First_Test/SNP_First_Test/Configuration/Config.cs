@@ -6,7 +6,11 @@ namespace SNP_First_Test.Configuration
 {
     public class Config
     {
-        public long iterations { get; set; }
+        public int iterations { get; set; }
+        //Parse through the arguments at run-time and use them for the network set-up
+        private void LoadConfig()
+        {
 
+        }
     };
 }

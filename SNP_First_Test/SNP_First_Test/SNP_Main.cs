@@ -1,6 +1,7 @@
 ﻿using System;
 using SNP_First_Test.Network;
 using SNP_Network = SNP_First_Test.Network.Network;
+using SNP_First_Test.Configuration;
 using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
@@ -49,7 +50,7 @@ namespace SNP_First_Test
                 }, 2, new List<int>() { }, true),
             }, new List<int>(), 0, false);
 
-        static int stepAmount = 100000;
+        static int stepAmount = 10000;
 
         static void Main(string[] args)
         {
