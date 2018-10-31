@@ -1,6 +1,7 @@
 ﻿using System;
 using SNP_First_Test.Network;
 using SNP_Network = SNP_First_Test.Network.Network;
+using SNP_First_Test.Configuration;
 using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
@@ -19,18 +20,21 @@ namespace SNP_First_Test
          */
         // test network (tutorial figure 1)
 
+        // https://dotnetfiddle.net/md2hH6 <- JSON Deserialize for constructor parsing from file
+        //https://stackoverflow.com/questions/45245032/c-sharp-parse-one-json-field-to-an-object-with-its-custom-constructor
+        //https://stackoverflow.com/questions/2246694/how-to-convert-json-object-to-custom-c-sharp-object
         public static SNP_Network evenNumbers = new SNP_Network(new List<Neuron>() {
                 new Neuron(new List<Rule>(){
                     new Rule(2,0,true),
-                   // new Rule(1,0,false)
+                    new Rule(1,0,false)
                 }, 2, new List<int>() {4}, false),
                  new Neuron(new List<Rule>() {
                     new Rule(2,0,true),
-                  //  new Rule(1,0,false)
+                    new Rule(1,0,false)
                 }, 2, new List<int>() {5}, false),
                  new Neuron(new List<Rule>() {
                     new Rule(2,0,true),
-                 //   new Rule(1,0,false)
+                    new Rule(1,0,false)
                 }, 2, new List<int>() {6}, false),
                   new Neuron(new List<Rule>() {
                     new Rule(1,0,true),
@@ -48,7 +52,7 @@ namespace SNP_First_Test
                 }, 2, new List<int>() { }, true),
             }, new List<int>(), 0, false);
 
-        static int stepAmount = 100000;
+        static int stepAmount = 10000;
 
         static void Main(string[] args)
         {
