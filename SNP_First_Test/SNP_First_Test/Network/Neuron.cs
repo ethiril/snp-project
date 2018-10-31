@@ -45,10 +45,6 @@ namespace SNP_First_Test
             int matchedCount = 0;
             foreach (Rule rule in this.Rules)
             {
-                // if the code for isMatched returns true (Rule has been fullfilled)
-                // this whole piece of logic can be changed to not use nulls, the ones in the rules class
-                // aren't really used. Only this method output needs them.
-                // Neuron 7 returns 0 matched only sometimes?
                 if ((rule.isMatched(this.SpikeCount) == null) || (rule.isMatched(this.SpikeCount) == true))
                 {
                     matchedCount++;

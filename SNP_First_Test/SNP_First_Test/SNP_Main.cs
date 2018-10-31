@@ -19,18 +19,19 @@ namespace SNP_First_Test
          */
         // test network (tutorial figure 1)
 
+        // https://dotnetfiddle.net/md2hH6 <- JSON Deserialize for constructor parsing from file
         public static SNP_Network evenNumbers = new SNP_Network(new List<Neuron>() {
                 new Neuron(new List<Rule>(){
                     new Rule(2,0,true),
-                   // new Rule(1,0,false)
+                    new Rule(1,0,false)
                 }, 2, new List<int>() {4}, false),
                  new Neuron(new List<Rule>() {
                     new Rule(2,0,true),
-                  //  new Rule(1,0,false)
+                    new Rule(1,0,false)
                 }, 2, new List<int>() {5}, false),
                  new Neuron(new List<Rule>() {
                     new Rule(2,0,true),
-                 //   new Rule(1,0,false)
+                    new Rule(1,0,false)
                 }, 2, new List<int>() {6}, false),
                   new Neuron(new List<Rule>() {
                     new Rule(1,0,true),
