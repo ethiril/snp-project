@@ -12,7 +12,7 @@ namespace SNP_First_Test.Utilities
         public static void JsonDeserialize()
         {
         }
-
+        /*
         public int RegexResolve(string input)
         {
             if (Regex.IsMatch(input, @"(\([^)]*\)|\w)\^(\([^)]*\)|\w)"))
@@ -21,7 +21,7 @@ namespace SNP_First_Test.Utilities
             };
             int count = Regex.Matches(input.Substring(0), "a").Count;
             return count;
-        }
+        } */
 
 
         double EvaluateExpression(string input)
@@ -31,12 +31,13 @@ namespace SNP_First_Test.Utilities
              * Amount of spikes has to be a natural number larger than 1.
              */
             string[] groupings = Regex.Split(input, @"\[?\@?\-?\w+\]?|\'[\w\s\/]*\'");
-
             List<int> evaluatedGroupings = new List<int>();
             foreach (string group in groupings)
             {
                 evaluatedGroupings.Add(EvaluateSpikeGroupings(group));
             }
+            // add these back into the original expression as numbers.
+            // for example: aaa(aa)+a^3 would equate to 3(2)+3
 
             var output = Regex.Replace(input, "[^MT]", string.Empty);
             return Convert.ToDouble(new DataTable().Compute(input, null));
