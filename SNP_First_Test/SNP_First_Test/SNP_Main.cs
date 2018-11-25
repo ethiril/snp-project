@@ -25,31 +25,31 @@ namespace SNP_First_Test
         //https://stackoverflow.com/questions/2246694/how-to-convert-json-object-to-custom-c-sharp-object
         public static SNP_Network evenNumbers = new SNP_Network(new List<Neuron>() {
                 new Neuron(new List<Rule>(){
-                    new Rule(2,0,true),
-                    new Rule(1,0,false)
-                }, 2, new List<int>() {4}, false),
+                    new Rule("aa",0,true),
+                    new Rule("a",0,false)
+                }, "aa", new List<int>() {4}, false),
                  new Neuron(new List<Rule>() {
-                    new Rule(2,0,true),
-                    new Rule(1,0,false)
-                }, 2, new List<int>() {5}, false),
+                    new Rule("aa",0,true),
+                    new Rule("a",0,false)
+                }, "aa", new List<int>() {5}, false),
                  new Neuron(new List<Rule>() {
-                    new Rule(2,0,true),
-                    new Rule(1,0,false)
-                }, 2, new List<int>() {6}, false),
+                    new Rule("aa",0,true),
+                    new Rule("a",0,false)
+                }, "aa", new List<int>() {6}, false),
                   new Neuron(new List<Rule>() {
-                    new Rule(1,0,true),
-                    new Rule(1,1,false)
-                }, 0, new List<int>() {1, 3, 7}, false),
+                    new Rule("a",0,true),
+                    new Rule("a",1,false)
+                }, "", new List<int>() {1, 3, 7}, false),
                    new Neuron(new List<Rule>() {
-                    new Rule(1,0,true),
-                }, 0, new List<int>() {1, 2, 7}, false),
+                    new Rule("a",0,true),
+                }, "", new List<int>() {1, 2, 7}, false),
                    new Neuron(new List<Rule>() {
-                    new Rule(1,0,true),
-                }, 0, new List<int>() { 3, 7}, false),
+                    new Rule("a",0,true),
+                }, "", new List<int>() { 3, 7}, false),
                    new Neuron(new List<Rule>() {
-                    new Rule(2,0,true),
-                    new Rule(3,0,false)
-                }, 2, new List<int>() { }, true),
+                    new Rule("aa",0,true),
+                    new Rule("aaa",0,false)
+                }, "aa", new List<int>() { }, true),
             }, new List<int>(), 0, false);
 
         static int stepAmount = 10000;

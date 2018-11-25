@@ -23,6 +23,21 @@ namespace SNP_First_Test.Utilities
             return count;
         } */
 
+        /* 
+         *  Regex just needs to parse in a valid expression which will then evaluate to the pattern of spikes that is accepted.
+         * 
+         * 
+         */
+
+
+        /* 
+         * This method will evalute if the provided input is in the correct pattern. The regex rules that we want only contain the +, * and set keys on character a.
+         */ 
+        public static string RegexAppendStrict(string input)
+        {
+            input = "^" + input + "$";
+            return input;
+        }
 
         double EvaluateExpression(string input)
         {

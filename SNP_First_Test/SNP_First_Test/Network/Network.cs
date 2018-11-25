@@ -40,14 +40,17 @@ namespace SNP_First_Test.Network
             {
                 if (neuron.RemoveSpikes(networkRef, neuron.Connections) == true)
                 {
+                    Console.WriteLine("REMOVING SPIKE.");
                     if (neuron.IsOutput == true)
                     {
+                        Console.Error.WriteLine("REMOVING OUTPUT SPIKE.");
                         this.OutputSet.Add(++this.CurrentOutput);
                         this.CurrentOutput = 0;
                     }
                 }
                 else
                 {
+                    Console.WriteLine("ADDING SPIKE.");
                     if (neuron.IsOutput == true)
                     {
                         this.CurrentOutput++;
@@ -73,7 +76,8 @@ namespace SNP_First_Test.Network
             foreach (Neuron neuron in this.Neurons)
             {
                 count++;
-                Console.WriteLine("Adding Spikes. Neuron " + count + ", Amount of spikes: " + neuron.SpikeCount);
+                Console.WriteLine("Adding Spikes. Neuron " + count + ", Amount of spikes: " + neuron.SpikeCount.Length + ", the rules: ");
+                //foreach (Rule rule in neuron.Rules) { Console.WriteLine(rule.RuleExpression); }; 
             }
         }
     }
