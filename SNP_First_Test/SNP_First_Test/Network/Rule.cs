@@ -8,6 +8,7 @@ namespace SNP_First_Test.Network
 {
     // https://stackoverflow.com/questions/6488034/how-to-implement-a-rule-engine could be an interesting implementation
     /* Each Rule will contain a set of instructions which will fire a neuron across an axon */
+    [Serializable()]
     public class Rule
     {
         public string RuleExpression { get; set; }
@@ -51,25 +52,24 @@ namespace SNP_First_Test.Network
 
         public bool? IsMatched(string currentSpikeAmount)
         {
-            if (RegexMatch(currentSpikeAmount))
+            if (RegexMatch(currentSpikeAmount) == true)
             {
                 if (this.Fire)
                 {
-                    if (this.DelayAmount > 0)
+                    if (this.Delay > 0)
                     {
-                        Console.WriteLine("This rule has a delay of " + this.DelayAmount + " step(s), of which there are " + this.Delay + " step(s) left.");
-                        this.Delay--;
+                        //Console.WriteLine("This rule: "+this.RuleExpression+", has a delay of " + this.DelayAmount + " step(s), of which there are " + this.Delay + " step(s) left.");
                         return false;
 
                     }
                     else
                     {
-                        this.Delay = this.DelayAmount;
                         return true;
                     }
                 }
                 else
                 {
+                   // Console.WriteLine("This was null and didn't fire");
                     return null;
                 }
 

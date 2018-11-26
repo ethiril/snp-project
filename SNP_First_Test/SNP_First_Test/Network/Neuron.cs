@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using SNP_First_Test.Network;
 using SNP_Network = SNP_First_Test.Network.Network;
 
@@ -10,6 +11,7 @@ namespace SNP_First_Test
      *   A neuron is made up of multiple rules and a count of spikes which are currently being held
      *   by the neuron.
      */
+    [Serializable()]
     public class Neuron
     {
         // List of rules that will determine whether a neuron will spike
@@ -43,64 +45,89 @@ namespace SNP_First_Test
         int MatchRules()
         {
             int matchedCount = 0;
+            int matchedIndex = 0;
+            int count = 0;
             foreach (Rule rule in this.Rules)
             {
-                if ((rule.IsMatched(this.SpikeCount) == null) || (rule.IsMatched(this.SpikeCount) == true))
+                if ((rule.IsMatched(this.SpikeCount).Equals(null)) || (rule.IsMatched(this.SpikeCount).Equals(true)))
                 {
                     matchedCount++;
+                    matchedIndex = count;
                 }
+                ++count;
             }
-            return matchedCount;
+            if (matchedCount > 1)
+            {
+                return matchedCount;
+            } else
+            {
+                return matchedIndex;
+            }
         }
 
 
         // This code will loop over the entire network and remove any spikes which match the correct rules.
         public bool? RemoveSpikes(SNP_Network networkRef, List<int> Connections)
         {
-            //int index = indexOfSpike();
             int index = 0;
             int matchedCount = MatchRules();
             if (matchedCount > 1)
             {
                 index = DetermineIndex(matchedCount);
-                foreach (Rule rule in this.Rules)
+                //Console.WriteLine("The index is:" + index);
+                if (this.Rules[index].IsMatched(this.SpikeCount).Equals(null))
                 {
-                    if (this.Rules[index].IsMatched(this.SpikeCount) == null)
+                    // this state needs storing somehow, as the spike needs to realise that it was just nulled and should not then spike. 
+                    //Console.WriteLine("NONDETERMINISTIC - Rule " + this.Rules[index].RuleExpression + " returned null, wiping spikes anyway");
+                    this.SpikeCount = "";
+                    return null;
+                }
+                else if (this.Rules[index].IsMatched(this.SpikeCount).Equals(false))
+                {
+                    if (this.Rules[index].Fire == true && this.Rules[index].Delay > 0)
                     {
-                        // this state needs storing somehow, as the spike needs to realise that it was just nulled and should not then spike. 
-                        this.SpikeCount = "";
-                        return null;
+                        this.Rules[index].Delay--;
                     }
-                    else if (this.Rules[index].IsMatched(this.SpikeCount) == false)
+                    return false;
+                }
+                else if (this.Rules[index].IsMatched(this.SpikeCount).Equals(true))
+                {
+                    if (this.Rules[index].Fire == true && this.Rules[index].Delay == 0)
                     {
-                        return false;
+                        this.Rules[index].Delay = this.Rules[index].DelayAmount;
                     }
-                    else
-                    {
-                        this.SpikeCount = "";
-                        return true;
-                    }
+                    this.SpikeCount = "";
+                    return true;
                 }
             }
             else
             {
+                index = matchedCount;
+                //Console.WriteLine("The index is:" + index);
                 //Console.Error.WriteLine("DETERMINISTIC PATH");
-                foreach (Rule rule in this.Rules)
+                if (this.Rules[index].IsMatched(this.SpikeCount).Equals(null))
                 {
-                    if (rule.IsMatched(this.SpikeCount) == null)
+                    // this state needs storing somehow, as the spike needs to realise that it was just nulled and should not then spike. 
+                    //Console.WriteLine("DETERMINISTIC - Rule " + this.Rules[index].RuleExpression + " returned null, wiping spikes anyway");
+                    this.SpikeCount = "";
+                    return null;
+                }
+                else if (this.Rules[index].IsMatched(this.SpikeCount).Equals(false))
+                {
+                    if (this.Rules[index].Fire == true && this.Rules[index].Delay > 0)
                     {
-                        this.SpikeCount = "";
-                        return null;
+                        this.Rules[index].Delay--;
                     }
-                    else if (rule.IsMatched(this.SpikeCount) == false)
+                    return false;
+                }
+                else if (this.Rules[index].IsMatched(this.SpikeCount).Equals(true))
+                {
+                    if (this.Rules[index].Fire == true && this.Rules[index].Delay == 0)
                     {
-                        return false;
+                        this.Rules[index].Delay = this.Rules[index].DelayAmount;
                     }
-                    else
-                    {
-                        this.SpikeCount = "";
-                        return true;
-                    }
+                    this.SpikeCount = "";
+                    return true;
                 }
             }
             // this should never happen.
@@ -126,15 +153,15 @@ namespace SNP_First_Test
                 index = DetermineIndex(matchedCount);
                 foreach (int connection in Connections)
                 {
-                    foreach (Rule rule in this.Rules)
+                    if (this.Rules[index].IsMatched(this.SpikeCount).Equals(true))
                     {
-                        if (this.Rules[index].Fire == true)
+                        if (this.Rules[index].Fire)
                         {
                             networkRef.Neurons[connection - 1].SpikeCount = networkRef.Neurons[connection - 1].SpikeCount + "a";
                         }
                         else
                         {
-                            Console.WriteLine("Wiping spike from system on connection " + connection + ", current rule has a delay of: " + this.Rules[index].Delay);
+                            //Console.WriteLine("Wiping spike from system on connection " + connection + ", current rule has a delay of: " + this.Rules[index].Delay);
                         }
                     }
                 }
@@ -145,25 +172,33 @@ namespace SNP_First_Test
                 {
                     foreach (Rule rule in this.Rules)
                     {
-                        if (rule.Fire == true)
+                        if (rule.IsMatched(this.SpikeCount).Equals(true))
                         {
-                            networkRef.Neurons[connection - 1].SpikeCount = networkRef.Neurons[connection - 1].SpikeCount + "a";
-                        }
-                        else
-                        {
-                            Console.WriteLine("Wiping spike from system on connection " + connection + ", current rule has a delay of: " + rule.Delay);
+                            if (rule.Fire)
+                            {
+                                networkRef.Neurons[connection - 1].SpikeCount = networkRef.Neurons[connection - 1].SpikeCount + "a";
+                            }
+                            else
+                            {
+                                //Console.WriteLine("Wiping spike from system on connection " + connection + ", current rule has a delay of: " + rule.Delay);
+                            }
                         }
                     }
                 }
             }
-            // just stagger this, do removal then addition. 
-            // Not sure how to do this in parallel, as all removals would have to be done independantly...
-            // Could split the two functions and simply make it a two-part func that starts from Network?
-            // I.e. Network -> Neuron.Fire() -> Neuron.Resolve() -> Output...
         }
-        // Temp code for sending a spike across to another neuron
-        // http://bezensek.com/blog/2015/04/12/non-deterministic-finite-state-machine-implementation-in-c-number/
-        // Will need the above for a non-deterministic approach to this implementation
-        // This method should also be rewritten to be synchronous
+
+        // https://stackoverflow.com/questions/129389/how-do-you-do-a-deep-copy-of-an-object-in-net-c-specifically/1213649#1213649
+        public static T DeepClone<T>(T obj)
+        {
+            using (var ms = new MemoryStream())
+            {
+                var formatter = new BinaryFormatter();
+                formatter.Serialize(ms, obj);
+                ms.Position = 0;
+
+                return (T)formatter.Deserialize(ms);
+            }
+        }
     }
 }
