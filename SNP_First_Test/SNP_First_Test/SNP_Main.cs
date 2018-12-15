@@ -13,12 +13,13 @@ namespace SNP_First_Test
     {
 
         /* TODO
-         * 3.) Add binary output to solution.
          * 4.) Check whether no rules apply any more.  
          * 5.) Change network creation to use JSON for now (easier import/export larger networks)
          * 6.) Move onto implementing a genetic algorithm solution
          * 
          */
+
+        // https://stackoverflow.com/questions/2246694/how-to-convert-json-object-to-custom-c-sharp-object
         // test network (tutorial figure 1)
 
         // https://dotnetfiddle.net/md2hH6 <- JSON Deserialize for constructor parsing from file
