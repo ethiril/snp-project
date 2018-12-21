@@ -31,3 +31,14 @@ E:\Projects\University\snp-project\SNP_First_Test\SNP_First_Test\obj\Debug\netco
 E:\Projects\University\snp-project\SNP_First_Test\SNP_First_Test\obj\Debug\netcoreapp2.0\SNP_First_Test.AssemblyInfo.cs
 E:\Projects\University\snp-project\SNP_First_Test\SNP_First_Test\obj\Debug\netcoreapp2.0\SNP_First_Test.dll
 E:\Projects\University\snp-project\SNP_First_Test\SNP_First_Test\obj\Debug\netcoreapp2.0\SNP_First_Test.pdb
+C:\Michael\snp-project\SNP_First_Test\SNP_First_Test\bin\Debug\netcoreapp2.0\SNP_First_Test.deps.json
+C:\Michael\snp-project\SNP_First_Test\SNP_First_Test\bin\Debug\netcoreapp2.0\SNP_First_Test.runtimeconfig.json
+C:\Michael\snp-project\SNP_First_Test\SNP_First_Test\bin\Debug\netcoreapp2.0\SNP_First_Test.runtimeconfig.dev.json
+C:\Michael\snp-project\SNP_First_Test\SNP_First_Test\bin\Debug\netcoreapp2.0\SNP_First_Test.dll
+C:\Michael\snp-project\SNP_First_Test\SNP_First_Test\bin\Debug\netcoreapp2.0\SNP_First_Test.pdb
+C:\Michael\snp-project\SNP_First_Test\SNP_First_Test\obj\Debug\netcoreapp2.0\SNP_First_Test.AssemblyInfo.cs
+C:\Michael\snp-project\SNP_First_Test\SNP_First_Test\obj\Debug\netcoreapp2.0\SNP_First_Test.dll
+C:\Michael\snp-project\SNP_First_Test\SNP_First_Test\obj\Debug\netcoreapp2.0\SNP_First_Test.pdb
+C:\Michael\snp-project\SNP_First_Test\SNP_First_Test\obj\Debug\netcoreapp2.0\SNP_First_Test.csprojAssemblyReference.cache
+C:\Michael\snp-project\SNP_First_Test\SNP_First_Test\obj\Debug\netcoreapp2.0\SNP_First_Test.csproj.CoreCompileInputs.cache
+C:\Michael\snp-project\SNP_First_Test\SNP_First_Test\obj\Debug\netcoreapp2.0\SNP_First_Test.AssemblyInfoInputs.cache

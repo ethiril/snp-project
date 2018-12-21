@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,13 +20,14 @@ namespace SNP_First_Test.Network
         public int CurrentOutput { get; set; }
         public bool NetworkClear { get; set; }
         public int GlobalTimer { get; set; }
-
+        public bool NetworkEngaged { get; set; }
         public Network(List<Neuron> neurons, List<int> outputSet, int currentOutput, bool networkClear)
         {
             Neurons = neurons;
             OutputSet = outputSet;
             CurrentOutput = currentOutput;
             NetworkClear = networkClear;
+            NetworkEngaged = false;
         }
 
         public void Spike(Network networkRef)
@@ -37,17 +40,22 @@ namespace SNP_First_Test.Network
              */
             List<Neuron> NeuronCopy = new List<Neuron>(this.Neurons);
             List<Neuron> NeuronAdditionCopy = this.Neurons.DeepClone();
-           // Console.WriteLine("Before Spikes: ");
-            //Console.WriteLine("---- TESTING NEURON ----");
-            //PrintNetwork(this.Neurons);
+            Console.WriteLine("Before Spikes: ");
+            Console.WriteLine("---- TESTING NEURON ----");
+            PrintNetwork(this.Neurons);
             Parallel.ForEach(NeuronCopy, neuron =>
             {
                 if (neuron.RemoveSpikes(networkRef, neuron.Connections) == true)
                 {
-                    if (neuron.IsOutput == true)
+                    if (neuron.IsOutput == true && this.NetworkEngaged == true)
                     {
                         this.OutputSet.Add(++this.CurrentOutput);
-                        this.CurrentOutput = 0;
+                        this.NetworkClear = true;
+                    }
+                    else if (this.NetworkEngaged == false)
+                    {
+                        this.OutputSet.Add(++this.CurrentOutput);
+                        this.NetworkEngaged = true;
                     }
                 }
                 else
@@ -58,23 +66,23 @@ namespace SNP_First_Test.Network
                     }
                 }
             });
-            //Console.WriteLine("After Spike Removal: ");
-            //Console.WriteLine("---- TESTING NEURON ----");
-            //PrintNetwork(this.Neurons);
-            //Console.WriteLine("Neuron addition copy should be the initial config");
-            //PrintNetwork(NeuronAdditionCopy);
+            Console.WriteLine("After Spike Removal: ");
+            Console.WriteLine("---- TESTING NEURON ----");
+            PrintNetwork(this.Neurons);
+            Console.WriteLine("Neuron addition copy should be the initial config");
+            PrintNetwork(NeuronAdditionCopy);
             Parallel.ForEach(NeuronAdditionCopy, neuron =>
              {
                  neuron.FireSpike(networkRef, neuron.Connections);
              });
-            //Console.WriteLine("After spike addition: ");
-            //Console.WriteLine("---- TESTING NEURON ----");
-            //PrintNetwork(this.Neurons);
-            //Console.WriteLine("Copy network");
-            //PrintNetwork(NeuronAdditionCopy);
+            Console.WriteLine("After spike addition: ");
+            Console.WriteLine("---- TESTING NEURON ----");
+            PrintNetwork(this.Neurons);
+            Console.WriteLine("Copy network");
+            PrintNetwork(NeuronAdditionCopy);
             this.GlobalTimer++;
-            //Console.Write("Global Timer: " + this.GlobalTimer + ", The current output set is: ");
-            //this.OutputSet.ForEach(i => Console.Write("{0}\t", i));
+            Console.Write("Global Timer: " + this.GlobalTimer + ", The current output set is: ");
+            this.OutputSet.ForEach(i => Console.Write("{0}\t", i));
 
         }
         private void PrintNetwork(List<Neuron> neurons)
@@ -84,9 +92,44 @@ namespace SNP_First_Test.Network
             {
                 count++;
                 Console.Write("Adding Spikes. Neuron " + count + ", Amount of spikes: " + neuron.SpikeCount + ", the rules: ");
-                foreach (Rule rule in neuron.Rules) { Console.Write(rule.RuleExpression + ", "); };
+                foreach (Rule rule in neuron.Rules) { Console.Write(rule.RuleExpression + "->" + rule.Fire + ";" + rule.DelayAmount + ", "); };
                 Console.WriteLine("");
             }
         }
+
+        public void print()
+        {
+            int count = 0;
+            Console.WriteLine("Network printout: ");
+            Console.WriteLine("Neuron amount: " + this.Neurons.Count);
+            Console.WriteLine("Network breakdown");
+            foreach (Neuron neuron in this.Neurons)
+            {
+                count++;
+                Console.WriteLine("Neuron: " + count);
+                Console.WriteLine("Current spikes: " + neuron.SpikeCount);
+                Console.WriteLine("Rule amount: " + neuron.Rules.Count);
+                Console.Write("Current Rules: ");
+                foreach (Rule rule in neuron.Rules) { Console.Write(rule.RuleExpression + "->" + rule.Fire + ";" + rule.DelayAmount + ", "); };
+                Console.WriteLine();
+                Console.Write("Neuron connections: ");
+                foreach (int connection in neuron.Connections) { Console.Write(connection + ", "); };
+                Console.WriteLine("\n");
+
+            }
+        }
+
+        public static T DeepClone<T>(T obj)
+        {
+            using (var ms = new MemoryStream())
+            {
+                var formatter = new BinaryFormatter();
+                formatter.Serialize(ms, obj);
+                ms.Position = 0;
+
+                return (T)formatter.Deserialize(ms);
+            }
+        }
+
     }
 }

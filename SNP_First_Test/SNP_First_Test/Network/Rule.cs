@@ -58,7 +58,7 @@ namespace SNP_First_Test.Network
                 {
                     if (this.Delay > 0)
                     {
-                        //Console.WriteLine("This rule: "+this.RuleExpression+", has a delay of " + this.DelayAmount + " step(s), of which there are " + this.Delay + " step(s) left.");
+                        Console.WriteLine("This rule: "+this.RuleExpression+", has a delay of " + this.DelayAmount + " step(s), of which there are " + this.Delay + " step(s) left.");
                         return false;
 
                     }
@@ -69,7 +69,7 @@ namespace SNP_First_Test.Network
                 }
                 else
                 {
-                   // Console.WriteLine("This was null and didn't fire");
+                    Console.WriteLine("This was null and didn't fire");
                     return null;
                 }
 

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
 using System.Linq;
+using SNP_First_Test.Utilities;
 
 namespace SNP_First_Test
 {
@@ -25,70 +26,47 @@ namespace SNP_First_Test
         // https://dotnetfiddle.net/md2hH6 <- JSON Deserialize for constructor parsing from file
         //https://stackoverflow.com/questions/45245032/c-sharp-parse-one-json-field-to-an-object-with-its-custom-constructor
         //https://stackoverflow.com/questions/2246694/how-to-convert-json-object-to-custom-c-sharp-object
-        static SNP_Network evenNumbers = new SNP_Network(new List<Neuron>() {
-                new Neuron(new List<Rule>(){
-                    new Rule("aa",0,true),
-                    new Rule("a",0,false)
-                }, "aa", new List<int>() {4}, false),
-                 new Neuron(new List<Rule>() {
-                    new Rule("aa",0,true),
-                    new Rule("a",0,false)
-                }, "aa", new List<int>() {5}, false),
-                 new Neuron(new List<Rule>() {
-                    new Rule("aa",0,true),
-                    new Rule("a",0,false)
-                }, "aa", new List<int>() {6}, false),
-                  new Neuron(new List<Rule>() {
-                    new Rule("a",0,true),
-                    new Rule("a",1,true)
-                }, "", new List<int>() {1, 2, 3, 7}, false),
-                   new Neuron(new List<Rule>() {
-                    new Rule("a",0,true),
-                }, "", new List<int>() {1, 2, 7}, false),
-                   new Neuron(new List<Rule>() {
-                    new Rule("a",0,true),
-                }, "", new List<int>() { 3, 7}, false),
-                   new Neuron(new List<Rule>() {
-                    new Rule("aa",0,true),
-                    new Rule("aaa",0,false)
-                }, "aa", new List<int>() { }, true),
-            }, new List<int>(), 0, false);
-
-        static int stepAmount = 1000;
-        static int stepRepetition = 50;
+        static readonly int maxSteps = 1000;
+        static readonly int stepRepetition = 100;
 
         static void Main(string[] args)
         {
-             Stopwatch stopWatch = new Stopwatch();
+            Stopwatch stopWatch = new Stopwatch();
             Console.WriteLine("Let's get started. //");
             Console.WriteLine("Press enter to start the test.");
             Console.ReadLine();
             Console.WriteLine("Initial state of the network: ");
             int count = 0;
+            SNP_Network evenNumbers = CreateNewNetwork();
             foreach (Neuron neuron in evenNumbers.Neurons)
             {
                 count++;
                 Console.WriteLine("Neuron " + count + ", Amount of spikes: " + neuron.SpikeCount);
 
             }
-            Console.WriteLine("The amount of steps a network will run through: " + stepAmount);
             Console.WriteLine("The amount of cycles each network will go through: " + stepRepetition);
-            Console.WriteLine("The total amount of steps that the networks will run through: " + stepAmount*stepRepetition);
+            evenNumbers.print();
             Console.WriteLine("Press enter to continue");
             Console.ReadLine();
             Console.WriteLine("----------- Test Started -----------");
             int loopCounter = 0;
             List<int> allOutputs = new List<int>();
             stopWatch.Start();
+            // clone the initial network setup for a network reset
+            // then loop across, resetting the network after every output
+            // test whether the random method is really giving us good random outputs.
+            // when a number hits, the next x amounts are also the same????
+            SNP_Network RuleState = evenNumbers.DeepClone();
+            evenNumbers.CurrentOutput = 0;
             for (int i = 0; i < stepRepetition; i++)
             {
-                SNP_Network evenNumbersTest = CreateNewNetwork();
-                evenNumbersTest.CurrentOutput = 1;
-                while ((evenNumbersTest.NetworkClear != true) && evenNumbersTest.GlobalTimer < stepAmount)
+                evenNumbers = CreateNewNetwork();
+                while (evenNumbers.NetworkClear == false && evenNumbers.GlobalTimer < maxSteps)
                     {
-                        stepThrough(loopCounter++, evenNumbersTest);
+                        stepThrough(loopCounter++, evenNumbers);
                     }
-                allOutputs.AddRange(evenNumbersTest.OutputSet);
+                allOutputs.AddRange(evenNumbers.OutputSet);
+                //Utils.ResetNetwork(RuleState, evenNumbers);
                 loopCounter = 0;
             }
             stopWatch.Stop();
@@ -119,8 +97,8 @@ namespace SNP_First_Test
                     new Rule("a",0,false)
                 }, "aa", new List<int>() {6}, false),
                   new Neuron(new List<Rule>() {
-                    new Rule("a",0,true),
-                    new Rule("a",1,true)
+                    new Rule("a",1,true),
+                    new Rule("a",0,true)
                 }, "", new List<int>() {1, 2, 3, 7}, false),
                    new Neuron(new List<Rule>() {
                     new Rule("a",0,true),
@@ -137,9 +115,9 @@ namespace SNP_First_Test
         }
         static void stepThrough(int count, SNP_Network network)
         {
-            //Console.WriteLine("Step: " + count + ", generating spike.");
+            Console.WriteLine("Step: " + count + ", generating spike.");
             network.Spike(network);
-            //Console.ReadLine();
+            Console.ReadLine();
         }
     }
 }
