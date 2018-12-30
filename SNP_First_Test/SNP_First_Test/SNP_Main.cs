@@ -115,9 +115,9 @@ namespace SNP_First_Test
         }
         static void stepThrough(int count, SNP_Network network)
         {
-            Console.WriteLine("Step: " + count + ", generating spike.");
+            //Console.WriteLine("Step: " + count + ", generating spike.");
             network.Spike(network);
-            Console.ReadLine();
+            //Console.ReadLine();
         }
     }
 }
