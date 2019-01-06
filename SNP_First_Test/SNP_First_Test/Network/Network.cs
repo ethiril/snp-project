@@ -21,11 +21,11 @@ namespace SNP_First_Test.Network
         public bool NetworkClear { get; set; }
         public int GlobalTimer { get; set; }
         public bool NetworkEngaged { get; set; }
-        public Network(List<Neuron> neurons, List<int> outputSet, int currentOutput, bool networkClear)
+        public Network(List<Neuron> neurons, List<int> outputSet, bool networkClear)
         {
             Neurons = neurons;
             OutputSet = outputSet;
-            CurrentOutput = currentOutput;
+            CurrentOutput = 0;
             NetworkClear = networkClear;
             NetworkEngaged = false;
         }
@@ -43,6 +43,8 @@ namespace SNP_First_Test.Network
             Console.WriteLine("Before Spikes: ");
             Console.WriteLine("---- TESTING NEURON ----");
             PrintNetwork(this.Neurons);
+            Console.WriteLine("Is network engaged?: " + this.NetworkEngaged);
+            // this doesn't really work.
             Parallel.ForEach(NeuronCopy, neuron =>
             {
                 if (neuron.RemoveSpikes(networkRef, neuron.Connections) == true)
@@ -52,9 +54,9 @@ namespace SNP_First_Test.Network
                         this.OutputSet.Add(++this.CurrentOutput);
                         this.NetworkClear = true;
                     }
-                    else if (this.NetworkEngaged == false)
+                    else if (neuron.IsOutput == true && this.NetworkEngaged == false)
                     {
-                        this.OutputSet.Add(++this.CurrentOutput);
+                        Console.WriteLine("Setting the networkEngaged to true.");
                         this.NetworkEngaged = true;
                     }
                 }
@@ -73,7 +75,10 @@ namespace SNP_First_Test.Network
             PrintNetwork(NeuronAdditionCopy);
             Parallel.ForEach(NeuronAdditionCopy, neuron =>
              {
-                 neuron.FireSpike(networkRef, neuron.Connections);
+                 if (neuron.ActiveDelay == 0)
+                 {
+                     neuron.FireSpike(networkRef, neuron.Connections);
+                 }
              });
             Console.WriteLine("After spike addition: ");
             Console.WriteLine("---- TESTING NEURON ----");
@@ -92,7 +97,7 @@ namespace SNP_First_Test.Network
             {
                 count++;
                 Console.Write("Adding Spikes. Neuron " + count + ", Amount of spikes: " + neuron.SpikeCount + ", the rules: ");
-                foreach (Rule rule in neuron.Rules) { Console.Write(rule.RuleExpression + "->" + rule.Fire + ";" + rule.DelayAmount + ", "); };
+                foreach (Rule rule in neuron.Rules) { Console.Write(rule.RuleExpression + "->" + rule.Fire + ";" + rule.Delay + ", "); };
                 Console.WriteLine("");
             }
         }
@@ -110,7 +115,7 @@ namespace SNP_First_Test.Network
                 Console.WriteLine("Current spikes: " + neuron.SpikeCount);
                 Console.WriteLine("Rule amount: " + neuron.Rules.Count);
                 Console.Write("Current Rules: ");
-                foreach (Rule rule in neuron.Rules) { Console.Write(rule.RuleExpression + "->" + rule.Fire + ";" + rule.DelayAmount + ", "); };
+                foreach (Rule rule in neuron.Rules) { Console.Write(rule.RuleExpression + "->" + rule.Fire + ";" + rule.Delay + ", "); };
                 Console.WriteLine();
                 Console.Write("Neuron connections: ");
                 foreach (int connection in neuron.Connections) { Console.Write(connection + ", "); };

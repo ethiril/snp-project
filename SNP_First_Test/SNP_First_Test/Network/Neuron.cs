@@ -20,16 +20,23 @@ namespace SNP_First_Test
         public string SpikeCount { get; set; }
         // List of connections for this neuron
         public List<int> Connections { get; set; }
-
+        // all neurons start with an active delay of 0.
+        public int ActiveDelay { get; set; }
+        // stored state of the neuron that will get fired after delay is over.
+        public bool? PersistedState { get; set; }
+        // is this neuron an output neuron
         public bool IsOutput { get; set; }
 
-        // Constructor
+
+        // Delay is part of the Neuron, not the rule. You need to store the CURRENT DELAY ACTIVE on the NEURON, such that the SPIKES do not happen when there is a DELAY that exists on a NEURON.
         public Neuron(List<Rule> rules, string spikeCount, List<int> connections, bool isOutput)
         {
             Rules = rules;
             SpikeCount = spikeCount;
             Connections = connections;
+            ActiveDelay = 0;
             IsOutput = isOutput;
+            PersistedState = false;
         }
 
 
@@ -46,7 +53,6 @@ namespace SNP_First_Test
             int matchedCount = 0;
             int matchedIndex = 0;
             int count = 0;
-            //Console.WriteLine("This.rules.count = " + this.Rules.Count);
             foreach (Rule rule in this.Rules)
             {
                 if (rule.IsMatched(this.SpikeCount).Equals(null) || rule.IsMatched(this.SpikeCount).Equals(true))
@@ -58,8 +64,7 @@ namespace SNP_First_Test
             }
             if (matchedCount > 1)
             {
-                Console.WriteLine("More than one kenobi");
-                return matchedCount;
+                return DetermineIndex(matchedCount);
             }
             else
             {
@@ -72,87 +77,65 @@ namespace SNP_First_Test
         public bool? RemoveSpikes(SNP_Network networkRef, List<int> Connections)
         {
             int index;
-            int matchedCount = MatchRules();
-            if (matchedCount > 1)
+            if (this.ActiveDelay == 0)
             {
-                index = DetermineIndex(matchedCount);
-                //Console.WriteLine("Random.next(0," + matchedCount + ")");
-                //Console.WriteLine("The index is:" + index);
-                if (this.Rules[index].IsMatched(this.SpikeCount).Equals(null))
+                if (PersistedState.Equals(true))
                 {
-                    // this state needs storing somehow, as the spike needs to realise that it was just nulled and should not then spike. 
-                    Console.WriteLine("NONDETERMINISTIC - Rule " + this.Rules[index].RuleExpression + " returned null, wiping spikes anyway");
                     this.SpikeCount = "";
+                    PersistedState = false;
+                    return true;
+                }
+                else if (PersistedState.Equals(null))
+                {
+                    this.SpikeCount = "";
+                    PersistedState = false;
                     return null;
                 }
-                else if (this.Rules[index].IsMatched(this.SpikeCount).Equals(false))
+                else
                 {
-                    Console.WriteLine("No rules matched, returning false");
-                    return false;
-                }
-                else if (this.Rules[index].IsMatched(this.SpikeCount).Equals(true))
-                {
-                    Console.WriteLine("Delay is: " + this.Rules[index].Delay);
-                    if (this.Rules[index].Delay > 0)
+                    index = MatchRules();
+                    //Console.WriteLine("Random.next(0," + matchedCount + ")");
+                    //Console.WriteLine("The index is:" + index);
+                    if (this.Rules[index].IsMatched(this.SpikeCount).Equals(null))
                     {
-                        Console.WriteLine("Maintaining delay");
-                        this.Rules[index].Delay--;
-                        Console.WriteLine("Delay is: " + this.Rules[index].Delay + ", returning false");
+                        // this state needs storing somehow, as the spike needs to realise that it was just nulled and should not then spike. 
+                        Console.WriteLine("NONDETERMINISTIC - Rule " + this.Rules[index].RuleExpression + " returned null, wiping spikes anyway");
+                        if (this.Rules[index].Delay > 0)
+                        {
+                            Console.WriteLine("Maintaining delay");
+                            this.ActiveDelay = this.Rules[index].Delay;
+                            Console.WriteLine("Delay is: " + this.ActiveDelay + ", returning false");
+                            this.PersistedState = null;
+                            return false;
+                        }
+                        this.SpikeCount = "";
+                        return null;
+                    }
+                    else if (this.Rules[index].IsMatched(this.SpikeCount).Equals(false))
+                    {
+                        Console.WriteLine("No rules matched, returning false");
                         return false;
                     }
-                    else if (this.Rules[index].Delay == 0)
+                    else if (this.Rules[index].IsMatched(this.SpikeCount).Equals(true))
                     {
-                        this.Rules[index].Delay = this.Rules[index].DelayAmount;
-                        Console.WriteLine("Delay is: " + this.Rules[index].Delay + ", wiping spikes and returning true");
+                        Console.WriteLine("Delay is: " + this.Rules[index].Delay);
+                        if (this.Rules[index].Delay > 0)
+                        {
+                            Console.WriteLine("Maintaining delay");
+                            this.ActiveDelay = this.Rules[index].Delay;
+                            Console.WriteLine("Delay is: " + this.ActiveDelay + ", returning false");
+                            this.PersistedState = true;
+                            return false;
+                        }
+                        this.SpikeCount = "";
+                        return true;
                     }
-                    this.SpikeCount = "";
-                    return true;
                 }
             }
             else
             {
-                index = matchedCount;
-                //Console.WriteLine("The index is:" + index);
-                if (this.Rules[index].IsMatched(this.SpikeCount).Equals(null))
-                {
-                    // this state needs storing somehow, as the spike needs to realise that it was just nulled and should not then spike. 
-                    Console.WriteLine("DETERMINISTIC - Rule " + this.Rules[index].RuleExpression + " returned null, wiping spikes anyway");
-                    this.SpikeCount = "";
-                    return null;
-                }
-                else if (this.Rules[index].IsMatched(this.SpikeCount).Equals(false))
-                {
-                    Console.WriteLine("Delay is: " + this.Rules[index].Delay);
-                    if (this.Rules[index].Delay > 0)
-                    {
-                        Console.WriteLine("Maintaining delay");
-                        this.Rules[index].Delay--;
-                        return false;
-                    }
-                    else if (this.Rules[index].Delay == 0)
-                    {
-                        Console.WriteLine("Rule: " + this.Rules[index].RuleExpression + ", has a current delay of 0 and a rule expression delay of " + this.Rules[index].DelayAmount + ".");
-                        this.Rules[index].Delay = this.Rules[index].DelayAmount;
-                    }
-                    return false;
-                }
-                else if (this.Rules[index].IsMatched(this.SpikeCount).Equals(true))
-                {
-                    Console.WriteLine("Delay is: " + this.Rules[index].Delay);
-                    if (this.Rules[index].Delay > 0)
-                    {
-                        Console.WriteLine("Maintaining delay");
-                        this.Rules[index].Delay--;
-                        return false;
-                    }
-                    else if (this.Rules[index].Delay == 0)
-                    {
-                        Console.WriteLine("Rule: " + this.Rules[index].RuleExpression + ", has a current delay of 0 and a rule expression delay of " + this.Rules[index].DelayAmount + ".");
-                        this.Rules[index].Delay = this.Rules[index].DelayAmount;
-                    }
-                    this.SpikeCount = "";
-                    return true;
-                }
+                this.ActiveDelay--;
+                return false;
             }
             // this should never happen.
             Console.Error.WriteLine("Foreach loop failed.");
@@ -170,48 +153,18 @@ namespace SNP_First_Test
              * Fire the spike on that chosen rule definition
              * We do not need to worry about the removal of spikes as that is done in RemoveSpikes()
              */
-            int index = 0;
             int matchedCount = MatchRules();
-            if (matchedCount > 1)
+            int index = DetermineIndex(matchedCount);
+            foreach (int connection in Connections)
             {
-                index = DetermineIndex(matchedCount);
-                //Console.WriteLine("Random.next(0," + matchedCount + ")");
-                foreach (int connection in Connections)
+                if (this.Rules[index].IsMatched(this.SpikeCount).Equals(true))
                 {
-                    if (this.Rules[index].IsMatched(this.SpikeCount).Equals(true))
+                    if (this.Rules[index].Fire)
                     {
-                        Console.WriteLine("Delay is: " + this.Rules[index].Delay);
-                        if (this.Rules[index].Delay > 0)
-                        {
-                            Console.WriteLine("Maintaining delay");
-                        }
-                        else if (this.Rules[index].Fire)
-                        {
-                            networkRef.Neurons[connection - 1].SpikeCount = networkRef.Neurons[connection - 1].SpikeCount + "a";
-                        }
+                        networkRef.Neurons[connection - 1].SpikeCount = networkRef.Neurons[connection - 1].SpikeCount + "a";
                     }
                 }
-            }
-            else
-            {
-                foreach (int connection in Connections)
-                {
-                    foreach (Rule rule in this.Rules)
-                    {
-                        if (rule.IsMatched(this.SpikeCount).Equals(true))
-                        {
-                            Console.WriteLine("Delay is: " + this.Rules[index].Delay);
-                            if (this.Rules[index].Delay > 0)
-                            {
-                                Console.WriteLine("Maintaining delay");
-                            }
-                            else if (rule.Fire)
-                            {
-                                networkRef.Neurons[connection - 1].SpikeCount = networkRef.Neurons[connection - 1].SpikeCount + "a";
-                            }
-                        }
-                    }
-                }
+
             }
         }
 

@@ -11,17 +11,18 @@ namespace SNP_First_Test.Network
     [Serializable()]
     public class Rule
     {
+        // The Regular Expression this rule has to match in order to spike
         public string RuleExpression { get; set; }
-        public int DelayAmount { get; set; }
+        // only used to hold the delay for the given rule, called in neuron
         public int Delay { get; set; }
+        // Whether this rule should fire a spike or wipe the spikes currently in the neuron.
         public bool Fire { get; set; }
 
-        public Rule(string ruleExpression, int delayAmount, bool fire)
+        public Rule(string ruleExpression, int delay, bool fire)
         {
             RuleExpression = ruleExpression;
-            DelayAmount = delayAmount;
             Fire = fire;
-            Delay = delayAmount;
+            Delay = delay;
         }
 
         /* 
@@ -34,16 +35,20 @@ namespace SNP_First_Test.Network
 
         public bool RegexMatch(string spikes)
         {
-            if (this.RuleExpression != null) {
+            if (this.RuleExpression != null)
+            {
                 string input = Utils.RegexAppendStrict(RuleExpression);
                 Regex rgx = new Regex(input);
-                if (rgx.IsMatch(spikes)) {
+                if (rgx.IsMatch(spikes))
+                {
                     return true;
-                } else
+                }
+                else
                 {
                     return false;
                 }
-            } else
+            }
+            else
             {
                 Console.Error.WriteLine("No rule provided");
                 return false;
@@ -56,23 +61,13 @@ namespace SNP_First_Test.Network
             {
                 if (this.Fire)
                 {
-                    if (this.Delay > 0)
-                    {
-                        Console.WriteLine("This rule: "+this.RuleExpression+", has a delay of " + this.DelayAmount + " step(s), of which there are " + this.Delay + " step(s) left.");
-                        return false;
-
-                    }
-                    else
-                    {
-                        return true;
-                    }
+                    return true;
                 }
                 else
                 {
                     Console.WriteLine("This was null and didn't fire");
                     return null;
                 }
-
             }
             else
             {
