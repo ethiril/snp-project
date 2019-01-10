@@ -27,7 +27,7 @@ namespace SNP_First_Test
         //https://stackoverflow.com/questions/45245032/c-sharp-parse-one-json-field-to-an-object-with-its-custom-constructor
         //https://stackoverflow.com/questions/2246694/how-to-convert-json-object-to-custom-c-sharp-object
         static readonly int maxSteps = 1000;
-        static readonly int stepRepetition = 1000;
+        static readonly int stepRepetition = 10000;
 
         static void Main(string[] args)
         {
@@ -62,18 +62,18 @@ namespace SNP_First_Test
             {
                 Console.WriteLine("---------- Iteration " + i + "----------");
                 evenNumbers = CreateNewNetwork();
-                Console.WriteLine("EvenNumbers new network engaged state: " + evenNumbers.NetworkEngaged);
+                //Console.WriteLine("EvenNumbers new network engaged state: " + evenNumbers.NetworkEngaged);
                 while (evenNumbers.NetworkClear == false && evenNumbers.GlobalTimer < maxSteps)
-                    {
-                        stepThrough(loopCounter++, evenNumbers);
-                    }
+                {
+                    stepThrough(loopCounter++, evenNumbers);
+                }
                 allOutputs.AddRange(evenNumbers.OutputSet);
                 //Utils.ResetNetwork(RuleState, evenNumbers);
                 loopCounter = 0;
             }
             stopWatch.Stop();
             Console.WriteLine("Final output set: ");
-            //allOutputs = allOutputs.Distinct().ToList();
+            allOutputs = allOutputs.Distinct().ToList();
             allOutputs.Sort();
             allOutputs.ForEach(x => Console.Write("{0}\t", x)); ;
             Console.WriteLine();
@@ -83,6 +83,30 @@ namespace SNP_First_Test
         }
 
         static SNP_Network CreateNewNetwork()
+        {
+            return new SNP_Network(new List<Neuron>() {
+                   new Neuron(new List<Rule>() {
+                    new Rule("aa",0,true),
+                    new Rule("a",0,false)
+                }, "aa", new List<int>() {2, 3, 4}, false),
+                   new Neuron(new List<Rule>() {
+                    new Rule("aa",0,true),
+                    new Rule("a",1,false)
+                }, "aa", new List<int>() {1,3,4}, false),
+                   new Neuron(new List<Rule>() {
+                    new Rule("aa",0,true),
+                    new Rule("aa",1,true)
+                }, "aa", new List<int>() {1,2,4}, false),
+                   new Neuron(new List<Rule>() {
+                    new Rule("aa",0,true),
+                    new Rule("aaa",0,false)
+                }, "aa", new List<int>() { }, true),
+            }, new List<int>(), false);
+
+        }
+
+
+        /* static SNP_Network CreateNewNetwork()
         {
            return new SNP_Network(new List<Neuron>() {
                 new Neuron(new List<Rule>(){
@@ -113,7 +137,7 @@ namespace SNP_First_Test
                 }, "aa", new List<int>() { }, true),
             }, new List<int>(), false);
 
-        }
+        } */
         static void stepThrough(int count, SNP_Network network)
         {
             //Console.WriteLine("Step: " + count + ", generating spike.");

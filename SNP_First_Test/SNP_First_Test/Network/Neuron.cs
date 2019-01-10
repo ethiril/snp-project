@@ -99,12 +99,12 @@ namespace SNP_First_Test
                     if (this.Rules[index].IsMatched(this.SpikeCount).Equals(null))
                     {
                         // this state needs storing somehow, as the spike needs to realise that it was just nulled and should not then spike. 
-                        Console.WriteLine("NONDETERMINISTIC - Rule " + this.Rules[index].RuleExpression + " returned null, wiping spikes anyway");
+                        //Console.WriteLine("NONDETERMINISTIC - Rule " + this.Rules[index].RuleExpression + " returned null, wiping spikes anyway");
                         if (this.Rules[index].Delay > 0)
                         {
-                            Console.WriteLine("Maintaining delay");
+                            //Console.WriteLine("Maintaining delay");
                             this.ActiveDelay = this.Rules[index].Delay;
-                            Console.WriteLine("Delay is: " + this.ActiveDelay + ", returning false");
+                            //Console.WriteLine("Delay is: " + this.ActiveDelay + ", returning false");
                             this.PersistedState = null;
                             return false;
                         }
@@ -113,17 +113,17 @@ namespace SNP_First_Test
                     }
                     else if (this.Rules[index].IsMatched(this.SpikeCount).Equals(false))
                     {
-                        Console.WriteLine("No rules matched, returning false");
+                        //Console.WriteLine("No rules matched, returning false");
                         return false;
                     }
                     else if (this.Rules[index].IsMatched(this.SpikeCount).Equals(true))
                     {
-                        Console.WriteLine("Delay is: " + this.Rules[index].Delay);
+                        //Console.WriteLine("Delay is: " + this.Rules[index].Delay);
                         if (this.Rules[index].Delay > 0)
                         {
-                            Console.WriteLine("Maintaining delay");
+                            //Console.WriteLine("Maintaining delay");
                             this.ActiveDelay = this.Rules[index].Delay;
-                            Console.WriteLine("Delay is: " + this.ActiveDelay + ", returning false");
+                            //Console.WriteLine("Delay is: " + this.ActiveDelay + ", returning false");
                             this.PersistedState = true;
                             return false;
                         }

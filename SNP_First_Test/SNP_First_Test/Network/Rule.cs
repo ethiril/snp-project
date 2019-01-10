@@ -50,7 +50,7 @@ namespace SNP_First_Test.Network
             }
             else
             {
-                Console.Error.WriteLine("No rule provided");
+                //Console.Error.WriteLine("No rule provided");
                 return false;
             }
         }
@@ -65,7 +65,7 @@ namespace SNP_First_Test.Network
                 }
                 else
                 {
-                    Console.WriteLine("This was null and didn't fire");
+                    //Console.WriteLine("This was null and didn't fire");
                     return null;
                 }
             }

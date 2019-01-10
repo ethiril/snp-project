@@ -2,9 +2,8 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Data;
-using System.Text;
-using System.Text.RegularExpressions;
 using SNP_Network = SNP_First_Test.Network.Network;
 
 
@@ -46,7 +45,44 @@ namespace SNP_First_Test.Utilities
             input = "^" + input + "$";
             return input;
         }
+
+        // Loop over list of dictionaries, each dictionary has fields "Rule, delay, fire, connections
+        /*public SNP_Network CreateNetwork(ListDictionary networkConfig);
+        {
+            foreach(var KeyValue in networkConfig) {
+            };
+            return new SNP_Network(new List<Neuron>() {
+                new Neuron(new List<Rule>(){
+                    new Rule("aa",0,true),
+                    new Rule("a",0,false)
+                }, "aa", new List<int>() {4}, false),
+                 new Neuron(new List<Rule>() {
+                    new Rule("aa",0,true),
+                    new Rule("a",0,false)
+                }, "aa", new List<int>() {5}, false),
+                 new Neuron(new List<Rule>() {
+                    new Rule("aa",0,true),
+                    new Rule("a",0,false)
+                }, "aa", new List<int>() {6}, false),
+                  new Neuron(new List<Rule>() {
+                    new Rule("a",1,true),
+                    new Rule("a",0,true)
+                }, "", new List<int>() {1, 2, 3, 7}, false),
+                   new Neuron(new List<Rule>() {
+                    new Rule("a",0,true),
+                }, "", new List<int>() {1, 2, 7}, false),
+                   new Neuron(new List<Rule>() {
+                    new Rule("a",0,true),
+                }, "", new List<int>() { 3, 7}, false),
+                   new Neuron(new List<Rule>() {
+                    new Rule("aa",0,true),
+                    new Rule("aaa",0,false)
+                }, "aa", new List<int>() { }, true),
+            }, new List<int>(), false);
+        } */
     }
+
+
 
 
 }

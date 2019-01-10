@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,11 +41,10 @@ namespace SNP_First_Test.Network
              */
             List<Neuron> NeuronCopy = new List<Neuron>(this.Neurons);
             List<Neuron> NeuronAdditionCopy = this.Neurons.DeepClone();
-            Console.WriteLine("Before Spikes: ");
-            Console.WriteLine("---- TESTING NEURON ----");
-            PrintNetwork(this.Neurons);
-            Console.WriteLine("Is network engaged?: " + this.NetworkEngaged);
-            // this doesn't really work.
+            //Console.WriteLine("Before Spikes: ");
+            //Console.WriteLine("---- TESTING NEURON ----");
+            //PrintNetwork(this.Neurons);
+            //Console.WriteLine("Is network engaged?: " + this.NetworkEngaged);
             Parallel.ForEach(NeuronCopy, neuron =>
             {
                 if (neuron.RemoveSpikes(networkRef, neuron.Connections) == true)
@@ -56,7 +56,7 @@ namespace SNP_First_Test.Network
                     }
                     else if (neuron.IsOutput == true && this.NetworkEngaged == false)
                     {
-                        Console.WriteLine("Setting the networkEngaged to true.");
+                        //Console.WriteLine("Setting the networkEngaged to true.");
                         this.NetworkEngaged = true;
                     }
                 }
@@ -68,11 +68,11 @@ namespace SNP_First_Test.Network
                     }
                 }
             });
-            Console.WriteLine("After Spike Removal: ");
-            Console.WriteLine("---- TESTING NEURON ----");
-            PrintNetwork(this.Neurons);
-            Console.WriteLine("Neuron addition copy should be the initial config");
-            PrintNetwork(NeuronAdditionCopy);
+            //Console.WriteLine("After Spike Removal: ");
+            //Console.WriteLine("---- TESTING NEURON ----");
+            //PrintNetwork(this.Neurons);
+            //Console.WriteLine("Neuron addition copy should be the initial config");
+            //PrintNetwork(NeuronAdditionCopy);
             Parallel.ForEach(NeuronAdditionCopy, neuron =>
              {
                  if (neuron.ActiveDelay == 0)
@@ -80,14 +80,14 @@ namespace SNP_First_Test.Network
                      neuron.FireSpike(networkRef, neuron.Connections);
                  }
              });
-            Console.WriteLine("After spike addition: ");
-            Console.WriteLine("---- TESTING NEURON ----");
-            PrintNetwork(this.Neurons);
-            Console.WriteLine("Copy network");
-            PrintNetwork(NeuronAdditionCopy);
+            //Console.WriteLine("After spike addition: ");
+            //Console.WriteLine("---- TESTING NEURON ----");
+            //PrintNetwork(this.Neurons);
+            //Console.WriteLine("Copy network");
+            //PrintNetwork(NeuronAdditionCopy);
             this.GlobalTimer++;
-            Console.Write("Global Timer: " + this.GlobalTimer + ", The current output set is: ");
-            this.OutputSet.ForEach(i => Console.Write("{0}\t", i));
+            //Console.Write("Global Timer: " + this.GlobalTimer + ", The current output set is: ");
+            //this.OutputSet.ForEach(i => Console.Write("{0}\t", i));
 
         }
         private void PrintNetwork(List<Neuron> neurons)
@@ -96,9 +96,9 @@ namespace SNP_First_Test.Network
             foreach (Neuron neuron in neurons)
             {
                 count++;
-                Console.Write("Adding Spikes. Neuron " + count + ", Amount of spikes: " + neuron.SpikeCount + ", the rules: ");
+                //Console.Write("Adding Spikes. Neuron " + count + ", Amount of spikes: " + neuron.SpikeCount + ", the rules: ");
                 foreach (Rule rule in neuron.Rules) { Console.Write(rule.RuleExpression + "->" + rule.Fire + ";" + rule.Delay + ", "); };
-                Console.WriteLine("");
+                //Console.WriteLine("");
             }
         }
 
@@ -124,6 +124,14 @@ namespace SNP_First_Test.Network
             }
         }
 
+        // way too slow
+        public static List<Neuron> Clone(List<Neuron> originalList)
+        {
+            List<Neuron> newList = originalList.ToList();
+            return newList;
+        }
+
+        // could do this with protobuf https://theburningmonk.com/2011/08/performance-test-binaryformatter-vs-protobuf-net/ !!!!!!!
         public static T DeepClone<T>(T obj)
         {
             using (var ms = new MemoryStream())
