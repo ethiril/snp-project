@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 using System.Threading.Tasks;
+using SNP_First_Test.Utilities;
 
 namespace SNP_First_Test.Network
 {
@@ -13,7 +10,6 @@ namespace SNP_First_Test.Network
      *   A network is made up of multiple neurons, this can be edited to contain as many or as little
      *   neurons as you would like. 
      */
-    [Serializable()]
     public class Network
     {
         public List<Neuron> Neurons { get; set; }
@@ -22,15 +18,15 @@ namespace SNP_First_Test.Network
         public bool NetworkClear { get; set; }
         public int GlobalTimer { get; set; }
         public bool NetworkEngaged { get; set; }
-        public Network(List<Neuron> neurons, List<int> outputSet, bool networkClear)
+
+        public Network(List<Neuron> neurons)
         {
             Neurons = neurons;
-            OutputSet = outputSet;
+            OutputSet = new List<int>() { };
             CurrentOutput = 0;
-            NetworkClear = networkClear;
+            NetworkClear = false;
             NetworkEngaged = false;
         }
-
         public void Spike(Network networkRef)
         {
             /*
@@ -40,7 +36,7 @@ namespace SNP_First_Test.Network
              * Add needs to be done on a copy of the network BEFORE the removal happens (original network)
              */
             List<Neuron> NeuronCopy = new List<Neuron>(this.Neurons);
-            List<Neuron> NeuronAdditionCopy = this.Neurons.DeepClone();
+            List<Neuron> NeuronAdditionCopy = ReflectionCloner.DeepFieldClone(this.Neurons);
             //Console.WriteLine("Before Spikes: ");
             //Console.WriteLine("---- TESTING NEURON ----");
             //PrintNetwork(this.Neurons);
@@ -124,15 +120,20 @@ namespace SNP_First_Test.Network
             }
         }
 
-        // way too slow
+        // Reflection cloner thanks to http://blog.nuclex-games.com/mono-dotnet/fast-deep-cloning/
+
+
+        /*
         public static List<Neuron> Clone(List<Neuron> originalList)
         {
             List<Neuron> newList = originalList.ToList();
             return newList;
-        }
+        }*/
+
+
 
         // could do this with protobuf https://theburningmonk.com/2011/08/performance-test-binaryformatter-vs-protobuf-net/ !!!!!!!
-        public static T DeepClone<T>(T obj)
+       /* public static T DeepClone<T>(T obj)
         {
             using (var ms = new MemoryStream())
             {
@@ -142,7 +143,7 @@ namespace SNP_First_Test.Network
 
                 return (T)formatter.Deserialize(ms);
             }
-        }
+        } */
 
     }
 }

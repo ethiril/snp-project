@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using SNP_First_Test.Network;
 using SNP_Network = SNP_First_Test.Network.Network;
 
@@ -11,7 +9,6 @@ namespace SNP_First_Test
      *   A neuron is made up of multiple rules and a count of spikes which are currently being held
      *   by the neuron.
      */
-    [Serializable()]
     public class Neuron
     {
         // List of rules that will determine whether a neuron will spike
@@ -28,7 +25,6 @@ namespace SNP_First_Test
         public bool IsOutput { get; set; }
 
 
-        // Delay is part of the Neuron, not the rule. You need to store the CURRENT DELAY ACTIVE on the NEURON, such that the SPIKES do not happen when there is a DELAY that exists on a NEURON.
         public Neuron(List<Rule> rules, string spikeCount, List<int> connections, bool isOutput)
         {
             Rules = rules;
@@ -168,16 +164,5 @@ namespace SNP_First_Test
             }
         }
 
-        // https://stackoverflow.com/questions/129389/how-do-you-do-a-deep-copy-of-an-object-in-net-c-specifically/1213649#1213649
-        public static T DeepClone<T>(T obj)
-        {
-            using (var ms = new MemoryStream())
-            {
-                var formatter = new BinaryFormatter();
-                formatter.Serialize(ms, obj);
-                ms.Position = 0;
-                return (T)formatter.Deserialize(ms);
-            }
-        }
     }
 }
