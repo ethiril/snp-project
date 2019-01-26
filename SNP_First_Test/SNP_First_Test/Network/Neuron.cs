@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SNP_First_Test.Network;
 using SNP_Network = SNP_First_Test.Network.Network;
 
@@ -15,6 +16,7 @@ namespace SNP_First_Test
         public List<Rule> Rules { get; set; }
         // Current spike count
         public string SpikeCount { get; set; }
+        public string AdditionTemp;
         // List of connections for this neuron
         public List<int> Connections { get; set; }
         // all neurons start with an active delay of 0.
@@ -149,19 +151,17 @@ namespace SNP_First_Test
              * Fire the spike on that chosen rule definition
              * We do not need to worry about the removal of spikes as that is done in RemoveSpikes()
              */
-            int matchedCount = MatchRules();
-            int index = DetermineIndex(matchedCount);
-            foreach (int connection in Connections)
+            int index = MatchRules();
+            Parallel.ForEach(Connections, connection =>
             {
-                if (this.Rules[index].IsMatched(this.SpikeCount).Equals(true))
+                if (this.Rules[index].IsMatched(this.AdditionTemp).Equals(true))
                 {
                     if (this.Rules[index].Fire)
                     {
                         networkRef.Neurons[connection - 1].SpikeCount = networkRef.Neurons[connection - 1].SpikeCount + "a";
                     }
                 }
-
-            }
+            });
         }
 
     }

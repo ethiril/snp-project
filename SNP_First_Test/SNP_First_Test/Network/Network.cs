@@ -15,17 +15,17 @@ namespace SNP_First_Test.Network
         public List<Neuron> Neurons { get; set; }
         public List<int> OutputSet { get; set; }
         public int CurrentOutput { get; set; }
-        public bool NetworkClear { get; set; }
+        public bool IsClear { get; set; }
         public int GlobalTimer { get; set; }
-        public bool NetworkEngaged { get; set; }
+        public bool IsEngaged { get; set; }
 
         public Network(List<Neuron> neurons)
         {
             Neurons = neurons;
             OutputSet = new List<int>() { };
             CurrentOutput = 0;
-            NetworkClear = false;
-            NetworkEngaged = false;
+            IsClear = false;
+            IsEngaged = false;
         }
         public void Spike(Network networkRef)
         {
@@ -36,24 +36,32 @@ namespace SNP_First_Test.Network
              * Add needs to be done on a copy of the network BEFORE the removal happens (original network)
              */
             List<Neuron> NeuronCopy = new List<Neuron>(this.Neurons);
-            List<Neuron> NeuronAdditionCopy = ReflectionCloner.DeepFieldClone(this.Neurons);
+            //List<Neuron> NeuronAdditionCopy = ReflectionCloner.DeepFieldClone(this.Neurons);
             //Console.WriteLine("Before Spikes: ");
             //Console.WriteLine("---- TESTING NEURON ----");
             //PrintNetwork(this.Neurons);
             //Console.WriteLine("Is network engaged?: " + this.NetworkEngaged);
+            int[] activeDelays = new int[this.Neurons.Count];
+            string[] spikes = new string[this.Neurons.Count];
+
+            for (int i = 0; i < this.Neurons.Count; i++)
+            {
+                activeDelays[i] = this.Neurons[i].ActiveDelay;
+                spikes[i] = this.Neurons[i].SpikeCount;
+            }
             Parallel.ForEach(NeuronCopy, neuron =>
             {
                 if (neuron.RemoveSpikes(networkRef, neuron.Connections) == true)
                 {
-                    if (neuron.IsOutput == true && this.NetworkEngaged == true)
+                    if (neuron.IsOutput == true && this.IsEngaged == true)
                     {
                         this.OutputSet.Add(++this.CurrentOutput);
-                        this.NetworkClear = true;
+                        this.IsClear = true;
                     }
-                    else if (neuron.IsOutput == true && this.NetworkEngaged == false)
+                    else if (neuron.IsOutput == true && this.IsEngaged == false)
                     {
                         //Console.WriteLine("Setting the networkEngaged to true.");
-                        this.NetworkEngaged = true;
+                        this.IsEngaged = true;
                     }
                 }
                 else
@@ -69,11 +77,15 @@ namespace SNP_First_Test.Network
             //PrintNetwork(this.Neurons);
             //Console.WriteLine("Neuron addition copy should be the initial config");
             //PrintNetwork(NeuronAdditionCopy);
-            Parallel.ForEach(NeuronAdditionCopy, neuron =>
+            Parallel.ForEach(activeDelays, (delay, state, index) =>
              {
-                 if (neuron.ActiveDelay == 0)
+             int curIndex = unchecked((int)index);
+                 if (activeDelays[curIndex] == 0)
                  {
-                     neuron.FireSpike(networkRef, neuron.Connections);
+                     this.Neurons[curIndex].AdditionTemp = spikes[curIndex];
+                     this.Neurons[curIndex].FireSpike(networkRef, this.Neurons[curIndex].Connections);
+                     //Console.WriteLine("Current active delay on index [" + index + "] is " + activeDelays[curIndex] + ", is it an output?: " + this.Neurons[curIndex].IsOutput + ", current spikes: " + this.Neurons[curIndex].SpikeCount);
+                     //Console.ReadLine();
                  }
              });
             //Console.WriteLine("After spike addition: ");

@@ -60,12 +60,11 @@ namespace SNP_First_Test
                 //Console.WriteLine("---------- Iteration " + i + "----------");
                 evenNumbers = CreateNewNetwork();
                 //Console.WriteLine("EvenNumbers new network engaged state: " + evenNumbers.NetworkEngaged);
-                while (evenNumbers.NetworkClear == false && evenNumbers.GlobalTimer < maxSteps)
+                while (evenNumbers.IsClear == false && evenNumbers.GlobalTimer < maxSteps)
                 {
                     stepThrough(loopCounter++, evenNumbers);
                 }
                 allOutputs.AddRange(evenNumbers.OutputSet);
-                //Utils.ResetNetwork(RuleState, evenNumbers);
                 loopCounter = 0;
             }
             stopWatch.Stop();
@@ -79,7 +78,7 @@ namespace SNP_First_Test
 
         }
 
-        static SNP_Network CreateNewNetwork()
+       /* static SNP_Network CreateNewNetwork()
         {
             return new SNP_Network(new List<Neuron>() {
                    new Neuron(new List<Rule>() {
@@ -100,10 +99,10 @@ namespace SNP_First_Test
                 }, "aa",new List<int>() { }, true),
             });
 
-        }
+        }*/
 
 
-         /*static SNP_Network CreateNewNetwork()
+         static SNP_Network CreateNewNetwork()
         {
            return new SNP_Network(new List<Neuron>() {
                 new Neuron(new List<Rule>(){
@@ -134,7 +133,7 @@ namespace SNP_First_Test
                 }, "aa", new List<int>() { }, true),
             });
 
-        } */ 
+        } 
         static void stepThrough(int count, SNP_Network network)
         {
             //Console.WriteLine("Step: " + count + ", generating spike.");
