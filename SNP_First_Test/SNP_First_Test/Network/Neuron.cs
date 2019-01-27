@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading.Tasks;
 using SNP_First_Test.Network;
 using SNP_Network = SNP_First_Test.Network.Network;
 
@@ -11,13 +10,13 @@ namespace SNP_First_Test
      *   A neuron is made up of multiple rules and a count of spikes which are currently being held
      *   by the neuron.
      */
-    [Serializable()]
     public class Neuron
     {
         // List of rules that will determine whether a neuron will spike
         public List<Rule> Rules { get; set; }
         // Current spike count
         public string SpikeCount { get; set; }
+        public string AdditionTemp;
         // List of connections for this neuron
         public List<int> Connections { get; set; }
         // all neurons start with an active delay of 0.
@@ -28,7 +27,6 @@ namespace SNP_First_Test
         public bool IsOutput { get; set; }
 
 
-        // Delay is part of the Neuron, not the rule. You need to store the CURRENT DELAY ACTIVE on the NEURON, such that the SPIKES do not happen when there is a DELAY that exists on a NEURON.
         public Neuron(List<Rule> rules, string spikeCount, List<int> connections, bool isOutput)
         {
             Rules = rules;
@@ -153,31 +151,18 @@ namespace SNP_First_Test
              * Fire the spike on that chosen rule definition
              * We do not need to worry about the removal of spikes as that is done in RemoveSpikes()
              */
-            int matchedCount = MatchRules();
-            int index = DetermineIndex(matchedCount);
-            foreach (int connection in Connections)
+            int index = MatchRules();
+            Parallel.ForEach(Connections, connection =>
             {
-                if (this.Rules[index].IsMatched(this.SpikeCount).Equals(true))
+                if (this.Rules[index].IsMatched(this.AdditionTemp).Equals(true))
                 {
                     if (this.Rules[index].Fire)
                     {
                         networkRef.Neurons[connection - 1].SpikeCount = networkRef.Neurons[connection - 1].SpikeCount + "a";
                     }
                 }
-
-            }
+            });
         }
 
-        // https://stackoverflow.com/questions/129389/how-do-you-do-a-deep-copy-of-an-object-in-net-c-specifically/1213649#1213649
-        public static T DeepClone<T>(T obj)
-        {
-            using (var ms = new MemoryStream())
-            {
-                var formatter = new BinaryFormatter();
-                formatter.Serialize(ms, obj);
-                ms.Position = 0;
-                return (T)formatter.Deserialize(ms);
-            }
-        }
     }
 }

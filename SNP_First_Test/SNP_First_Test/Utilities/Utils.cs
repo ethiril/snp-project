@@ -36,8 +36,8 @@ namespace SNP_First_Test.Utilities
                 }
             }
             network.OutputSet.Clear();
-            network.NetworkClear = false;
-            network.NetworkEngaged = false;
+            network.IsClear = false;
+            network.IsEngaged = false;
         }
         
         public static string RegexAppendStrict(string input)

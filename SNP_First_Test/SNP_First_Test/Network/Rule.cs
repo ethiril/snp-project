@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using SNP_First_Test.Utilities;
 
 namespace SNP_First_Test.Network
 {
     // https://stackoverflow.com/questions/6488034/how-to-implement-a-rule-engine could be an interesting implementation
     /* Each Rule will contain a set of instructions which will fire a neuron across an axon */
-    [Serializable()]
     public class Rule
     {
         // The Regular Expression this rule has to match in order to spike

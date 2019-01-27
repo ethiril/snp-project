@@ -1,12 +1,10 @@
 ﻿using System;
 using SNP_First_Test.Network;
 using SNP_Network = SNP_First_Test.Network.Network;
-using SNP_First_Test.Configuration;
 using System.Collections.Generic;
-using System.Text;
 using System.Diagnostics;
-using System.Linq;
 using SNP_First_Test.Utilities;
+using System.Linq;
 
 namespace SNP_First_Test
 {
@@ -23,7 +21,6 @@ namespace SNP_First_Test
         // https://stackoverflow.com/questions/2246694/how-to-convert-json-object-to-custom-c-sharp-object
         // test network (tutorial figure 1)
 
-        // https://dotnetfiddle.net/md2hH6 <- JSON Deserialize for constructor parsing from file
         //https://stackoverflow.com/questions/45245032/c-sharp-parse-one-json-field-to-an-object-with-its-custom-constructor
         //https://stackoverflow.com/questions/2246694/how-to-convert-json-object-to-custom-c-sharp-object
         static readonly int maxSteps = 1000;
@@ -56,19 +53,18 @@ namespace SNP_First_Test
             // then loop across, resetting the network after every output
             // test whether the random method is really giving us good random outputs.
             // when a number hits, the next x amounts are also the same????
-            SNP_Network RuleState = evenNumbers.DeepClone();
+            SNP_Network RuleState = ReflectionCloner.DeepFieldClone(evenNumbers);
             evenNumbers.CurrentOutput = 0;
             for (int i = 0; i < stepRepetition; i++)
             {
-                Console.WriteLine("---------- Iteration " + i + "----------");
+                //Console.WriteLine("---------- Iteration " + i + "----------");
                 evenNumbers = CreateNewNetwork();
                 //Console.WriteLine("EvenNumbers new network engaged state: " + evenNumbers.NetworkEngaged);
-                while (evenNumbers.NetworkClear == false && evenNumbers.GlobalTimer < maxSteps)
+                while (evenNumbers.IsClear == false && evenNumbers.GlobalTimer < maxSteps)
                 {
                     stepThrough(loopCounter++, evenNumbers);
                 }
                 allOutputs.AddRange(evenNumbers.OutputSet);
-                //Utils.ResetNetwork(RuleState, evenNumbers);
                 loopCounter = 0;
             }
             stopWatch.Stop();
@@ -82,7 +78,7 @@ namespace SNP_First_Test
 
         }
 
-        static SNP_Network CreateNewNetwork()
+       /* static SNP_Network CreateNewNetwork()
         {
             return new SNP_Network(new List<Neuron>() {
                    new Neuron(new List<Rule>() {
@@ -100,13 +96,13 @@ namespace SNP_First_Test
                    new Neuron(new List<Rule>() {
                     new Rule("aa",0,true),
                     new Rule("aaa",0,false)
-                }, "aa", new List<int>() { }, true),
-            }, new List<int>(), false);
+                }, "aa",new List<int>() { }, true),
+            });
 
-        }
+        }*/
 
 
-        /* static SNP_Network CreateNewNetwork()
+         static SNP_Network CreateNewNetwork()
         {
            return new SNP_Network(new List<Neuron>() {
                 new Neuron(new List<Rule>(){
@@ -135,9 +131,9 @@ namespace SNP_First_Test
                     new Rule("aa",0,true),
                     new Rule("aaa",0,false)
                 }, "aa", new List<int>() { }, true),
-            }, new List<int>(), false);
+            });
 
-        } */
+        } 
         static void stepThrough(int count, SNP_Network network)
         {
             //Console.WriteLine("Step: " + count + ", generating spike.");
