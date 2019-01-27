@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using SNP_First_Test.Network;
 using SNP_Network = SNP_First_Test.Network.Network;
 
@@ -25,7 +24,7 @@ namespace SNP_First_Test
         public bool? PersistedState { get; set; }
         // is this neuron an output neuron
         public bool IsOutput { get; set; }
-        Random random = new Random((int)DateTime.Now.Ticks);
+        private Random random = new Random((int)DateTime.Now.Ticks);
 
 
 
@@ -44,7 +43,7 @@ namespace SNP_First_Test
         {
             // if there is just one rule that is fullfilled then the random will always just 0, hence no need to check.
             // otherwise if more rules are matched it will be chosen at random
-            return random.Next(0, count);
+            return this.random.Next(0, count);
         }
 
         int MatchRules()

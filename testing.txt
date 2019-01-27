@@ -1,0 +1,41 @@
+New Method: Parallel direct array access and method call
+Old Method: Parallel Reflection Deep Copy and method call
+evens network; 1000 its; 10000 runs;
+new: 00:00:47.1115171s
+old: 00:01:31.3242747s
+
+new: 00:00:46.5086204s
+old: 00:01:27.7084084s
+
+new: 00:00:44.4069758s
+old: 00:01:33.7640064s
+
+1000its; 1000 runs;
+new: 00:00:05.0693041s
+old: 00:00:07.8694847s
+
+new: 00:00:03.5648424s
+old: 00:00:09.8467662s
+
+new: 00:00:04.5373637s
+old: 00:00:12.6631931s
+
+nat nums; 1000 its; 10000 runs;
+new: 00:02:58.2669836s!!!
+old: 00:00:26.8437990s
+
+new: 00:03:18.5715496s!!!
+old: 00:00:30.3698551s
+
+new: 00:02:54.6919307s!!!
+old: 00:00:29.4169657s
+
+1000its; 1000 runs;
+new: 00:00:17.1365214s
+old: 00:00:03.5785298s
+
+new: 00:00:16.1292308s
+old: 00:00:03.0056984s
+
+new: 00:00:19.3738520s
+old: 00:00:03.0124147s
