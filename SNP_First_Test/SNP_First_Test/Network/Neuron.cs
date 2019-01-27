@@ -16,15 +16,17 @@ namespace SNP_First_Test
         public List<Rule> Rules { get; set; }
         // Current spike count
         public string SpikeCount { get; set; }
-        public string AdditionTemp;
         // List of connections for this neuron
         public List<int> Connections { get; set; }
         // all neurons start with an active delay of 0.
         public int ActiveDelay { get; set; }
+        //public string AdditionTemp { get; set; }
         // stored state of the neuron that will get fired after delay is over.
         public bool? PersistedState { get; set; }
         // is this neuron an output neuron
         public bool IsOutput { get; set; }
+        Random random = new Random((int)DateTime.Now.Ticks);
+
 
 
         public Neuron(List<Rule> rules, string spikeCount, List<int> connections, bool isOutput)
@@ -42,7 +44,6 @@ namespace SNP_First_Test
         {
             // if there is just one rule that is fullfilled then the random will always just 0, hence no need to check.
             // otherwise if more rules are matched it will be chosen at random
-            Random random = new Random();
             return random.Next(0, count);
         }
 
@@ -92,17 +93,11 @@ namespace SNP_First_Test
                 else
                 {
                     index = MatchRules();
-                    //Console.WriteLine("Random.next(0," + matchedCount + ")");
-                    //Console.WriteLine("The index is:" + index);
                     if (this.Rules[index].IsMatched(this.SpikeCount).Equals(null))
                     {
-                        // this state needs storing somehow, as the spike needs to realise that it was just nulled and should not then spike. 
-                        //Console.WriteLine("NONDETERMINISTIC - Rule " + this.Rules[index].RuleExpression + " returned null, wiping spikes anyway");
                         if (this.Rules[index].Delay > 0)
                         {
-                            //Console.WriteLine("Maintaining delay");
                             this.ActiveDelay = this.Rules[index].Delay;
-                            //Console.WriteLine("Delay is: " + this.ActiveDelay + ", returning false");
                             this.PersistedState = null;
                             return false;
                         }
@@ -111,17 +106,13 @@ namespace SNP_First_Test
                     }
                     else if (this.Rules[index].IsMatched(this.SpikeCount).Equals(false))
                     {
-                        //Console.WriteLine("No rules matched, returning false");
                         return false;
                     }
                     else if (this.Rules[index].IsMatched(this.SpikeCount).Equals(true))
                     {
-                        //Console.WriteLine("Delay is: " + this.Rules[index].Delay);
                         if (this.Rules[index].Delay > 0)
                         {
-                            //Console.WriteLine("Maintaining delay");
                             this.ActiveDelay = this.Rules[index].Delay;
-                            //Console.WriteLine("Delay is: " + this.ActiveDelay + ", returning false");
                             this.PersistedState = true;
                             return false;
                         }
@@ -152,16 +143,16 @@ namespace SNP_First_Test
              * We do not need to worry about the removal of spikes as that is done in RemoveSpikes()
              */
             int index = MatchRules();
-            Parallel.ForEach(Connections, connection =>
+            foreach(int connection in Connections)
             {
-                if (this.Rules[index].IsMatched(this.AdditionTemp).Equals(true))
+                if (this.Rules[index].IsMatched(this.SpikeCount).Equals(true))
                 {
                     if (this.Rules[index].Fire)
                     {
                         networkRef.Neurons[connection - 1].SpikeCount = networkRef.Neurons[connection - 1].SpikeCount + "a";
                     }
                 }
-            });
+            }
         }
 
     }

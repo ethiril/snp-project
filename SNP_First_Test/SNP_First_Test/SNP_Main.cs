@@ -48,18 +48,16 @@ namespace SNP_First_Test
             Console.WriteLine("----------- Test Started -----------");
             int loopCounter = 0;
             List<int> allOutputs = new List<int>();
-            stopWatch.Start();
             // clone the initial network setup for a network reset
             // then loop across, resetting the network after every output
             // test whether the random method is really giving us good random outputs.
             // when a number hits, the next x amounts are also the same????
-            SNP_Network RuleState = ReflectionCloner.DeepFieldClone(evenNumbers);
             evenNumbers.CurrentOutput = 0;
+            stopWatch.Start();
             for (int i = 0; i < stepRepetition; i++)
             {
                 //Console.WriteLine("---------- Iteration " + i + "----------");
                 evenNumbers = CreateNewNetwork();
-                //Console.WriteLine("EvenNumbers new network engaged state: " + evenNumbers.NetworkEngaged);
                 while (evenNumbers.IsClear == false && evenNumbers.GlobalTimer < maxSteps)
                 {
                     stepThrough(loopCounter++, evenNumbers);
@@ -78,7 +76,7 @@ namespace SNP_First_Test
 
         }
 
-       /* static SNP_Network CreateNewNetwork()
+        static SNP_Network CreateNewNetwork()
         {
             return new SNP_Network(new List<Neuron>() {
                    new Neuron(new List<Rule>() {
@@ -99,12 +97,12 @@ namespace SNP_First_Test
                 }, "aa",new List<int>() { }, true),
             });
 
-        }*/
+        }
 
 
-         static SNP_Network CreateNewNetwork()
+        static SNP_Network CreateNewXNetwork()
         {
-           return new SNP_Network(new List<Neuron>() {
+            return new SNP_Network(new List<Neuron>() {
                 new Neuron(new List<Rule>(){
                     new Rule("aa",0,true),
                     new Rule("a",0,false)
@@ -133,12 +131,10 @@ namespace SNP_First_Test
                 }, "aa", new List<int>() { }, true),
             });
 
-        } 
+        }
         static void stepThrough(int count, SNP_Network network)
         {
-            //Console.WriteLine("Step: " + count + ", generating spike.");
             network.Spike(network);
-            //Console.ReadLine();
         }
     }
 }
