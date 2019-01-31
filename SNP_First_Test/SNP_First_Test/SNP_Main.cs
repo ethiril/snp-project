@@ -25,6 +25,10 @@ namespace SNP_First_Test
         //https://stackoverflow.com/questions/2246694/how-to-convert-json-object-to-custom-c-sharp-object
         static readonly int maxSteps = 1000;
         static readonly int stepRepetition = 10000;
+        static int populationSize = 200;
+        static float mutationRate = 0.01f;
+        private Genetic_Algorithms.GeneticAlgorithm<SNP_Network> ga;
+        private Random random;
 
         static void Main(string[] args)
         {
@@ -35,6 +39,7 @@ namespace SNP_First_Test
             Console.WriteLine("Initial state of the network: ");
             int count = 0;
             SNP_Network evenNumbers = CreateNewNetwork();
+            
             foreach (Neuron neuron in evenNumbers.Neurons)
             {
                 count++;
@@ -46,6 +51,11 @@ namespace SNP_First_Test
             Console.WriteLine("Press enter to continue");
             Console.ReadLine();
             Console.WriteLine("----------- Test Started -----------");
+
+          // instantiate the GA for a new SN P Network with the rules as targets
+          //  ga = new Genetic_Algorithms.GeneticAlgorithm<SNP_Network>(populationSize, targetString.Length, random, );
+
+
             int loopCounter = 0;
             List<int> allOutputs = new List<int>();
             // clone the initial network setup for a network reset

@@ -11,8 +11,8 @@ namespace SNP_First_Test.Genetic_Algorithms
         public float Fitness { get; set; }
         private Random random;
         private Func<T> getRandomGene;
-        private Func<float, int> fitnessFunction;
-        public DNA (int size, Random random, Func<T> getRandomGene, Func<float, int> fitnessFunction, bool initGenes = true)
+        private Func<int, float> fitnessFunction;
+        public DNA (int size, Random random, Func<T> getRandomGene, Func<int, float> fitnessFunction, bool initGenes = true)
         {
             Genes = new T[size];
             this.random = random;
@@ -26,8 +26,6 @@ namespace SNP_First_Test.Genetic_Algorithms
                 }
             }
         }
-
-
 
         public float CalculateFitness(int index)
         {
@@ -52,7 +50,7 @@ namespace SNP_First_Test.Genetic_Algorithms
             {
                 if (random.NextDouble() < mutationRate)
                 {
-                    Genes[i]
+                    Genes[i] = getRandomGene();
                 }
             }
         }
