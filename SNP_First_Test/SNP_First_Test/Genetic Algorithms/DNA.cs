@@ -22,7 +22,6 @@ namespace SNP_First_Test.Genetic_Algorithms
                 for (int i = 0; i < Genes.Length; i++)
                 {
                     Genes[i] = getRandomGene();
-
                 }
             }
         }
@@ -38,6 +37,8 @@ namespace SNP_First_Test.Genetic_Algorithms
             DNA<T> child = new DNA<T>(Genes.Length, random, getRandomGene, fitnessFunction, initGenes: false);
             for (int i = 0; i < Genes.Length; i++)
             {
+
+                // need to do this for every rule in the network as well as every network 
                 child.Genes[i] = random.NextDouble() < 0.5 ? Genes[i] : secondParent.Genes[i];
             }
             return child;

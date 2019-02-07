@@ -72,7 +72,7 @@ namespace SNP_First_Test.Genetic_Algorithms
                 }
                 else
                 {
-                    newPopulation.Add(new DNA<T>(dnaSize, random, getRandomGene, fitnessFunction, shouldInitGenes: true));
+                    newPopulation.Add(new DNA<T>(dnaSize, random, getRandomGene, fitnessFunction, initGenes: true));
                 }
             }
             List<DNA<T>> tmpList = Population;

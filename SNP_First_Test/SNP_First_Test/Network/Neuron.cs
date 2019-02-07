@@ -39,7 +39,7 @@ namespace SNP_First_Test
         }
 
 
-        int DetermineIndex(int count)
+        int DetermineIndex(int count, Random random)
         {
             // if there is just one rule that is fullfilled then the random will always just 0, hence no need to check.
             // otherwise if more rules are matched it will be chosen at random
@@ -62,7 +62,7 @@ namespace SNP_First_Test
             }
             if (matchedCount > 1)
             {
-                return DetermineIndex(matchedCount);
+                return DetermineIndex(matchedCount, random);
             }
             else
             {
