@@ -97,6 +97,9 @@ namespace SNP_First_Test.Network
             }
         }
 
+
+
+
         public void print()
         {
             int count = 0;
@@ -110,10 +113,11 @@ namespace SNP_First_Test.Network
                 Console.WriteLine("Current spikes: " + neuron.SpikeCount);
                 Console.WriteLine("Rule amount: " + neuron.Rules.Count);
                 Console.Write("Current Rules: ");
-                foreach (Rule rule in neuron.Rules) { Console.Write(rule.RuleExpression + "->" + rule.Fire + ";" + rule.Delay + ", "); };
+                foreach (Rule rule in neuron.Rules) { Console.Write(rule.RuleExpression + " -> " + rule.Fire + ";" + rule.Delay + ", "); };
                 Console.WriteLine();
                 Console.Write("Neuron connections: ");
                 foreach (int connection in neuron.Connections) { Console.Write(connection + ", "); };
+                Console.WriteLine("Is output neuron: " + neuron.IsOutput);
                 Console.WriteLine("\n");
 
             }

@@ -24,26 +24,27 @@ namespace SNP_First_Test
         //https://stackoverflow.com/questions/45245032/c-sharp-parse-one-json-field-to-an-object-with-its-custom-constructor
         //https://stackoverflow.com/questions/2246694/how-to-convert-json-object-to-custom-c-sharp-object
         static readonly int maxSteps = 100;
-        static readonly int stepRepetition = 500;
+        static readonly int stepRepetition = 200;
         static int populationSize = 200;
         static float mutationRate = 0.01f;
         static int maximumGenerations = 1000;
         // maximum size of each spike grouping in the random new gene
         static private int maxExpSize = 4;
         // set of numbers that I expect to see after the evolution
-        static private List<int> expectedSet = new List<int>() { 2, 4, 6, 8, 10, 12, 14, 16, 18, 20 };
+        //static private List<int> expectedSet = new List<int>() { 2, 4, 6, 8, 10, 12, 14, 16 };
+        static private List<int> expectedSet = new List<int>() { 1, 2, 5, 6, 9, 10 };
         // How are they ranked? Just chosen at random? If the parents 
         static private List<string> acceptedRegex = new List<string>() {
             "x", // direct match 
-            "x+", // x followed by one or moren
-            "x*", // x followed by zero or more
-            "x?", // x followed by zero or one 
-            "x(y)+", // x followed by one or more y groupings
-            "x(y)*", // x followed by zero or more y groupings
-            "x(y)?", // x followed by zero or one y groupings
+            //"x+", // x followed by one or moren
+            //"x*", // x followed by zero or more
+            //"x?", // x followed by zero or one 
+            //"x(y)+", // x followed by one or more y groupings
+            //"x(y)*", // x followed by zero or more y groupings
+            //"x(y)?", // x followed by zero or one y groupings
         };
-
-        private Genetic_Algorithms.GeneticAlgorithm<int> ga;
+        static private int elitism = 5;
+        private static GeneticAlgorithm<SNP_Network> ga;
         static private Random random = new Random((int)DateTime.Now.Ticks);
 
         static void Main(string[] args)
@@ -54,12 +55,7 @@ namespace SNP_First_Test
             Console.ReadLine();
             Console.WriteLine("Initial state of the network: ");
             int count = 0;
-            SNP_Network generatedNetwork = CreateNewRandomNetwork(random);
-            for (int j = 0; j < 10; j++)
-            {
-                generatedNetwork = CreateNewRandomNetwork(random);
-                generatedNetwork.print();
-            }
+            SNP_Network generatedNetwork = CreateNewRandomNetwork();
             foreach (Neuron neuron in generatedNetwork.Neurons)
             {
                 count++;
@@ -71,7 +67,7 @@ namespace SNP_First_Test
             Console.ReadLine();
             Console.WriteLine("----------- Test Started -----------");
             // instantiate the GA for a new SN P Network with the rules as targets
-            // ga = new Genetic_Algorithms.GeneticAlgorithm<SNP_Network>(populationSize, targetString.Length, random, );
+            //ga = new Genetic_Algorithms.GeneticAlgorithm<SNP_Network>(populationSize, 200, random, CreateNewRandomNetwork, FitnessFunction, elitism);
             // clone the initial network setup for a network reset
             // then loop across, resetting the network after every output
             // test whether the random method is really giving us good random outputs.
@@ -79,15 +75,18 @@ namespace SNP_First_Test
             stopWatch.Start();
             for (int i = 0; i <= maximumGenerations; i++)
             {
-                List<int> currentOutputs = SNPRun(generatedNetwork, random);
+                Console.WriteLine("------------- Generation {0} -------------", i);
+                List<int> currentOutputs = SNPRun(generatedNetwork);
                 if (currentOutputs.Count != 0)
                 {
                     Console.WriteLine("Final output set: ");
                     currentOutputs.ForEach(x => Console.Write("{0}\t", x));
                     Console.WriteLine("");
+                    FitnessFunction(expectedSet, currentOutputs);
                 }
-                generatedNetwork = GenerateNewRandomNetwork(random);
+                generatedNetwork = CreateNewRandomNetwork();
             }
+            //FitnessFunction(expectedSet, currentOutputs);
             stopWatch.Stop();
             Console.WriteLine();
             Console.WriteLine("Press any key to exit, time elapsed: " + stopWatch.Elapsed.ToString() + "s");
@@ -96,26 +95,34 @@ namespace SNP_First_Test
         }
 
 
-        static List<int> SNPRun(SNP_Network network, Random random)
+        static List<int> SNPRun(SNP_Network network)
         {
-            int loopCounter = 0;
             List<int> allOutputs = new List<int>();
-            network.CurrentOutput = 0;
+            SNP_Network clone = GenerateIdenticalNetwork(network);
+            clone.CurrentOutput = 0;
             for (int i = 0; i < stepRepetition; i++)
             {
-                while (network.IsClear == false && network.GlobalTimer < maxSteps)
+                clone = GenerateIdenticalNetwork(network);
+                while (clone.IsClear == false && clone.GlobalTimer < maxSteps)
                 {
-                    stepThrough(loopCounter++, network);
+                    stepThrough(clone);
                 }
-                allOutputs.AddRange(network.OutputSet);
-                loopCounter = 0;
+                allOutputs.AddRange(clone.OutputSet);
+                if (allOutputs.Count == 0 && (i > 5))
+                {
+                    Console.WriteLine("No outputs provided");
+                    break;
+                }
             }
-            allOutputs = allOutputs.Distinct().ToList();
+            //allOutputs = allOutputs.Distinct().ToList();
             allOutputs.Sort();
             return allOutputs;
         }
 
-
+        static void stepThrough(SNP_Network network)
+        {
+            network.Spike(network);
+        }
         // Create new network with the List of new rules.
         // Note that this is a NON-GENERIC way of implementing this method, as I know exactly how many neurons this network will have.
 
@@ -140,23 +147,69 @@ namespace SNP_First_Test
             }
         }
 
-        // not implemented
-        static Dictionary<int, Dictionary<string, dynamic>> CreateRandomConfiguration()
+
+        private static float FitnessFunction(List<int> target, List<int> output)
         {
+            /* If a number is in output and in target then it is a true positive
+             * If a number is in output but not in target then it is a false positive 
+             * If a number is not in output but is in the target then it is a false negative
+             * If a number is not in output and not in the target then it is a true negative
+             * 
+             * We will never deal in True Negative members as the numbers will always be in the target
+             * 
+             * Sensitivity = number of true positives / number of true positives + number of false negatives
+             * 
+             * Specificity = number of true negatives / number of true negatives + number false positives. 
+             * 
+             * Precision (Positive predictive value) = The number of true positives / number of true positives + false positives 
+             * 
+             * We will never be able to check for specificity but we can work out the sensitivity and use it for our fitness function.
+             * A higher sensitivity is better, as it means the amount of false negatives is lower. 
+             * We can check for sensitivity and precision.
+             * 
+             */
+            float tp = 0, fp = 0;
+            List<int> tpFound = new List<int>();
+            for (int i = 0; i < output.Count(); i++)
+            {
+                foreach (int value in target)
+                {
+                    if (target.Contains(output[i]))
+                    {
+                        tp++;
+                        if (!tpFound.Contains(output[i]))
+                        {
+                            tpFound.Add(output[i]);
+                        }
+                    }
+                    else
+                    {
+                        fp++;
+                    }
+                }
+            }
+            tp = (tp - target.Count) / (output.Count - target.Count);
+            fp = (fp - target.Count) / (output.Count - target.Count);
+            float scaledFitness = 0, targetCount = tpFound.Count, tpCount = target.Count;
+            if (tpFound.Count != 0)
+            {
+                scaledFitness = targetCount / tpCount;
+            }
+            tp = tp / target.Count;
+            fp = fp / target.Count;
+            float fn = target.Except(output).Count();
+            float sensitivity = (tp / (tp + fn));
+            float precision = tp / (tp + fp);
+            float fitness = ((2 * tp) / ((2 * tp) + fp + fn)) * scaledFitness;
+            Console.WriteLine("\nFitness {0}", fitness);
 
-            return null;
-        }
-
-
-        private float FitnessFunction(int index)
-        {
-            float score = 0;
-            DNA<int> dna = ga.Population[index];
-
-            for (int i = 0; i < ga.Population[index].Genes.Length; i++)
+            //DNA<SNP_Network> dna = ga.Population[index];
+            // for each of the outputs in the ga we need to compare against the target output
+            /*for (int i = 0; i < ga.Population[index].Genes.Length; i++)
             {
 
-            }
+
+            } */
             return 1;
         }
 
@@ -164,9 +217,6 @@ namespace SNP_First_Test
         void Update()
         {
             ga.NewGeneration();
-
-            //UpdateText(ga.BestGenes, ga.BestFitness, ga.Generation, ga.Population.Count, (j) => ga.Population[j].Genes);
-
             if (ga.BestFitness == 1)
             {
                 Console.WriteLine("Succeeded");
@@ -202,19 +252,52 @@ namespace SNP_First_Test
 
 
         // generate a completely random network
-        static SNP_Network GenerateNewRandomNetwork(Random random)
+
+        private static SNP_Network GenerateIdenticalNetwork(SNP_Network network)
+        {
+            int neuronAmount = network.Neurons.Count;
+            int outputNeuron = 0;
+            for (int i = 0; i < neuronAmount; i++)
+            {
+                if (network.Neurons[i].IsOutput)
+                {
+                    outputNeuron = i;
+                }
+            }
+            List<Neuron> neurons = new List<Neuron>();
+            for (int i = 0; i < neuronAmount; i++)
+            {
+                int ruleAmount = network.Neurons[i].Rules.Count;
+                List<Rule> rules = new List<Rule>();
+                for (int j = 0; j < ruleAmount; j++)
+                {
+                    rules.Add(new Rule(network.Neurons[i].Rules[j].RuleExpression, network.Neurons[i].Rules[j].Delay, network.Neurons[i].Rules[j].Fire));
+                }
+                List<int> connections = new List<int>();
+                int connectionCount = network.Neurons[i].Connections.Count;
+                for (int k = 0; k < connectionCount; k++)
+                {
+                    connections.Add(network.Neurons[i].Connections[k]);
+                }
+                neurons.Add(new Neuron(rules, network.Neurons[i].SpikeCount, connections, (i == outputNeuron)));
+            }
+            return new SNP_Network(neurons);
+        }
+
+
+        private static SNP_Network GenerateNewRandomNetwork(Random random)
         {
             int neuronAmount = random.Next(2, 8);
             int outputNeuron = random.Next(1, neuronAmount + 1);
-            List<Neuron> neuronList = new List<Neuron>();
+            List<Neuron> neurons = new List<Neuron>();
             for (int i = 0; i < neuronAmount; i++)
             {
                 int ruleAmount = random.Next(1, 4);
-                List<Rule> ruleList = new List<Rule>();
+                List<Rule> rules = new List<Rule>();
                 for (int j = 0; j < ruleAmount; j++)
                 {
                     bool next = (random.Next(0, 2) == 1);
-                    ruleList.Add(new Rule(GenerateRandomExpression(acceptedRegex, random), random.Next(0, 2), next));
+                    rules.Add(new Rule(GenerateRandomExpression(acceptedRegex, random), random.Next(0, 2), next));
                 }
                 List<int> connections = new List<int>();
                 for (int k = 0; k < neuronAmount; k++)
@@ -229,7 +312,7 @@ namespace SNP_First_Test
                         }
                         connections.Add(randomFirstConnection);
                     }
-                    else if (i != k && !(connections.Contains(k+1)))
+                    else if (i != k && !(connections.Contains(k + 1)))
                     {
                         if (random.Next(0, 2) == 1)
                         {
@@ -238,50 +321,42 @@ namespace SNP_First_Test
                     }
                 }
                 connections.Sort();
-                if (i+1 == outputNeuron)
-                {
-                    neuronList.Add(new Neuron(ruleList, new string('a', random.Next(0, maxExpSize + 1)), connections, true));
-                }
-                else
-                {
-                    neuronList.Add(new Neuron(ruleList, new string('a', random.Next(0, maxExpSize + 1)), connections, false));
-                }
+                neurons.Add(new Neuron(rules, new string('a', random.Next(0, maxExpSize + 1)), connections, (i + 1 == outputNeuron)));
             }
-            return new SNP_Network(neuronList);
+            return new SNP_Network(neurons);
         }
 
-        // Generate new random expressions for a network we know works
-
-        static SNP_Network CreateNewRandomNetwork(Random random)
+        // Generate new random expressions for a network we know work
+        private static SNP_Network CreateNewRandomNetwork()
         {
             return new SNP_Network(new List<Neuron>() {
-                     new Neuron(new List<Rule>(){
-                         new Rule(GenerateRandomExpression(acceptedRegex, random),0,true),
-                         new Rule(GenerateRandomExpression(acceptedRegex, random),0,false)
-                     }, "aa", new List<int>() {4}, false),
-                      new Neuron(new List<Rule>() {
-                         new Rule(GenerateRandomExpression(acceptedRegex, random),0,true),
-                         new Rule(GenerateRandomExpression(acceptedRegex, random),0,false)
-                     }, "aa", new List<int>() {5}, false),
-                      new Neuron(new List<Rule>() {
-                         new Rule(GenerateRandomExpression(acceptedRegex, random),0,true),
-                         new Rule(GenerateRandomExpression(acceptedRegex, random),0,false)
-                     }, "aa", new List<int>() {6}, false),
+                      new Neuron(new List<Rule>(){
+                          new Rule(GenerateRandomExpression(acceptedRegex, random),0,true),
+                          new Rule(GenerateRandomExpression(acceptedRegex, random),0,false)
+                      }, "aa", new List<int>() {4}, false),
                        new Neuron(new List<Rule>() {
-                         new Rule(GenerateRandomExpression(acceptedRegex, random),1,true),
-                         new Rule(GenerateRandomExpression(acceptedRegex, random),0,true)
-                     }, "", new List<int>() {1, 2, 3, 7}, false),
+                          new Rule(GenerateRandomExpression(acceptedRegex, random),0,true),
+                          new Rule(GenerateRandomExpression(acceptedRegex, random),0,false)
+                      }, "aa", new List<int>() {5}, false),
+                       new Neuron(new List<Rule>() {
+                          new Rule(GenerateRandomExpression(acceptedRegex, random),0,true),
+                          new Rule(GenerateRandomExpression(acceptedRegex, random),0,false)
+                      }, "aa", new List<int>() {6}, false),
                         new Neuron(new List<Rule>() {
-                         new Rule(GenerateRandomExpression(acceptedRegex, random),0,true),
-                     }, "", new List<int>() {1, 2, 7}, false),
-                        new Neuron(new List<Rule>() {
-                         new Rule(GenerateRandomExpression(acceptedRegex, random),0,true),
-                     }, "", new List<int>() { 3, 7}, false),
-                        new Neuron(new List<Rule>() {
-                         new Rule(GenerateRandomExpression(acceptedRegex, random),0,true),
-                         new Rule(GenerateRandomExpression(acceptedRegex, random),0,false)
-                     }, "aa", new List<int>() { }, true),
-                 });
+                          new Rule(GenerateRandomExpression(acceptedRegex, random),1,true),
+                          new Rule(GenerateRandomExpression(acceptedRegex, random),0,true)
+                      }, "", new List<int>() {1, 2, 3, 7}, false),
+                         new Neuron(new List<Rule>() {
+                          new Rule(GenerateRandomExpression(acceptedRegex, random),0,true),
+                      }, "", new List<int>() {1, 2, 7}, false),
+                         new Neuron(new List<Rule>() {
+                          new Rule(GenerateRandomExpression(acceptedRegex, random),0,true),
+                      }, "", new List<int>() { 3, 7}, false),
+                         new Neuron(new List<Rule>() {
+                          new Rule(GenerateRandomExpression(acceptedRegex, random),0,true),
+                          new Rule(GenerateRandomExpression(acceptedRegex, random),0,false)
+                      }, "aa", new List<int>() { }, true),
+                  });
         }
 
         /*  Natural Numbers fully auto generated
@@ -305,9 +380,9 @@ namespace SNP_First_Test
             }); */
 
 
-        /* Natural numbers network original 
-                static SNP_Network CreateNewNetwork(Dictionary<int, Dictionary<string, dynamic>> networkConfiguration)
-        { 
+        //Natural numbers network original 
+        static SNP_Network CreateNewRandomXNetwork()
+        {
             return new SNP_Network(new List<Neuron>() {
                    new Neuron(new List<Rule>(){
                     new Rule("aa",0,true),
@@ -327,13 +402,13 @@ namespace SNP_First_Test
                 }, "aa",new List<int>() { }, true),
             });
         }
- */
 
 
-        /* Even numbers network original
-         * static SNP_Network CreateNewRandomNetwork(Random random)
-          {
-              return new SNP_Network(new List<Neuron>() {
+
+        // Even numbers network original
+        /*static SNP_Network CreateNewRandomNetwork()
+        {
+            return new SNP_Network(new List<Neuron>() {
                       new Neuron(new List<Rule>(){
                           new Rule("aa",0,true),
                           new Rule("a",0,false)
@@ -361,11 +436,8 @@ namespace SNP_First_Test
                           new Rule("aaa",0,false)
                       }, "aa", new List<int>() { }, true),
                   });
-          } */
+        }*/
 
-        static void stepThrough(int count, SNP_Network network)
-        {
-            network.Spike(network);
-        }
+
     }
 }

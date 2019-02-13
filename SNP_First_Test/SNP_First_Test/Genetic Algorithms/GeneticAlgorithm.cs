@@ -97,6 +97,7 @@ namespace SNP_First_Test.Genetic_Algorithms
             }
         }
 
+        // compare the fitnesses of the two networks
         private void CalculateFitness()
         {
             fitnessSum = 0;
