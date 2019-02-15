@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using SNP_First_Test.Network;
 using SNP_Network = SNP_First_Test.Network.Network;
 
-namespace SNP_First_Test
+namespace SNP_First_Test.Network
 {
     /* 
      *   A neuron is made up of multiple rules and a count of spikes which are currently being held

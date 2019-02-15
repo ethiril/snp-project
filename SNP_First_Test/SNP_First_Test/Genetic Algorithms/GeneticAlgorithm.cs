@@ -1,41 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
+using SNP_First_Test.Network;
+using SNP_First_Test.Utilities;
+using SNP_Network = SNP_First_Test.Network.Network;
 
 namespace SNP_First_Test.Genetic_Algorithms
 {
-    public class GeneticAlgorithm<T>
+    public class GeneticAlgorithm
     {
-        public List<DNA<T>> Population { get; private set; }
+        public List<DNA> Population { get; private set; }
         public int Generation { get; private set; }
         public float BestFitness { get; private set; }
-        public T[] BestGenes { get; private set; }
+        public SNP_Network BestGenes { get; private set; }
 
         public int Elitism;
         public float MutationRate;
 
-        private List<DNA<T>> newPopulation;
+        private List<DNA> newPopulation;
         private Random random;
         private float fitnessSum;
-        private int dnaSize;
-        private Func<T> getRandomGene;
+        private Func<SNP_Network> getRandomNetwork;
+        private Func<List<string>, Random, string> getModifiedRule;
         private Func<int, float> fitnessFunction;
 
-        public GeneticAlgorithm(int populationSize, int dnaSize, Random random, Func<T> getRandomGene, Func<int, float> fitnessFunction,
+        public GeneticAlgorithm(int populationSize, Random random, Func<SNP_Network> getRandomNetwork, Func<List<string>, Random, string> getModifiedRule, Func<int, float> fitnessFunction,
             int elitism, float mutationRate = 0.01f)
         {
             Generation = 1;
             Elitism = elitism;
             MutationRate = mutationRate;
-            Population = new List<DNA<T>>(populationSize);
-            newPopulation = new List<DNA<T>>(populationSize);
+            Population = new List<DNA>(populationSize);
+            newPopulation = new List<DNA>(populationSize);
             this.random = random;
-            this.dnaSize = dnaSize;
-            this.getRandomGene = getRandomGene;
+            this.getRandomNetwork = getRandomNetwork;
+            this.getModifiedRule = getModifiedRule;
             this.fitnessFunction = fitnessFunction;
-            BestGenes = new T[dnaSize];
             for (int i = 0; i < populationSize; i++)
             {
-                Population.Add(new DNA<T>(dnaSize, random, getRandomGene, fitnessFunction, initGenes: true));
+                Population.Add(new DNA(random, getRandomNetwork, getModifiedRule, fitnessFunction, init: true));
             }
         }
         public void NewGeneration(int numNewDNA = 0, bool crossoverNewDNA = false)
@@ -48,6 +50,7 @@ namespace SNP_First_Test.Genetic_Algorithms
             }
             if (Population.Count > 0)
             {
+
                 CalculateFitness();
                 Population.Sort(CompareDNA);
             }
@@ -61,10 +64,14 @@ namespace SNP_First_Test.Genetic_Algorithms
                 }
                 else if (i < Population.Count || crossoverNewDNA)
                 {
-                    DNA<T> parent1 = ChooseParent();
-                    DNA<T> parent2 = ChooseParent();
+                    DNA parent1 = ChooseParent();
+                    parent1.Genes.print();
+                    Console.WriteLine("Chosen Parent 1, its fitness is: {0}", parent1.Fitness);
+                    DNA parent2 = ChooseParent();
+                    Console.WriteLine("Chosen Parent 2, its fitness is: {0}", parent2.Fitness);
 
-                    DNA<T> child = parent1.Crossover(parent2);
+
+                    DNA child = parent1.Crossover(parent2);
 
                     child.Mutate(MutationRate);
 
@@ -72,16 +79,16 @@ namespace SNP_First_Test.Genetic_Algorithms
                 }
                 else
                 {
-                    newPopulation.Add(new DNA<T>(dnaSize, random, getRandomGene, fitnessFunction, initGenes: true));
+                    newPopulation.Add(new DNA(random, getRandomNetwork, getModifiedRule, fitnessFunction, init: true));
                 }
             }
-            List<DNA<T>> tmpList = Population;
+            List<DNA> tmpList = Population;
             Population = newPopulation;
             newPopulation = tmpList;
             Generation++;
         }
 
-        private int CompareDNA(DNA<T> a, DNA<T> b)
+        private int CompareDNA(DNA a, DNA b)
         {
             if (a.Fitness > b.Fitness)
             {
@@ -101,22 +108,23 @@ namespace SNP_First_Test.Genetic_Algorithms
         private void CalculateFitness()
         {
             fitnessSum = 0;
-            DNA<T> best = Population[0];
+            DNA best = Population[0];
 
             for (int i = 0; i < Population.Count; i++)
             {
                 fitnessSum += Population[i].CalculateFitness(i);
-
                 if (Population[i].Fitness > best.Fitness)
                 {
                     best = Population[i];
+                    best.Genes.print();
+                    Console.WriteLine("\nCurrent best fitness: {0}", best.Fitness);
                 }
             }
             BestFitness = best.Fitness;
-            best.Genes.CopyTo(BestGenes, 0);
+            best.Genes = ReflectionCloner.DeepFieldClone(BestGenes);
         }
 
-        private DNA<T> ChooseParent()
+       private DNA ChooseParent()
         {
             double randomNumber = random.NextDouble() * fitnessSum;
 
@@ -129,6 +137,6 @@ namespace SNP_First_Test.Genetic_Algorithms
                 randomNumber -= Population[i].Fitness;
             }
             return null;
-        }
+        } 
     }
 }
