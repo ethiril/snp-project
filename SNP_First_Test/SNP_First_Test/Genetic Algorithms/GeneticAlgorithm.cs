@@ -50,7 +50,6 @@ namespace SNP_First_Test.Genetic_Algorithms
             }
             if (Population.Count > 0)
             {
-
                 CalculateFitness();
                 Population.Sort(CompareDNA);
             }
@@ -65,12 +64,9 @@ namespace SNP_First_Test.Genetic_Algorithms
                 else if (i < Population.Count || crossoverNewDNA)
                 {
                     DNA parent1 = ChooseParent();
-                    parent1.Genes.print();
-                    Console.WriteLine("Chosen Parent 1, its fitness is: {0}", parent1.Fitness);
+                    //Console.WriteLine("Chosen Parent 1, its fitness is: {0}", parent1.Fitness);
                     DNA parent2 = ChooseParent();
-                    Console.WriteLine("Chosen Parent 2, its fitness is: {0}", parent2.Fitness);
-
-
+                    //Console.WriteLine("Chosen Parent 2, its fitness is: {0}", parent2.Fitness);
                     DNA child = parent1.Crossover(parent2);
 
                     child.Mutate(MutationRate);
@@ -116,15 +112,20 @@ namespace SNP_First_Test.Genetic_Algorithms
                 if (Population[i].Fitness > best.Fitness)
                 {
                     best = Population[i];
-                    best.Genes.print();
+                    best.Genes.minifiedPrint();
+                    best.Genes.OutputSet.ForEach(x => Console.Write("{0}\t", x));
+                    if (best.Fitness >= 1)
+                    {
+                        best.Genes.minifiedPrint();
+                    }
                     Console.WriteLine("\nCurrent best fitness: {0}", best.Fitness);
                 }
             }
             BestFitness = best.Fitness;
-            best.Genes = ReflectionCloner.DeepFieldClone(BestGenes);
+            BestGenes = ReflectionCloner.DeepFieldClone(best.Genes);
         }
 
-       private DNA ChooseParent()
+        private DNA ChooseParent()
         {
             double randomNumber = random.NextDouble() * fitnessSum;
 
@@ -137,6 +138,6 @@ namespace SNP_First_Test.Genetic_Algorithms
                 randomNumber -= Population[i].Fitness;
             }
             return null;
-        } 
+        }
     }
 }

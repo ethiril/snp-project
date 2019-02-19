@@ -98,7 +98,20 @@ namespace SNP_First_Test.Network
         }
 
 
-
+        public void minifiedPrint()
+        {
+            int count = 0;
+            Console.WriteLine("Network breakdown");
+            foreach (Neuron neuron in this.Neurons)
+            {
+                count++;
+                Console.WriteLine("Neuron: {0}, Current Spikes: {1}, Rule Amount: {2}, Current Rules: ",+count, neuron.SpikeCount, neuron.Rules.Count);
+                foreach (Rule rule in neuron.Rules) { Console.Write(rule.RuleExpression + " -> " + rule.Fire + ";" + rule.Delay + ", "); };
+                Console.Write("Neuron connections: ");
+                foreach (int connection in neuron.Connections) { Console.Write(connection + ", "); };
+                Console.WriteLine("Is output neuron: " + neuron.IsOutput);
+            }
+        }
 
         public void print()
         {

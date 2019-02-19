@@ -89,19 +89,15 @@ namespace SNP_First_Test.Genetic_Algorithms
         }
 
 
-
+        // should mutate rules at random, not generate whole new networks?
         public void Mutate(float mutationRate)
         {
                 if (random.NextDouble() < mutationRate)
                 {
+                int neuron = random.Next(0, Genes.Neurons.Count);
+                int rule = random.Next(0, Genes.Neurons[neuron].Rules.Count);
                 // Change one of the rules at random
-                for (int i = 0; i < Genes.Neurons.Count; i++)
-                {
-                    for (int j = 0; i < Genes.Neurons[i].Rules.Count; j++)
-                    {
-                        Genes.Neurons[i].Rules[j] = new Rule(getModifiedRule(acceptedRegex, random), Genes.Neurons[i].Rules[j].Delay, Genes.Neurons[i].Rules[j].Fire);
-                    }
-                }
+                Genes.Neurons[neuron].Rules[rule] = new Rule(getModifiedRule(acceptedRegex, random), Genes.Neurons[neuron].Rules[rule].Delay, Genes.Neurons[neuron].Rules[rule].Fire);
                 }
         }
 

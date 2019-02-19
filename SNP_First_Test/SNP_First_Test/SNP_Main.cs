@@ -23,19 +23,19 @@ namespace SNP_First_Test
 
         //https://stackoverflow.com/questions/45245032/c-sharp-parse-one-json-field-to-an-object-with-its-custom-constructor
         //https://stackoverflow.com/questions/2246694/how-to-convert-json-object-to-custom-c-sharp-object
-        static readonly int maxSteps = 100;
-        static readonly int stepRepetition = 20;
-        static int populationSize = 20;
-        static float mutationRate = 0.01f;
-        static int maximumGenerations = 100;
+        static readonly int maxSteps = 50;
+        static readonly int stepRepetition = 500;
+        static int populationSize = 100;
+        static float mutationRate = 0.1f;
+        static int maximumGenerations = 20;
         // maximum size of each spike grouping in the random new gene
         static private int maxExpSize = 4;
         // set of numbers that I expect to see after the evolution
         //static private List<int> expectedSet = new List<int>() { 2, 4, 6, 8, 10, 12, 14, 16 };
-        static private List<int> expectedSet = new List<int>() { 1, 2, 5, 6, 9, 10 };
+        static private List<int> expectedSet = new List<int>() { 4, 6, 8 };
         // How are they ranked? Just chosen at random? If the parents 
         static private List<string> acceptedRegex = new List<string>() {
-            "x", // direct match 
+            "x", // direct match f
             //"x+", // x followed by one or more
             //"x*", // x followed by zero or more
             //"x?", // x followed by zero or one 
@@ -43,7 +43,7 @@ namespace SNP_First_Test
             //"x(y)*", // x followed by zero or more y groupings
             //"x(y)?", // x followed by zero or one y groupings
         };
-        static private int elitism = 2;
+        static private int elitism = 4;
         private static GeneticAlgorithm ga;
         static private Random random = new Random((int)DateTime.Now.Ticks);
 
@@ -59,12 +59,20 @@ namespace SNP_First_Test
             Console.ReadLine();
             Console.WriteLine("----------- Test Started -----------");
             stopWatch.Start();
-            ga = new GeneticAlgorithm(populationSize, random, CreateNewRandomNetwork, GenerateRandomExpression, FitnessFunction, elitism);
-            for (int i = 0; i < 10; i++ )
-            {
-                Console.WriteLine("First test generation {0}", i);
-                ga.NewGeneration();
-            }
+            ga = new GeneticAlgorithm(populationSize, random, CreateNewRandomNetwork, GenerateRandomExpression, FitnessFunction, elitism, mutationRate);
+            for (int i = 0; i < maximumGenerations; i++ )
+             {
+                 Console.WriteLine("First test generation {0}", i);
+                 ga.NewGeneration();
+                 if (ga.BestFitness >= 1)
+                 {
+                     break;
+                 }
+             }
+            Console.WriteLine("Best Genes: ");
+            //ga.BestGenes.print();
+            Console.WriteLine("Best Gene output set: ");
+            //ga.BestGenes.OutputSet.ForEach(x => Console.Write("{0}\t", x)); ;
             stopWatch.Stop();
             Console.WriteLine();
             Console.WriteLine("Press any key to exit, time elapsed: " + stopWatch.Elapsed.ToString() + "s");
@@ -148,23 +156,39 @@ namespace SNP_First_Test
                     }
                 }
             }
-            tp = (tp - expectedSet.Count) / (output.Count - expectedSet.Count);
-            fp = (fp - expectedSet.Count) / (output.Count - expectedSet.Count);
-            float scaledFitness = 0, targetCount = tpFound.Count, tpCount = expectedSet.Count;
-            if (tpFound.Count != 0)
+            if (output.Count > 0)
             {
-                scaledFitness = targetCount / tpCount;
+                // normalize
+                //tp = (tp - expectedSet.Count) * ((tp) / (output.Count));
+                tp = (tp - expectedSet.Count) / (output.Count - expectedSet.Count);
+                fp = (fp > expectedSet.Count) ? (fp - expectedSet.Count) / (output.Count - expectedSet.Count) : 0;
+                float scaledFitness = 0, targetCount = tpFound.Count, tpCount = expectedSet.Count;
+                if (tpFound.Count != 0)
+                {
+                    scaledFitness = targetCount / tpCount;
+                }
+                //tp = tp / expectedSet.Count;
+                //fp = fp / expectedSet.Count;
+                float fn = expectedSet.Except(output).Count();
+                //fn = (fn - expectedSet.Count) / ()
+                float sensitivity = (tp / (tp + fn));
+                float precision = tp / (tp + fp);
+                float fitness = ((2 * tp) / ((2 * tp) + fp + fn)) * scaledFitness;
+                output = output.Distinct().ToList();
+                output.Sort();
+
+                Console.WriteLine("Actual output distinct:");
+                output.ForEach(x => Console.Write("{0}\t", x)); ;
+                Console.WriteLine("Precision: ({0} / ({1} + {2}) = {3})", tp, tp, fp, precision);
+                Console.WriteLine("Sensitivity: ({0} / ({1} + {2}) = {3})", tp, tp, fn, sensitivity);
+                Console.WriteLine("\nFitness: (((2 * {0}) / ((2 * {1}) + {2} + {3})) * {4}) = {5}", tp, tp, fp, fn, scaledFitness, fitness);
+                return fitness;
             }
-            //tp = tp / expectedSet.Count;
-            //fp = fp / expectedSet.Count;
-            float fn = expectedSet.Except(output).Count();
-            float sensitivity = (tp / (tp + fn));
-            float precision = tp / (tp + fp);
-            float fitness = ((2 * tp) / ((2 * tp) + fp + fn)) * scaledFitness;
-            Console.WriteLine("Precision: ({0} / ({1} + {2}) = {3})", tp, tp, fn, precision);
-            Console.WriteLine("Sensitivity: ({0} / ({1} + {2}) = {3})", tp, tp, fp,  sensitivity);
-            Console.WriteLine("\nFitness: (((2 * {0}) / ((2 * {1}) + {2} + {3})) * {4}) = {5}", tp, tp, fp, fn, scaledFitness, fitness);
-            return fitness;
+            else
+            {
+                return 0;
+            }
+
         }
 
         private static float FitnessFunction(int index)
@@ -192,7 +216,6 @@ namespace SNP_First_Test
             List<int> output = SNPRun(dna.Genes);
             //dna.Genes.print();
             List<int> tpFound = new List<int>();
-
             for (int i = 0; i < output.Count(); i++)
             {
                 foreach (int value in expectedSet)
@@ -200,7 +223,7 @@ namespace SNP_First_Test
                     if (expectedSet.Contains(output[i]))
                     {
                         tp++;
-                        if (!tpFound.Contains(output[i]))
+                        if (!(tpFound.Contains(output[i])))
                         {
                             tpFound.Add(output[i]);
                         }
@@ -211,19 +234,25 @@ namespace SNP_First_Test
                     }
                 }
             }
-            tp = (tp - expectedSet.Count) / (output.Count - expectedSet.Count);
-            fp = (fp - expectedSet.Count) / (output.Count - expectedSet.Count);
-            float scaledFitness = 0, targetCount = tpFound.Count, tpCount = expectedSet.Count;
-            if (tpFound.Count != 0)
+            if (output.Count > 0)
             {
-                scaledFitness = targetCount / tpCount;
+                tp = (tp - expectedSet.Count) / (output.Count - expectedSet.Count);
+                fp = (fp > expectedSet.Count) ? (fp - expectedSet.Count) / (output.Count - expectedSet.Count) : 0;
+                float scaledFitness = 0, targetCount = tpFound.Count, tpCount = expectedSet.Count;
+                if (tpFound.Count != 0)
+                {
+                    scaledFitness = targetCount / tpCount;
+                }
+                float fn = expectedSet.Except(output).Count();
+                float sensitivity = (tp / (tp + fn));
+                float precision = tp / (tp + fp);
+                float fitness = ((2 * tp) / ((2 * tp) + fp + fn)) * scaledFitness;
+                //Console.WriteLine("Fitness for this Gene: " + fitness);
+                return fitness;
+            } else
+            {
+                return 0;
             }
-            float fn = expectedSet.Except(output).Count();
-            float sensitivity = (tp / (tp + fn));
-            float precision = tp / (tp + fp);
-            float fitness = ((2 * tp) / ((2 * tp) + fp + fn)) * scaledFitness;
-            //Console.WriteLine("Fitness for this Gene: " + fitness);
-            return fitness;
         }
 
 
@@ -310,6 +339,40 @@ namespace SNP_First_Test
             }
             return new SNP_Network(neurons);
         }
+
+
+        private static SNP_Network CreateNewRandomTestNetwork()
+        {
+            return new SNP_Network(new List<Neuron>() {
+                      new Neuron(new List<Rule>(){
+                          new Rule("aa",0,true),
+                          new Rule("a",0,false)
+                      }, "aa", new List<int>() {4}, false),
+                       new Neuron(new List<Rule>() {
+                          new Rule("aa",0,true),
+                          new Rule("aaa",0,false)
+                      }, "aa", new List<int>() {5}, false),
+                       new Neuron(new List<Rule>() {
+                          new Rule("aaa",0,true),
+                          new Rule("aaa",0,false)
+                      }, "aa", new List<int>() {6}, false),
+                        new Neuron(new List<Rule>() {
+                          new Rule("a",1,true),
+                          new Rule("aa",0,true)
+                      }, "", new List<int>() {1, 2, 3, 7}, false),
+                         new Neuron(new List<Rule>() {
+                          new Rule("aa",0,true),
+                      }, "", new List<int>() {1, 2, 7}, false),
+                         new Neuron(new List<Rule>() {
+                          new Rule("a",0,true),
+                      }, "", new List<int>() { 3, 7}, false),
+                         new Neuron(new List<Rule>() {
+                          new Rule("aa",0,true),
+                          new Rule("aa",0,false)
+                      }, "aa", new List<int>() { }, true),
+                  });
+        }
+
 
         // Generate new random expressions for a network we know work
         private static SNP_Network CreateNewRandomNetwork()
