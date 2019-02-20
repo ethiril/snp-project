@@ -15,6 +15,8 @@ IBM Common Public License for more details.
 
 You should have received a copy of the IBM Common Public
 License along with this library
+
+This library was created by Nuclex and not myself: http://blog.nuclex-games.com/mono-dotnet/fast-deep-cloning/
 */
 #endregion
 

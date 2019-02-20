@@ -13,7 +13,6 @@ namespace SNP_First_Test.Network
         public int Delay { get; set; }
         // Whether this rule should fire a spike or wipe the spikes currently in the neuron.
         public bool Fire { get; set; }
-
         public Rule(string ruleExpression, int delay, bool fire)
         {
             RuleExpression = ruleExpression;
@@ -33,8 +32,7 @@ namespace SNP_First_Test.Network
         {
             if (this.RuleExpression != null)
             {
-                string input = Utils.RegexAppendStrict(RuleExpression);
-                Regex rgx = new Regex(input);
+                Regex rgx = new Regex(Utils.RegexAppendStrict(RuleExpression));
                 if (rgx.IsMatch(spikes))
                 {
                     return true;
@@ -46,7 +44,6 @@ namespace SNP_First_Test.Network
             }
             else
             {
-                //Console.Error.WriteLine("No rule provided");
                 return false;
             }
         }
@@ -61,7 +58,6 @@ namespace SNP_First_Test.Network
                 }
                 else
                 {
-                    //Console.WriteLine("This was null and didn't fire");
                     return null;
                 }
             }
