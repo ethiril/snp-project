@@ -117,6 +117,7 @@ namespace SNP_First_Test.Genetic_Algorithms
                     if (best.Fitness >= 1)
                     {
                         best.Genes.minifiedPrint();
+                        
                     }
                     Console.WriteLine("\nCurrent best fitness: {0}", best.Fitness);
                 }
