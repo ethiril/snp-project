@@ -4,6 +4,7 @@ using SNP_Network = SNP_First_Test.Network.Network;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using SNP_First_Test.Utilities;
 using SNP_First_Test.Genetic_Algorithms;
 
 namespace SNP_First_Test
@@ -24,15 +25,15 @@ namespace SNP_First_Test
         //https://stackoverflow.com/questions/45245032/c-sharp-parse-one-json-field-to-an-object-with-its-custom-constructor
         //https://stackoverflow.com/questions/2246694/how-to-convert-json-object-to-custom-c-sharp-object
         static readonly int maxSteps = 50;
-        static readonly int stepRepetition = 500;
-        static int populationSize = 100;
+        static readonly int stepRepetition = 250;
+        static int populationSize = 50;
         static float mutationRate = 0.1f;
-        static int maximumGenerations = 20;
+        static int maximumGenerations = 20; 
         // maximum size of each spike grouping in the random new gene
         static private int maxExpSize = 4;
         // set of numbers that I expect to see after the evolution
         //static private List<int> expectedSet = new List<int>() { 2, 4, 6, 8, 10, 12, 14, 16 };
-        static private List<int> expectedSet = new List<int>() { 4, 6, 8 };
+        static private List<int> expectedSet = new List<int>() { 2, 4, 6, 8, 10, 12, 14, 16 };
         // How are they ranked? Just chosen at random? If the parents 
         static private List<string> acceptedRegex = new List<string>() {
             "x", // direct match f
@@ -64,7 +65,7 @@ namespace SNP_First_Test
              {
                  Console.WriteLine("First test generation {0}", i);
                  ga.NewGeneration();
-                 if (ga.BestFitness >= 1)
+                 if (ga.BestFitness >= 0.985)
                  {
                      break;
                  }
@@ -214,7 +215,6 @@ namespace SNP_First_Test
             float tp = 0, fp = 0;
             DNA dna = ga.Population[index];
             List<int> output = SNPRun(dna.Genes);
-            //dna.Genes.print();
             List<int> tpFound = new List<int>();
             for (int i = 0; i < output.Count(); i++)
             {
@@ -248,6 +248,15 @@ namespace SNP_First_Test
                 float precision = tp / (tp + fp);
                 float fitness = ((2 * tp) / ((2 * tp) + fp + fn)) * scaledFitness;
                 //Console.WriteLine("Fitness for this Gene: " + fitness);
+                if (fitness > 0.9)
+                {
+                    Console.WriteLine("\nOutput set for this gene: ");
+                    output.ForEach(x => Console.Write("{0}\t", x)); ;
+                    output = output.Distinct().ToList();
+                    Console.WriteLine("\nMinified Output set for this gene: ");
+                    output.ForEach(x => Console.Write("{0}\t", x)); ;
+
+                }
                 return fitness;
             } else
             {
