@@ -431,7 +431,7 @@ namespace SNP_First_Test
                     Console.Clear();
                     long time = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond);
                     string normFileName = "/" + time + "/NatNumsNet.json";
-                    Console.WriteLine("The File will be saved to: {0}/{1}.json", Directory.GetCurrentDirectory(), normFileName);
+                    Console.WriteLine("The File will be saved to: {0}/{1}", Directory.GetCurrentDirectory(), normFileName);
                     Console.WriteLine("Press the enter key to carry out this test.");
                     Console.ReadLine();
                     Console.WriteLine("---------- Evolving a network based on the Natural Numbers Spiking Neural P System ----------");
@@ -447,7 +447,7 @@ namespace SNP_First_Test
                     Console.Clear();
                     long evensTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond);
                     string evensFileName = "/" + evensTime + "/EvenNumsNet.json";
-                    Console.WriteLine("The File will be saved to: {0}/{1}.json", Directory.GetCurrentDirectory(), evensFileName);
+                    Console.WriteLine("The File will be saved to: {0}/{1}", Directory.GetCurrentDirectory(), evensFileName);
                     Console.WriteLine("Press the enter key to carry out this test.");
                     Console.ReadLine();
                     Console.WriteLine("---------- Evolving a network based on the Evens Spiking Neural P System ----------");
