@@ -41,7 +41,6 @@ namespace SNP_First_Test.Genetic_Algorithms
             this.fitnessFunction = fitnessFunction;
             for (int i = 0; i < populationSize; i++)
             {
-
                 Population.Add(new DNA(random, getRandomNetwork, getModifiedRule, fitnessFunction, init: true));
             }
         }
@@ -64,14 +63,26 @@ namespace SNP_First_Test.Genetic_Algorithms
                 {
                     for (int i = 0; i < Population.Count; i++)
                     {
+                        // Eliminate the possibility of erroneous networks or 0 fitness networks. The networks should all at least provide a minimal fitness (produce one number out of the 
+                        // target set
                         if (Population[i].Fitness == 0 || float.IsNaN(Population[i].Fitness) || Population[i].Equals(null))
                         {
                             Console.WriteLine("Member {0} did not live up to the standards of society and has been replaced with a new member.", i);
                             Population[i] = new DNA(random, getRandomNetwork, getModifiedRule, fitnessFunction, init: true);
-                        } else
+                        }
+                        else
                         {
                             erroneousNetworks--;
                         }
+                    }
+                    TestFitnesses();
+                    if (erroneousNetworks == 0)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        NewGeneration();
                     }
                 }
             }
@@ -80,7 +91,6 @@ namespace SNP_First_Test.Genetic_Algorithms
                 CalculateFitness();
                 Population.Sort(CompareDNA);
             }
-
             newPopulation.Clear();
 
             for (int i = 0; i < finalCount; i++)
@@ -108,6 +118,15 @@ namespace SNP_First_Test.Genetic_Algorithms
             Population = newPopulation;
             newPopulation = tmpList;
             Generation++;
+        }
+
+
+        private void TestFitnesses()
+        {
+            for (int i = 0; i < Population.Count; i++)
+            {
+                Console.Write("Fitness {0}: {1};", i, Population[i].Fitness);
+            }
         }
 
         private int CompareDNA(DNA a, DNA b)
@@ -160,11 +179,15 @@ namespace SNP_First_Test.Genetic_Algorithms
             {
                 if (randomNumber < Population[i].Fitness)
                 {
+                    Console.WriteLine("Chosen Population Member #{0}, Fitness: {1}", i, Population[i].Fitness);
                     return Population[i];
                 }
                 randomNumber -= Population[i].Fitness;
             }
-            return null;
+            // if the parent could not be chosen for some reason, choose randomly from the top 10% of fittest parents
+            int randomParent = random.Next(0, (Convert.ToInt32(Math.Floor(Population.Count * 0.1)) + 1));
+            Console.WriteLine("Network could not choose a suitable parent, defaulted to parent: {0}", randomParent);
+            return Population[randomParent];
         }
     }
 }

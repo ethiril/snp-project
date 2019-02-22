@@ -28,7 +28,8 @@ namespace SNP_First_Test
         static readonly int stepRepetition = 50;
         static int populationSize = 10;
         static float mutationRate = 0.1f;
-        static int maximumGenerations = 20; 
+        static int maximumGenerations = 20;
+        static int testBestFitness = 5;
         // maximum size of each spike grouping in the random new gene
         static private int maxExpSize = 4;
         // set of numbers that I expect to see after the evolution
@@ -118,72 +119,34 @@ namespace SNP_First_Test
 
         static void UpdateGA(GeneticAlgorithm ga)
         {
-            for (int i = 0; i < maximumGenerations; i++ )
-             {
-                 Console.WriteLine("Running Generation {0}", ga.Generation);
-                 ga.NewGeneration((populationSize/10));
-                 if (ga.BestFitness >= 0.985)
-                 {
-                    Console.WriteLine("Fitness over 0.985, stopping . . .");
-                     break;
-                 }
-             }
+            for (int i = 0; i < maximumGenerations; i++)
+            {
+                Console.WriteLine("Running Generation {0}", ga.Generation);
+                ga.NewGeneration((populationSize / 10));
+                if (ga.BestFitness >= 0.985)
+                {
+                    Console.WriteLine("Testing the best fitness for repeated success.");
+                    if (TestBestNetwork(ga.BestGenes, ga.BestFitness))
+                    {
+                        Console.WriteLine("Fitness over 0.985, stopping . . .");
+                        break;
+                    }
+                }
+            }
         }
 
-        // Testing fitness without GA implementation
-        private static float TestFitnessFunction(List<int> output)
+        static bool TestBestNetwork(SNP_Network bestNetwork, float bestGAFitness)
         {
-            float tp = 0, fp = 0;
-            //DNA dna = ga.Population[index];
-            List<int> tpFound = new List<int>();
-            for (int i = 0; i < output.Count(); i++)
+            float bestFitness = 0;
+            for (int i = 0; i <= testBestFitness; i++)
             {
-                foreach (int value in expectedSet)
-                {
-                    if (expectedSet.Contains(output[i]))
-                    {
-                        tp++;
-                        if (!tpFound.Contains(output[i]))
-                        {
-                            tpFound.Add(output[i]);
-                        }
-                    }
-                    else
-                    {
-                        fp++;
-                    }
-                }
+                float currentFitness = TestFitnessFunction(SNPRun(bestNetwork));
+                bestFitness = (currentFitness > bestFitness) ? currentFitness : bestFitness;
             }
-            if (output.Count > 0)
-            {
-                // normalize
-                tp = (tp - expectedSet.Count) / (output.Count - expectedSet.Count);
-                fp = (fp > expectedSet.Count) ? (fp - expectedSet.Count) / (output.Count - expectedSet.Count) : 0;
-                float scaledFitness = 0, targetCount = tpFound.Count, tpCount = expectedSet.Count;
-                if (tpFound.Count != 0)
-                {
-                    scaledFitness = targetCount / tpCount;
-                }
-                float fn = expectedSet.Except(output).Count();
-                float sensitivity = (tp / (tp + fn));
-                float precision = tp / (tp + fp);
-                float fitness = ((2 * tp) / ((2 * tp) + fp + fn)) * scaledFitness;
-                output = output.Distinct().ToList();
-                output.Sort();
-
-                Console.WriteLine("Actual output distinct:");
-                output.ForEach(x => Console.Write("{0}\t", x)); ;
-                Console.WriteLine("Precision: ({0} / ({1} + {2}) = {3})", tp, tp, fp, precision);
-                Console.WriteLine("Sensitivity: ({0} / ({1} + {2}) = {3})", tp, tp, fn, sensitivity);
-                Console.WriteLine("\nFitness: (((2 * {0}) / ((2 * {1}) + {2} + {3})) * {4}) = {5}", tp, tp, fp, fn, scaledFitness, fitness);
-                return fitness;
-            }
-            else
-            {
-                return 0;
-            }
-
+            return (bestFitness > bestGAFitness);
         }
+
+
 
         private static float FitnessFunction(int index)
         {
@@ -216,7 +179,7 @@ namespace SNP_First_Test
                     if (expectedSet.Contains(output[i]))
                     {
                         tp++;
-                        if (!(tpFound.Contains(output[i])))
+                        if (!tpFound.Contains(output[i]))
                         {
                             tpFound.Add(output[i]);
                         }
@@ -229,7 +192,7 @@ namespace SNP_First_Test
             }
             if (output.Count > 0)
             {
-                tp = (tp - expectedSet.Count) / (output.Count - expectedSet.Count);
+                tp = (tp > expectedSet.Count) ? (tp - expectedSet.Count) / (output.Count - expectedSet.Count) : 0;
                 fp = (fp > expectedSet.Count) ? (fp - expectedSet.Count) / (output.Count - expectedSet.Count) : 0;
                 float scaledFitness = 0, targetCount = tpFound.Count, tpCount = expectedSet.Count;
                 if (tpFound.Count != 0)
@@ -242,15 +205,11 @@ namespace SNP_First_Test
                 float fitness = ((2 * tp) / ((2 * tp) + fp + fn)) * scaledFitness;
                 if (fitness > 0.9)
                 {
-                    Console.WriteLine("\nOutput set for this gene: ");
-                    output.ForEach(x => Console.Write("{0}\t", x)); ;
                     output = output.Distinct().ToList();
-                    Console.WriteLine("\nMinified Output set for this gene: ");
-                    output.ForEach(x => Console.Write("{0}\t", x)); ;
-
                 }
                 return fitness;
-            } else
+            }
+            else
             {
                 return 0;
             }
@@ -288,7 +247,7 @@ namespace SNP_First_Test
             return new SNP_Network(neurons);
         }
 
-
+        // Generate a completely random network
         private static SNP_Network GenerateNewRandomNetwork(Random random)
         {
             int neuronAmount = random.Next(2, 8);
@@ -330,40 +289,6 @@ namespace SNP_First_Test
             return new SNP_Network(neurons);
         }
 
-
-        private static SNP_Network CreateNewRandomTestNetwork()
-        {
-            return new SNP_Network(new List<Neuron>() {
-                      new Neuron(new List<Rule>(){
-                          new Rule("aa",0,true),
-                          new Rule("a",0,false)
-                      }, "aa", new List<int>() {4}, false),
-                       new Neuron(new List<Rule>() {
-                          new Rule("aa",0,true),
-                          new Rule("aaa",0,false)
-                      }, "aa", new List<int>() {5}, false),
-                       new Neuron(new List<Rule>() {
-                          new Rule("aaa",0,true),
-                          new Rule("aaa",0,false)
-                      }, "aa", new List<int>() {6}, false),
-                        new Neuron(new List<Rule>() {
-                          new Rule("a",1,true),
-                          new Rule("aa",0,true)
-                      }, "", new List<int>() {1, 2, 3, 7}, false),
-                         new Neuron(new List<Rule>() {
-                          new Rule("aa",0,true),
-                      }, "", new List<int>() {1, 2, 7}, false),
-                         new Neuron(new List<Rule>() {
-                          new Rule("a",0,true),
-                      }, "", new List<int>() { 3, 7}, false),
-                         new Neuron(new List<Rule>() {
-                          new Rule("aa",0,true),
-                          new Rule("aa",0,false)
-                      }, "aa", new List<int>() { }, true),
-                  });
-        }
-
-
         // Generate new random expressions for a network we know work
         private static SNP_Network CreateNewRandomNetwork()
         {
@@ -398,7 +323,7 @@ namespace SNP_First_Test
         }
 
         //Natural numbers network original 
-        static SNP_Network CreateNewRandomXNetwork()
+        static SNP_Network CreateNaturalNumbersNetwork()
         {
             return new SNP_Network(new List<Neuron>() {
                    new Neuron(new List<Rule>(){
@@ -420,28 +345,8 @@ namespace SNP_First_Test
             });
         }
 
-        /*  Natural Numbers fully auto generated
-           return new SNP_Network(new List<Neuron>() {
-                   new Neuron(new List<Rule>(){
-                       new Rule(networkConfiguration[0]["Expression"], networkConfiguration[0]["Delay"], networkConfiguration[0]["Fire"]),
-                       new Rule(networkConfiguration[1]["Expression"], networkConfiguration[1]["Delay"], networkConfiguration[1]["Fire"]),
-                }, "aa", new List<int>() {2, 3, 4}, false),
-                   new Neuron(new List<Rule>() {
-                       new Rule(networkConfiguration[2]["Expression"], networkConfiguration[2]["Delay"], networkConfiguration[2]["Fire"]),
-                       new Rule(networkConfiguration[3]["Expression"], networkConfiguration[3]["Delay"], networkConfiguration[3]["Fire"]),
-                }, "aa", new List<int>() {1,3,4}, false),
-                   new Neuron(new List<Rule>() {
-                       new Rule(networkConfiguration[4]["Expression"], networkConfiguration[4]["Delay"], networkConfiguration[4]["Fire"]),
-                       new Rule(networkConfiguration[5]["Expression"], networkConfiguration[5]["Delay"], networkConfiguration[5]["Fire"]),
-                }, "aa", new List<int>() {1,2,4}, false),
-                   new Neuron(new List<Rule>() {
-                       new Rule(networkConfiguration[6]["Expression"], networkConfiguration[6]["Delay"], networkConfiguration[6]["Fire"]),
-                       new Rule(networkConfiguration[7]["Expression"], networkConfiguration[7]["Delay"], networkConfiguration[7]["Fire"]),
-                }, "aa",new List<int>() { }, true),
-            }); */
-
         // Even numbers network original
-        /*static SNP_Network CreateNewRandomNetwork()
+        static SNP_Network CreateEvenNumbersNetwork()
         {
             return new SNP_Network(new List<Neuron>() {
                       new Neuron(new List<Rule>(){
@@ -471,6 +376,75 @@ namespace SNP_First_Test
                           new Rule("aaa",0,false)
                       }, "aa", new List<int>() { }, true),
                   });
-        }*/
+        }
+
+        /*  Natural Numbers fully auto generated
+           return new SNP_Network(new List<Neuron>() {
+                   new Neuron(new List<Rule>(){
+                       new Rule(networkConfiguration[0]["Expression"], networkConfiguration[0]["Delay"], networkConfiguration[0]["Fire"]),
+                       new Rule(networkConfiguration[1]["Expression"], networkConfiguration[1]["Delay"], networkConfiguration[1]["Fire"]),
+                }, "aa", new List<int>() {2, 3, 4}, false),
+                   new Neuron(new List<Rule>() {
+                       new Rule(networkConfiguration[2]["Expression"], networkConfiguration[2]["Delay"], networkConfiguration[2]["Fire"]),
+                       new Rule(networkConfiguration[3]["Expression"], networkConfiguration[3]["Delay"], networkConfiguration[3]["Fire"]),
+                }, "aa", new List<int>() {1,3,4}, false),
+                   new Neuron(new List<Rule>() {
+                       new Rule(networkConfiguration[4]["Expression"], networkConfiguration[4]["Delay"], networkConfiguration[4]["Fire"]),
+                       new Rule(networkConfiguration[5]["Expression"], networkConfiguration[5]["Delay"], networkConfiguration[5]["Fire"]),
+                }, "aa", new List<int>() {1,2,4}, false),
+                   new Neuron(new List<Rule>() {
+                       new Rule(networkConfiguration[6]["Expression"], networkConfiguration[6]["Delay"], networkConfiguration[6]["Fire"]),
+                       new Rule(networkConfiguration[7]["Expression"], networkConfiguration[7]["Delay"], networkConfiguration[7]["Fire"]),
+                }, "aa",new List<int>() { }, true),
+            }); */
+
+        // Testing fitness without GA implementation
+        private static float TestFitnessFunction(List<int> output)
+        {
+            float tp = 0, fp = 0;
+            List<int> tpFound = new List<int>();
+            for (int i = 0; i < output.Count(); i++)
+            {
+                foreach (int value in expectedSet)
+                {
+                    if (expectedSet.Contains(output[i]))
+                    {
+                        tp++;
+                        if (!tpFound.Contains(output[i]))
+                        {
+                            tpFound.Add(output[i]);
+                        }
+                    }
+                    else
+                    {
+                        fp++;
+                    }
+                }
+            }
+            if (output.Count > 0)
+            {
+                // normalize
+                tp = (tp - expectedSet.Count) / (output.Count - expectedSet.Count);
+                fp = (fp > expectedSet.Count) ? (fp - expectedSet.Count) / (output.Count - expectedSet.Count) : 0;
+                float scaledFitness = 0, targetCount = tpFound.Count, tpCount = expectedSet.Count;
+                if (tpFound.Count != 0)
+                {
+                    scaledFitness = targetCount / tpCount;
+                }
+                float fn = expectedSet.Except(output).Count();
+                float sensitivity = (tp / (tp + fn));
+                float precision = tp / (tp + fp);
+                float fitness = ((2 * tp) / ((2 * tp) + fp + fn)) * scaledFitness;
+                output = output.Distinct().ToList();
+                output.Sort();
+                return fitness;
+            }
+            else
+            {
+                return 0;
+            }
+
+        }
+
     }
 }
