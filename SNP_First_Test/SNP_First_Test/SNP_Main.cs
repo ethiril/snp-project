@@ -12,6 +12,10 @@ using System.Text.RegularExpressions;
 
 namespace SNP_First_Test
 {
+    /// <summary>
+    /// 15068126, Michael Stachowicz
+    /// Reflection Cloner provided by Nuclex and was not created by myself, you can find it at: http://blog.nuclex-games.com/mono-dotnet/fast-deep-cloning/
+    /// </summary>
     class SNP_Main
     {
         // maximum steps that each network will take, default value
@@ -929,7 +933,6 @@ namespace SNP_First_Test
 
         /// <summary>
         /// Generate new random expressions for a network we know works, in this case, the Natural Numbers SN P system
-        /// 
         /// </summary>
         /// <returns>Natural Numbers network with randomly generated rules</returns>
         private static SNP_Network CreateNewRandomNormalNetwork()
@@ -957,7 +960,6 @@ namespace SNP_First_Test
 
         /// <summary>
         /// Natural numbers network original system with correct rules
-        /// 
         /// </summary>
         /// <returns></returns>
         static SNP_Network CreateNaturalNumbersNetwork()
@@ -984,7 +986,6 @@ namespace SNP_First_Test
 
         /// <summary>
         /// Even numbers network original system with correct rules
-        /// 
         /// </summary>
         /// <returns></returns>
         static SNP_Network CreateEvenNumbersNetwork()
@@ -1044,7 +1045,6 @@ namespace SNP_First_Test
 
         /// <summary>
         /// Testing fitness for non-ga testing (when a network reaches > 0.985 fitness)
-        /// 
         /// </summary>
         /// <param name="output">List of outputs that the network provides</param>
         /// <returns>Fitness</returns>
