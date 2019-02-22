@@ -8,23 +8,39 @@ namespace SNP_First_Test.Genetic_Algorithms
 {
     public class GeneticAlgorithm
     {
+        // full population list for the GA
         public List<DNA> Population { get; private set; }
+        // which generation is currently running
         public int Generation { get; private set; }
+        // Stored best current fitness for this generation
         public float BestFitness { get; private set; }
+        // List of best fitnesses
         public List<float> FitnessList = new List<float>();
+        // Best current network
         public SNP_Network BestGenes { get; private set; }
-
+        
+        // Amount of parent networks that will 100% reproduce
         public int Elitism;
+        // Rate of mutation
         public float MutationRate;
 
+        // List of new DNA for another generation
         private List<DNA> newPopulation;
+        // max amount of population
         private int PopulationSize;
+        // Random()
         private Random random;
+        // Sum of all fitnesses in a population, used to calculate which parent to crossover
         private float fitnessSum;
+        // How many networks didn't give a valid fitness (or a fitness of 0)
         private int erroneousNetworks;
+        // Function to get a random new network
         private Func<SNP_Network> getRandomNetwork;
+        // list of accepted rules
         private List<string> acceptedRegex;
+        // Get next random rule
         private Func<List<string>, Random, string> getModifiedRule;
+        // Calculate the fitness
         private Func<int, float> fitnessFunction;
 
         public GeneticAlgorithm(int populationSize, Random random, Func<SNP_Network> getRandomNetwork, Func<List<string>, Random, string> getModifiedRule, List<string> acceptedRegex, Func<int, float> fitnessFunction,
@@ -48,7 +64,11 @@ namespace SNP_First_Test.Genetic_Algorithms
             }
         }
 
-
+        /// <summary>
+        /// Start a new generation
+        /// </summary>
+        /// <param name="NewDNACount"> Amount of new random added DNA </param>
+        /// <param name="crossoverNewDNA"> Should the new DNA be used in crossovers in the first generation they are included in</param>
         public void NewGeneration(int NewDNACount = 0, bool crossoverNewDNA = false)
         {
             int finalCount = Population.Count + NewDNACount;
@@ -77,7 +97,6 @@ namespace SNP_First_Test.Genetic_Algorithms
                             erroneousNetworks--;
                         }
                     }
-                    //TestFitnesses();
                     if (erroneousNetworks == 0)
                     {
                         break;
@@ -122,7 +141,9 @@ namespace SNP_First_Test.Genetic_Algorithms
             Generation++;
         }
 
-
+        /// <summary>
+        /// Currently unused debugging function
+        /// </summary>
         private void TestFitnesses()
         {
             for (int i = 0; i < Population.Count; i++)
@@ -131,6 +152,12 @@ namespace SNP_First_Test.Genetic_Algorithms
             }
         }
 
+        /// <summary>
+        /// Compare the two provided DNA , used for sorting objects
+        /// </summary>
+        /// <param name="a">DNA 1</param>
+        /// <param name="b">DNA 2</param>
+        /// <returns>Should A be higher, above or in the same position as B</returns>
         private int CompareDNA(DNA a, DNA b)
         {
             if (a.Fitness > b.Fitness)
@@ -147,7 +174,9 @@ namespace SNP_First_Test.Genetic_Algorithms
             }
         }
 
-        // compare the fitnesses of the two networks
+        /// <summary>
+        ///  compare the fitnesses of the two networks, save the best genes
+        /// </summary>
         private void CalculateFitness()
         {
             fitnessSum = 0;
@@ -169,6 +198,11 @@ namespace SNP_First_Test.Genetic_Algorithms
             BestGenes = ReflectionCloner.DeepFieldClone(best.Genes);
         }
 
+        /// <summary>
+        /// Parents with a higher fitness will have a higher chance of reproducing, however all parents should have a chance.
+        /// If for some reason a parent does not find a partner, select one from the top 10% of parents (rounded down)
+        /// </summary>
+        /// <returns>DNA of the selected parent</returns>
         private DNA ChooseParent()
         {
             double randomNumber = random.NextDouble() * fitnessSum;

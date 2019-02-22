@@ -8,13 +8,19 @@ namespace SNP_First_Test.Genetic_Algorithms
 {
     public class DNA
     {
-        // any arbitrary type of gene
+        // Network which is contained in this DNA
         public SNP_Network Genes { get; set; }
+        // Fitness of this DNA
         public float Fitness { get; set; }
+        // Random()
         private Random random;
+        // Get a new randomized network for this DNA
         private Func<SNP_Network> getRandomNetwork;
+        // Get a new random rule
         private Func<List<string>, Random, string> getModifiedRule;
+        // accepted templates
         private List<string> acceptedRegex;
+        // The provided Fitness Function for this DNA
         private Func<int, float> fitnessFunction;
 
         // Gene is of type SNP_Network
@@ -32,7 +38,12 @@ namespace SNP_First_Test.Genetic_Algorithms
                     Genes = getRandomNetwork();
             }
         }
-
+        
+        /// <summary>
+        /// Use the fitness function passed through from the main file
+        /// </summary>
+        /// <param name="index">index of the population that the fitness is being calculated for</param>
+        /// <returns>float value of the fitness</returns>
         public float CalculateFitness(int index)
         {
             // calculate the fitness for the current gene
@@ -41,9 +52,14 @@ namespace SNP_First_Test.Genetic_Algorithms
         } 
         
     
-        
+        /// <summary>
+        /// Combine the DNA of two parents into a child
+        /// </summary>
+        /// <param name="secondParent">Second piece of DNA we will be combining</param>
+        /// <returns></returns>
         public DNA Crossover(DNA secondParent)
         {
+            // New default child
             DNA child = new DNA(random, getRandomNetwork, getModifiedRule, acceptedRegex, fitnessFunction, init: false);
 
             // for now crossover with always the same amount of genes and rules 
@@ -81,7 +97,10 @@ namespace SNP_First_Test.Genetic_Algorithms
         }
 
 
-        // should mutate rules at random, not generate whole new networks?
+        /// <summary>
+        /// Random chance (at a given % rate) to mutate a rule during the evolution
+        /// </summary>
+        /// <param name="mutationRate"></param>
         public void Mutate(float mutationRate)
         {
                 if (random.NextDouble() < mutationRate)

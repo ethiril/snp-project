@@ -12,36 +12,36 @@ using System.Text.RegularExpressions;
 
 namespace SNP_First_Test
 {
+    /// <summary>
+    /// 15068126, Michael Stachowicz
+    /// Reflection Cloner (ClonerHelpers.cs, ICloneFactory.cs, ReflectionCloner.cs) provided by Nuclex and was not created by myself, you can find it at: http://blog.nuclex-games.com/mono-dotnet/fast-deep-cloning/
+    /// </summary>
     class SNP_Main
     {
-
-        /* TODO
-         * 4.) Check whether no rules apply any more.  
-         * 5.) Change network creation to use JSON for now (easier import/export larger networks)
-         * 6.) Move onto implementing a genetic algorithm solution
-         * 
-         */
-
-        // https://stackoverflow.com/questions/2246694/how-to-convert-json-object-to-custom-c-sharp-object
-        // test network (tutorial figure 1)
-
-        //https://stackoverflow.com/questions/45245032/c-sharp-parse-one-json-field-to-an-object-with-its-custom-constructor
-        //https://stackoverflow.com/questions/2246694/how-to-convert-json-object-to-custom-c-sharp-object
+        // maximum steps that each network will take, default value
         static int maxSteps = 50;
-        static int stepRepetition = 50;
+        // amount of repetitions each network will undergo to generate an output list
+        static int stepRepetition = 200;
+        // population size of the Genetic Algorithm
         static int populationSize = 50;
+        // % chance for mutation
         static float mutationRate = 0.1f;
+        // max amount of generations 
         static int maximumGenerations = 25;
+        // how many times the best fitness will be tested before concluding the test
         static int testBestFitness = 5;
         // maximum size of each spike grouping in the random new gene
         static private int maxExpSize = 4;
         // set of numbers that I expect to see after the evolution
         static private List<int> expectedSet = new List<int>() { 2, 4, 6, 8, 10, 12, 14, 16 };
+        // use the extended rule set
         static private bool experimentalRules = true;
+        // accepted rules
         static private List<string> acceptedRegex = new List<string>()
         {
             "x" // direct match
         };
+        // extended list of accepted rules
         static private List<string> acceptedRegexExperimental = new List<string>() {
             "x", // direct match 
             "x+", // x followed by one or more
@@ -51,6 +51,7 @@ namespace SNP_First_Test
             "x(y)*", // x followed by zero or more y groupings
             "x(y)?", // x followed by zero or one y groupings
         };
+        // List of options for the main menu
         static string[] options = new string[8] {
             "1. Change the configuration",
             "2. Evolve a natural numbers network",
@@ -61,12 +62,15 @@ namespace SNP_First_Test
             "7. Import Network from file",
             "8. Exit"
         };
+        // will always keep the 4 best networks 
         static private int elitism = 4;
         private static GeneticAlgorithm ga;
+        // seed the random func with the current time
         static private Random random = new Random((int)DateTime.Now.Ticks);
 
         static void Main(string[] args)
         {
+            // slightly expand the console
             Console.SetWindowSize(Console.WindowWidth, Console.WindowHeight + 5);
             Menu();
             Console.WriteLine("Thanks for testing! :)");
@@ -75,11 +79,18 @@ namespace SNP_First_Test
 
 
         // based on https://stackoverflow.com/questions/46908148/controlling-menu-with-the-arrow-keys-and-enter
-        static int MultipleChoiceMenuDisplay(bool cancel, params string[] options)
+        /// <summary>
+        /// Simple arrow controlled menu with the option to display a message above the choices.
+        /// </summary>
+        /// <param name="cancel">Should the menu accept the ESC key to go back</param>
+        /// <param name="message">Message to display on top of the menu</param>
+        /// <param name="options">The options the menu will go display</param>
+        /// <returns>integer value of option chosen </returns>
+        static int MultipleChoiceMenuDisplay(bool cancel, string message, params string[] options)
         {
 
             const int startX = 4;
-            const int startY = 20;
+            const int startY = 21;
             const int optionsPerLine = 1;
             const int spacingPerLine = 2;
             int maxLength = 0;
@@ -98,6 +109,7 @@ namespace SNP_First_Test
                 Console.Clear();
                 Splash();
                 ConfigurationDisplay();
+                Console.WriteLine("  " + message);
                 Console.WriteLine(new String(' ', startX) + new String('-', maxLength));
                 for (int i = 0; i < options.Length; i++)
                 {
@@ -152,6 +164,9 @@ namespace SNP_First_Test
             return currentSelection;
         }
 
+        /// <summary>
+        /// Display the current set configuration that will run
+        /// </summary>
         static void ConfigurationDisplay()
         {
             Console.WriteLine(" Current Configuration:");
@@ -179,6 +194,11 @@ namespace SNP_First_Test
             Console.Write("}\n\n");
         }
 
+        /// <summary>
+        /// Change the colour of a single string to appear next
+        /// </summary>
+        /// <param name="color">Colour of the string</param>
+        /// <param name="word">The string to display</param>
         static void SingleColour(ConsoleColor color, object word)
         {
             Console.ForegroundColor = color;
@@ -186,6 +206,9 @@ namespace SNP_First_Test
             Console.ResetColor();
         }
 
+        /// <summary>
+        /// ASCII Art for the menu
+        /// </summary>
         static void Splash()
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
@@ -210,6 +233,13 @@ namespace SNP_First_Test
             Console.WriteLine(" Please select an option from the menu below using your arrow and enter keys:\n");
         }
 
+        /// <summary>
+        /// Main menu code, large switch statement that will execute the code accordingly. 
+        /// </summary>
+        /// <param name="defaultChoice">Should the menu display another sub menu</param>
+        /// <param name="configChoice">Should the menu display a sub menu of a sub menu</param>
+        /// <param name="defaultNum">Which menu</param>
+        /// <param name="defaultConfig">Which sub-menu</param>
         static void Menu(bool defaultChoice = false, bool configChoice = false, int defaultNum = 0, int defaultConfig = 0)
         {
             int choice;
@@ -220,21 +250,11 @@ namespace SNP_First_Test
             }
             else
             {
-                choice = MultipleChoiceMenuDisplay(false, options);
+                choice = MultipleChoiceMenuDisplay(false, "", options);
             }
             switch (choice)
-            /*
-            "1. Change the configuration", ./
-            "2. Evolve a natural numbers network", ./
-            "3. Evolve an even numbers network", ./
-            "4. Evolve a natural numbers network with random delays",
-            "5. Evolve an even numbers network with random delays",
-            "6. Run standard natural numbers network",
-            "7. Run standard evens network",
-            "8. Run experimental network",
-            "9. Import Network from file" };
-            */
             {
+                // Configuration 
                 case 0:
                     if (configChoice)
                     {
@@ -242,7 +262,7 @@ namespace SNP_First_Test
                     }
                     else
                     {
-                        config = MultipleChoiceMenuDisplay(true, "Max Steps", "Step-Through Amount", "GA Population Size", "Mutation Rate", "Max Generations", "Expected Set", "Experimental Rules", "Default Config");
+                        config = MultipleChoiceMenuDisplay(true, "", "Max Steps", "Step-Through Amount", "GA Population Size", "Mutation Rate", "Max Generations", "Expected Set", "Experimental Rules", "Default Config");
                         if (config == -1)
                         {
                             Menu();
@@ -250,6 +270,7 @@ namespace SNP_First_Test
                     }
                     switch (config)
                     {
+                        // Max Steps
                         case 0:
                             Console.Clear();
                             Splash();
@@ -268,6 +289,7 @@ namespace SNP_First_Test
                             }
                             Menu();
                             break;
+                        // Step-through amount 
                         case 1:
                             Console.Clear();
                             Splash();
@@ -286,6 +308,7 @@ namespace SNP_First_Test
                             }
                             Menu();
                             break;
+                        // GA Population size
                         case 2:
                             Console.Clear();
                             Splash();
@@ -304,6 +327,7 @@ namespace SNP_First_Test
                             }
                             Menu();
                             break;
+                        // Mutation rate
                         case 3:
                             Console.Clear();
                             Splash();
@@ -322,6 +346,7 @@ namespace SNP_First_Test
                             }
                             Menu();
                             break;
+                        // Max Generations
                         case 4:
                             Console.Clear();
                             Splash();
@@ -340,6 +365,7 @@ namespace SNP_First_Test
                             }
                             Menu();
                             break;
+                        // Expected Set
                         case 5:
                             Console.Clear();
                             Splash();
@@ -366,11 +392,9 @@ namespace SNP_First_Test
                             expectedSet = list;
                             Menu();
                             break;
+                        // Experimental Rules
                         case 6:
-                            Console.Clear();
-                            Splash();
-                            Console.WriteLine("Please select which rule setting you would like to use: ");
-                            int expChoice = MultipleChoiceMenuDisplay(true, "DISABLED", "ENABLED");
+                            int expChoice = MultipleChoiceMenuDisplay(true, "Please select which rule setting you would like to use: ", "DISABLED", "ENABLED");
                             if (expChoice == -1)
                             {
                                 Menu(true, false);
@@ -381,11 +405,9 @@ namespace SNP_First_Test
                             }
                             Menu();
                             break;
+                        // Default configs
                         case 7:
-                            Console.Clear();
-                            Splash();
-                            Console.WriteLine("Please confirm whether to load default values for the configuration: ");
-                            int defaults = MultipleChoiceMenuDisplay(true, "YES", "NO");
+                            int defaults = MultipleChoiceMenuDisplay(true, "Please confirm whether to load default values for the configuration: ", "YES", "NO");
                             if (defaults == -1)
                             {
                                 Menu(true, false);
@@ -404,6 +426,7 @@ namespace SNP_First_Test
                             break;
                     }
                     break;
+                // Evolve the natural numbers network
                 case 1:
                     Console.Clear();
                     long time = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond);
@@ -418,22 +441,24 @@ namespace SNP_First_Test
                     string normCSVFile = "/" + time + "/NatNumsNet.csv";
                     Utils.SaveCSV(ga.FitnessList, normCSVFile);
                     Utils.SaveNetwork(ga.BestGenes, normFileName);
-
-                    // afterwards save the data
                     break;
+                // Evolve the Even numbers network
                 case 2:
                     Console.Clear();
-                    string evensFileName = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + "EvenNumsNet.json";
+                    long evensTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond);
+                    string evensFileName = "/" + evensTime + "/EvenNumsNet.json";
                     Console.WriteLine("The File will be saved to: {0}/{1}.json", Directory.GetCurrentDirectory(), evensFileName);
                     Console.WriteLine("Press the enter key to carry out this test.");
                     Console.ReadLine();
                     Console.WriteLine("---------- Evolving a network based on the Evens Spiking Neural P System ----------");
                     ga = new GeneticAlgorithm(populationSize, random, CreateNewRandomEvensNetwork, GenerateRandomExpression, (experimentalRules) ? acceptedRegexExperimental : acceptedRegex, FitnessFunction, elitism, mutationRate);
                     UpdateGA(ga);
-                    string evensCSVFile = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + "EvenNumsNet.csv";
+                    Utils.CreateFolder(evensTime.ToString());
+                    string evensCSVFile = "/" + evensTime + "EvenNumsNet.csv";
                     Utils.SaveCSV(ga.FitnessList, evensCSVFile);
-                    // afterwards save the data
+                    Utils.SaveNetwork(ga.BestGenes, evensFileName);
                     break;
+                // Standard Nat Numbers
                 case 3:
                     Console.Clear();
                     Console.WriteLine("---------- Running a standard test to get an output from a Natural Numbers Network ----------");
@@ -447,6 +472,7 @@ namespace SNP_First_Test
                     Console.WriteLine("Press any key to exit, time elapsed: " + stopWatch.Elapsed.ToString() + "s");
                     Console.ReadLine();
                     break;
+                // Standard Evens
                 case 4:
                     Console.Clear();
                     Console.WriteLine("---------- Running a standard test to get an output from an Even Numbers Network ----------");
@@ -460,6 +486,7 @@ namespace SNP_First_Test
                     Console.WriteLine("Press any key to exit, time elapsed: " + evenStopWatch.Elapsed.ToString() + "s");
                     Console.ReadLine();
                     break;
+                // experimental network
                 case 5:
                     Console.ForegroundColor = ConsoleColor.DarkRed;
                     Console.WriteLine("!!! These features are experimental and will not provide meaningful results, are you sure you wish to continue? !!!");
@@ -483,6 +510,7 @@ namespace SNP_First_Test
                         break;
                     }
                     break;
+                // import network
                 case 6:
                     Console.Clear();
                     Splash();
@@ -511,11 +539,11 @@ namespace SNP_First_Test
                         Console.ReadLine();
                     }
                     break;
+                // quit
                 case 7:
                     Console.Clear();
                     Splash();
-                    Console.WriteLine("Are you sure you wish to exit? ");
-                    int exit = MultipleChoiceMenuDisplay(true, "YES", "NO");
+                    int exit = MultipleChoiceMenuDisplay(true, "Are you sure you wish to quit?", "YES", "NO");
                     if (exit == -1)
                     {
                         Menu();
@@ -535,12 +563,23 @@ namespace SNP_First_Test
             }
         }
 
+        /// <summary>
+        /// Check if string is alphanumeric
+        /// </summary>
+        /// <param name="strToCheck">String to check</param>
+        /// <returns>True or false</returns>
         public static Boolean isAlphaNumeric(string strToCheck)
         {
-            Regex rg = new Regex(@"^[a-zA-Z0-9\s,]*$");
+            Regex rg = new Regex(@"^[a-zA-Z0-9\s.]*$");
             return rg.IsMatch(strToCheck);
         }
 
+        /// <summary>
+        /// Console.ReadLine() but you can press esc and return to the last menu
+        /// </summary>
+        /// <param name="main">return to menu</param>
+        /// <param name="moveToMenu">return to submenu</param>
+        /// <returns>string after ENTER is pressed</returns>
         private static string readLineWithCancel(bool main = false, int moveToMenu = 0)
         {
             string result = null;
@@ -593,6 +632,11 @@ namespace SNP_First_Test
             return result;
         }
 
+        /// <summary>
+        /// This will loop through the given networks until the repetitions provided have been executed, then it will compile the full output
+        /// </summary>
+        /// <param name="network">SNP Network</param>
+        /// <returns>List of integers that are the output for that network</returns>
         static List<int> SNPRun(SNP_Network network)
         {
             List<int> allOutputs = new List<int>();
@@ -617,6 +661,8 @@ namespace SNP_First_Test
             return allOutputs;
         }
 
+
+        // Utilised by SNPRun, does a single repetition of the network execution
         static void stepThrough(SNP_Network network)
         {
             network.Spike(network);
@@ -624,6 +670,12 @@ namespace SNP_First_Test
         // Create new network with the List of new rules.
         // Note that this is a NON-GENERIC way of implementing this method, as I know exactly how many neurons this network will have.
 
+        /// <summary>
+        /// Generate random regular expressions based on a list of templates
+        /// </summary>
+        /// <param name="templates">List of templates</param>
+        /// <param name="random">Random()</param>
+        /// <returns>Returns a randomly generated regular expression based on the constraints</returns>
         static string GenerateRandomExpression(List<string> templates, Random random)
         {
             int templateIndex = random.Next(0, templates.Count);
@@ -634,6 +686,9 @@ namespace SNP_First_Test
             return generatedExpression;
         }
 
+        /// <summary>
+        /// Load the default configurations for the networks
+        /// </summary>
         static void LoadDefaultConfiguration()
         {
             maxSteps = 50;
@@ -646,6 +701,10 @@ namespace SNP_First_Test
             experimentalRules = true;
         }
 
+        /// <summary>
+        /// Go through the GA and execute the networks that are being evolved.
+        /// </summary>
+        /// <param name="ga">The Genetic Algorithm being ran</param>
         static void UpdateGA(GeneticAlgorithm ga)
         {
             for (int i = 0; i < maximumGenerations; i++)
@@ -663,7 +722,12 @@ namespace SNP_First_Test
                 }
             }
         }
-
+        /// <summary>
+        /// Once a best network has been found, the fitness needs to be tested to ensure that it lives up to the standard
+        /// </summary>
+        /// <param name="bestNetwork">the network being tested</param>
+        /// <param name="bestGAFitness">compare it against the best fitness</param>
+        /// <returns></returns>
         static bool TestBestNetwork(SNP_Network bestNetwork, float bestGAFitness)
         {
             float bestFitness = 0;
@@ -676,7 +740,11 @@ namespace SNP_First_Test
         }
 
 
-
+        /// <summary>
+        /// Fitness Function, will go through and work out the sensitivity, precision and combine them for a general fitness of the network
+        /// </summary>
+        /// <param name="index">Index of the network in the population of the genetic algorithm</param>
+        /// <returns></returns>
         private static float FitnessFunction(int index)
         {
             /* If a number is in output and in target then it is a true positive
@@ -721,6 +789,7 @@ namespace SNP_First_Test
             }
             if (output.Count > 0)
             {
+                // normalize the data
                 tp = (tp > expectedSet.Count) ? (tp - expectedSet.Count) / (output.Count - expectedSet.Count) : 0;
                 fp = (fp > expectedSet.Count) ? (fp - expectedSet.Count) / (output.Count - expectedSet.Count) : 0;
                 float scaledFitness = 0, targetCount = tpFound.Count, tpCount = expectedSet.Count;
@@ -744,7 +813,11 @@ namespace SNP_First_Test
             }
         }
 
-        // generate a completely random network
+        /// <summary>
+        /// Generatate a completely identical network
+        /// </summary>
+        /// <param name="network">Network to clone</param>
+        /// <returns>Identical network as a new object</returns>
         private static SNP_Network GenerateIdenticalNetwork(SNP_Network network)
         {
             int neuronAmount = network.Neurons.Count;
@@ -776,7 +849,10 @@ namespace SNP_First_Test
             return new SNP_Network(neurons);
         }
 
-        // Generate a completely random network
+        /// <summary>
+        /// Generate a completely random network
+        /// </summary>
+        /// <returns>Completely random network based on provided constraints</returns>
         private static SNP_Network GenerateNewRandomNetwork()
         {
             int neuronAmount = random.Next(2, 8);
@@ -818,7 +894,11 @@ namespace SNP_First_Test
             return new SNP_Network(neurons);
         }
 
-        // Generate new random expressions for a network we know work
+        /// <summary>
+        /// Generate new random expressions for a network we know works, in this case, the Evens SN P system
+        /// 
+        /// </summary>
+        /// <returns>Evens network with randomly generated rules</returns>
         private static SNP_Network CreateNewRandomEvensNetwork()
         {
             return new SNP_Network(new List<Neuron>() {
@@ -851,6 +931,10 @@ namespace SNP_First_Test
                   });
         }
 
+        /// <summary>
+        /// Generate new random expressions for a network we know works, in this case, the Natural Numbers SN P system
+        /// </summary>
+        /// <returns>Natural Numbers network with randomly generated rules</returns>
         private static SNP_Network CreateNewRandomNormalNetwork()
         {
             return new SNP_Network(new List<Neuron>() {
@@ -874,7 +958,10 @@ namespace SNP_First_Test
 
         }
 
-        //Natural numbers network original 
+        /// <summary>
+        /// Natural numbers network original system with correct rules
+        /// </summary>
+        /// <returns></returns>
         static SNP_Network CreateNaturalNumbersNetwork()
         {
             return new SNP_Network(new List<Neuron>() {
@@ -897,7 +984,10 @@ namespace SNP_First_Test
             });
         }
 
-        // Even numbers network original
+        /// <summary>
+        /// Even numbers network original system with correct rules
+        /// </summary>
+        /// <returns></returns>
         static SNP_Network CreateEvenNumbersNetwork()
         {
             return new SNP_Network(new List<Neuron>() {
@@ -929,28 +1019,35 @@ namespace SNP_First_Test
                       }, "aa", new List<int>() { }, true),
                   });
         }
+        /*
+         * Natural Numbers fully auto generated rules, delays and spiking decision
+         * Didn't end up implementing this function.
+         * But will keep it commented out for future development or research
+         * /
+        return new SNP_Network(new List<Neuron>() {
+                new Neuron(new List<Rule>(){
+                    new Rule(networkConfiguration[0]["Expression"], networkConfiguration[0]["Delay"], networkConfiguration[0]["Fire"]),
+                    new Rule(networkConfiguration[1]["Expression"], networkConfiguration[1]["Delay"], networkConfiguration[1]["Fire"]),
+             }, "aa", new List<int>() {2, 3, 4}, false),
+                new Neuron(new List<Rule>() {
+                    new Rule(networkConfiguration[2]["Expression"], networkConfiguration[2]["Delay"], networkConfiguration[2]["Fire"]),
+                    new Rule(networkConfiguration[3]["Expression"], networkConfiguration[3]["Delay"], networkConfiguration[3]["Fire"]),
+             }, "aa", new List<int>() {1,3,4}, false),
+                new Neuron(new List<Rule>() {
+                    new Rule(networkConfiguration[4]["Expression"], networkConfiguration[4]["Delay"], networkConfiguration[4]["Fire"]),
+                    new Rule(networkConfiguration[5]["Expression"], networkConfiguration[5]["Delay"], networkConfiguration[5]["Fire"]),
+             }, "aa", new List<int>() {1,2,4}, false),
+                new Neuron(new List<Rule>() {
+                    new Rule(networkConfiguration[6]["Expression"], networkConfiguration[6]["Delay"], networkConfiguration[6]["Fire"]),
+                    new Rule(networkConfiguration[7]["Expression"], networkConfiguration[7]["Delay"], networkConfiguration[7]["Fire"]),
+             }, "aa",new List<int>() { }, true),
+         }); */
 
-        /*  Natural Numbers fully auto generated
-           return new SNP_Network(new List<Neuron>() {
-                   new Neuron(new List<Rule>(){
-                       new Rule(networkConfiguration[0]["Expression"], networkConfiguration[0]["Delay"], networkConfiguration[0]["Fire"]),
-                       new Rule(networkConfiguration[1]["Expression"], networkConfiguration[1]["Delay"], networkConfiguration[1]["Fire"]),
-                }, "aa", new List<int>() {2, 3, 4}, false),
-                   new Neuron(new List<Rule>() {
-                       new Rule(networkConfiguration[2]["Expression"], networkConfiguration[2]["Delay"], networkConfiguration[2]["Fire"]),
-                       new Rule(networkConfiguration[3]["Expression"], networkConfiguration[3]["Delay"], networkConfiguration[3]["Fire"]),
-                }, "aa", new List<int>() {1,3,4}, false),
-                   new Neuron(new List<Rule>() {
-                       new Rule(networkConfiguration[4]["Expression"], networkConfiguration[4]["Delay"], networkConfiguration[4]["Fire"]),
-                       new Rule(networkConfiguration[5]["Expression"], networkConfiguration[5]["Delay"], networkConfiguration[5]["Fire"]),
-                }, "aa", new List<int>() {1,2,4}, false),
-                   new Neuron(new List<Rule>() {
-                       new Rule(networkConfiguration[6]["Expression"], networkConfiguration[6]["Delay"], networkConfiguration[6]["Fire"]),
-                       new Rule(networkConfiguration[7]["Expression"], networkConfiguration[7]["Delay"], networkConfiguration[7]["Fire"]),
-                }, "aa",new List<int>() { }, true),
-            }); */
-
-        // Testing fitness without GA implementation
+        /// <summary>
+        /// Testing fitness for non-ga testing (when a network reaches > 0.985 fitness)
+        /// </summary>
+        /// <param name="output">List of outputs that the network provides</param>
+        /// <returns>Fitness</returns>
         private static float TestFitnessFunction(List<int> output)
         {
             float tp = 0, fp = 0;
@@ -975,7 +1072,7 @@ namespace SNP_First_Test
             }
             if (output.Count > 0)
             {
-                // normalize
+                // normalize the data
                 tp = (tp - expectedSet.Count) / (output.Count - expectedSet.Count);
                 fp = (fp > expectedSet.Count) ? (fp - expectedSet.Count) / (output.Count - expectedSet.Count) : 0;
                 float scaledFitness = 0, targetCount = tpFound.Count, tpCount = expectedSet.Count;
@@ -993,6 +1090,7 @@ namespace SNP_First_Test
             }
             else
             {
+                // if there are no outputs then the fitness will be 0 
                 return 0;
             }
 

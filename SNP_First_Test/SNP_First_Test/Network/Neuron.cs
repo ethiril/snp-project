@@ -37,7 +37,12 @@ namespace SNP_First_Test.Network
             PersistedState = false;
         }
 
-
+        /// <summary>
+        /// Determine, randomly, which rule will be chosen
+        /// </summary>
+        /// <param name="count">amount of rules</param>
+        /// <param name="random">random()</param>
+        /// <returns>index of rule</returns>
         int DetermineIndex(int count, Random random)
         {
             // if there is just one rule that is fullfilled then the random will always just 0, hence no need to check.
@@ -45,6 +50,10 @@ namespace SNP_First_Test.Network
             return this.random.Next(0, count);
         }
 
+        /// <summary>
+        /// Check if any rules match
+        /// </summary>
+        /// <returns></returns>
         int MatchRules()
         {
             int matchedCount = 0;
@@ -70,7 +79,12 @@ namespace SNP_First_Test.Network
         }
 
 
-        // This code will loop over the entire network and remove any spikes which match the correct rules.
+        /// <summary>
+        /// This code will loop over the entire network and remove any spikes which match the correct rules.
+        /// </summary>
+        /// <param name="networkRef">the network which this neuron belongs to and for which this method is being executed</param>
+        /// <param name="Connections">connections that this neuron has</param>
+        /// <returns></returns>
         public bool? RemoveSpikes(SNP_Network networkRef, List<int> Connections)
         {
             int index;
@@ -129,7 +143,11 @@ namespace SNP_First_Test.Network
             return false;
         }
 
-
+        /// <summary>
+        /// Once the spikes have been removed, each network can spike across all of its connections
+        /// </summary>
+        /// <param name="networkRef">the network which this neuron belongs to and for which this method is being executed</param>
+        /// <param name="Connections">connections that this neuron has</param>
         public void FireSpike(SNP_Network networkRef, List<int> Connections)
         {
             /* 
@@ -141,7 +159,7 @@ namespace SNP_First_Test.Network
              * We do not need to worry about the removal of spikes as that is done in RemoveSpikes()
              */
             int index = MatchRules();
-            foreach(int connection in Connections)
+            foreach (int connection in Connections)
             {
                 if (this.Rules[index].IsMatched(this.SpikeCount).Equals(true))
                 {
