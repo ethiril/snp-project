@@ -570,7 +570,7 @@ namespace SNP_First_Test
         /// <returns>True or false</returns>
         public static Boolean isAlphaNumeric(string strToCheck)
         {
-            Regex rg = new Regex(@"^[a-zA-Z0-9\s.]*$");
+            Regex rg = new Regex(@"^[a-zA-Z0-9\s.,]*$");
             return rg.IsMatch(strToCheck);
         }
 
