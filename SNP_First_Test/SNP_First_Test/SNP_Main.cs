@@ -109,7 +109,7 @@ namespace SNP_First_Test
                 Console.Clear();
                 Splash();
                 ConfigurationDisplay();
-                Console.WriteLine("  " +message);
+                Console.WriteLine("  " + message);
                 Console.WriteLine(new String(' ', startX) + new String('-', maxLength));
                 for (int i = 0; i < options.Length; i++)
                 {

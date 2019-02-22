@@ -3,7 +3,6 @@ using SNP_First_Test.Utilities;
 
 namespace SNP_First_Test.Network
 {
-    // https://stackoverflow.com/questions/6488034/how-to-implement-a-rule-engine could be an interesting implementation
     /* Each Rule will contain a set of instructions which will fire a neuron across an axon */
     public class Rule
     {

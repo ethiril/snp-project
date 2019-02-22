@@ -83,7 +83,8 @@ namespace SNP_First_Test.Utilities
                         string parsedJson = r.ReadToEnd();
                         return ConvertJsonToNetwork(parsedJson);
                     }
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     Console.WriteLine(e);
                     return null;
