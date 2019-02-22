@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using SNP_First_Test.Network;
 using SNP_First_Test.Utilities;
 using SNP_Network = SNP_First_Test.Network.Network;
 
