@@ -1,4 +1,4 @@
-====== Spiking Neural P Systems evolved with the use of Genetic Algorithms
+# Spiking Neural P Systems evolved with the use of Genetic Algorithms
 #### Researched and Developed by Michael Stachowicz, 15068126 - MMU
 
 This project relies on .netcore2.0 and will not compile without it.
@@ -36,4 +36,4 @@ To return to any previous menu, simply press the ESC key.
 ## Understanding the evolution outputs in the console
 For options 2, 3 and 6, outputs in the console will appear as a fitness of the general population increases with every generation. This will show you what the current generated network contains, including its Neuron structure, Rules per neuron and the distinct outputs that it has generated to give the network such a high fitness.
 
-For outputs 4 and 5 and 7, the screen will be filled with numbers that were generated through running the SN P network specified, as well as a message informing you how long the network took to run. To import your own network (Generated networks from options 2,3 and 6 will be saved to individual folders, as described in the message at the end of a run) simply choose option 7 and provide the correct Folder and file name from the base directory of the executable. This should look like this: `6234234242322/Network.json`, then press enter and the program will run the provided network configuration and provide an output. 
+For outputs 4 and 5 and 7, the screen will be filled with numbers that were generated through running the SN P network specified, as well as a message informing you how long the network took to run. To import your own network (Generated networks from options 2,3 and 6 will be saved to individual folders, as described in the message at the end of a run) simply choose option 7 and provide the correct Folder and file name from the base directory of the executable. This should look like this: `6234234242322/Network.json`, then press enter and the program will run the provided network configuration and provide an output.
