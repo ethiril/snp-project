@@ -25,8 +25,8 @@ namespace SNP_First_Test
         //https://stackoverflow.com/questions/45245032/c-sharp-parse-one-json-field-to-an-object-with-its-custom-constructor
         //https://stackoverflow.com/questions/2246694/how-to-convert-json-object-to-custom-c-sharp-object
         static readonly int maxSteps = 50;
-        static readonly int stepRepetition = 250;
-        static int populationSize = 50;
+        static readonly int stepRepetition = 50;
+        static int populationSize = 10;
         static float mutationRate = 0.1f;
         static int maximumGenerations = 20; 
         // maximum size of each spike grouping in the random new gene
@@ -37,12 +37,12 @@ namespace SNP_First_Test
         // How are they ranked? Just chosen at random? If the parents 
         static private List<string> acceptedRegex = new List<string>() {
             "x", // direct match f
-            //"x+", // x followed by one or more
-            //"x*", // x followed by zero or more
-            //"x?", // x followed by zero or one 
-            //"x(y)+", // x followed by one or more y groupings
-            //"x(y)*", // x followed by zero or more y groupings
-            //"x(y)?", // x followed by zero or one y groupings
+            "x+", // x followed by one or more
+            "x*", // x followed by zero or more
+            "x?", // x followed by zero or one 
+            "x(y)+", // x followed by one or more y groupings
+            "x(y)*", // x followed by zero or more y groupings
+            "x(y)?", // x followed by zero or one y groupings
         };
         static private int elitism = 4;
         private static GeneticAlgorithm ga;
@@ -61,15 +61,7 @@ namespace SNP_First_Test
             Console.WriteLine("----------- Test Started -----------");
             stopWatch.Start();
             ga = new GeneticAlgorithm(populationSize, random, CreateNewRandomNetwork, GenerateRandomExpression, FitnessFunction, elitism, mutationRate);
-            for (int i = 0; i < maximumGenerations; i++ )
-             {
-                 Console.WriteLine("First test generation {0}", i);
-                 ga.NewGeneration();
-                 if (ga.BestFitness >= 0.985)
-                 {
-                     break;
-                 }
-             }
+            UpdateGA(ga);
             Console.WriteLine("Best Genes: ");
             //ga.BestGenes.print();
             Console.WriteLine("Best Gene output set: ");
@@ -124,13 +116,18 @@ namespace SNP_First_Test
         }
 
 
-        void UpdateGA()
+        static void UpdateGA(GeneticAlgorithm ga)
         {
-            ga.NewGeneration();
-            if (ga.BestFitness == 1)
-            {
-                Console.WriteLine("End");
-            }
+            for (int i = 0; i < maximumGenerations; i++ )
+             {
+                 Console.WriteLine("Running Generation {0}", ga.Generation);
+                 ga.NewGeneration((populationSize/10));
+                 if (ga.BestFitness >= 0.985)
+                 {
+                    Console.WriteLine("Fitness over 0.985, stopping . . .");
+                     break;
+                 }
+             }
         }
 
         // Testing fitness without GA implementation
@@ -160,7 +157,6 @@ namespace SNP_First_Test
             if (output.Count > 0)
             {
                 // normalize
-                //tp = (tp - expectedSet.Count) * ((tp) / (output.Count));
                 tp = (tp - expectedSet.Count) / (output.Count - expectedSet.Count);
                 fp = (fp > expectedSet.Count) ? (fp - expectedSet.Count) / (output.Count - expectedSet.Count) : 0;
                 float scaledFitness = 0, targetCount = tpFound.Count, tpCount = expectedSet.Count;
@@ -168,10 +164,7 @@ namespace SNP_First_Test
                 {
                     scaledFitness = targetCount / tpCount;
                 }
-                //tp = tp / expectedSet.Count;
-                //fp = fp / expectedSet.Count;
                 float fn = expectedSet.Except(output).Count();
-                //fn = (fn - expectedSet.Count) / ()
                 float sensitivity = (tp / (tp + fn));
                 float precision = tp / (tp + fp);
                 float fitness = ((2 * tp) / ((2 * tp) + fp + fn)) * scaledFitness;
@@ -247,7 +240,6 @@ namespace SNP_First_Test
                 float sensitivity = (tp / (tp + fn));
                 float precision = tp / (tp + fp);
                 float fitness = ((2 * tp) / ((2 * tp) + fp + fn)) * scaledFitness;
-                //Console.WriteLine("Fitness for this Gene: " + fitness);
                 if (fitness > 0.9)
                 {
                     Console.WriteLine("\nOutput set for this gene: ");
@@ -261,17 +253,6 @@ namespace SNP_First_Test
             } else
             {
                 return 0;
-            }
-        }
-
-
-        void Update()
-        {
-            ga.NewGeneration();
-            if (ga.BestFitness == 1)
-            {
-                Console.WriteLine("Succeeded");
-                //this.enabled = false;
             }
         }
 

@@ -17,8 +17,10 @@ namespace SNP_First_Test.Genetic_Algorithms
         public float MutationRate;
 
         private List<DNA> newPopulation;
+        private int PopulationSize;
         private Random random;
         private float fitnessSum;
+        private int erroneousNetworks;
         private Func<SNP_Network> getRandomNetwork;
         private Func<List<string>, Random, string> getModifiedRule;
         private Func<int, float> fitnessFunction;
@@ -27,9 +29,11 @@ namespace SNP_First_Test.Genetic_Algorithms
             int elitism, float mutationRate = 0.01f)
         {
             Generation = 1;
+            erroneousNetworks = 0;
             Elitism = elitism;
             MutationRate = mutationRate;
             Population = new List<DNA>(populationSize);
+            PopulationSize = populationSize;
             newPopulation = new List<DNA>(populationSize);
             this.random = random;
             this.getRandomNetwork = getRandomNetwork;
@@ -37,25 +41,49 @@ namespace SNP_First_Test.Genetic_Algorithms
             this.fitnessFunction = fitnessFunction;
             for (int i = 0; i < populationSize; i++)
             {
+
                 Population.Add(new DNA(random, getRandomNetwork, getModifiedRule, fitnessFunction, init: true));
             }
         }
-        public void NewGeneration(int numNewDNA = 0, bool crossoverNewDNA = false)
+
+
+        public void NewGeneration(int NewDNACount = 0, bool crossoverNewDNA = false)
         {
-            int finalCount = Population.Count + numNewDNA;
+            int finalCount = Population.Count + NewDNACount;
 
             if (finalCount <= 0)
             {
                 return;
             }
-            if (Population.Count > 0)
+            if (Generation == 1)
+            {
+                CalculateFitness();
+                Population.Sort(CompareDNA);
+                erroneousNetworks = Population.Count;
+                while (erroneousNetworks > 0)
+                {
+                    for (int i = 0; i < Population.Count; i++)
+                    {
+                        if (Population[i].Fitness == 0 || float.IsNaN(Population[i].Fitness) || Population[i].Equals(null))
+                        {
+                            Console.WriteLine("Member {0} did not live up to the standards of society and has been replaced with a new member.", i);
+                            Population[i] = new DNA(random, getRandomNetwork, getModifiedRule, fitnessFunction, init: true);
+                        } else
+                        {
+                            erroneousNetworks--;
+                        }
+                    }
+                }
+            }
+            else if (Population.Count > 0)
             {
                 CalculateFitness();
                 Population.Sort(CompareDNA);
             }
+
             newPopulation.Clear();
 
-            for (int i = 0; i < Population.Count; i++)
+            for (int i = 0; i < finalCount; i++)
             {
                 if (i < Elitism && i < Population.Count)
                 {
@@ -64,9 +92,7 @@ namespace SNP_First_Test.Genetic_Algorithms
                 else if (i < Population.Count || crossoverNewDNA)
                 {
                     DNA parent1 = ChooseParent();
-                    //Console.WriteLine("Chosen Parent 1, its fitness is: {0}", parent1.Fitness);
                     DNA parent2 = ChooseParent();
-                    //Console.WriteLine("Chosen Parent 2, its fitness is: {0}", parent2.Fitness);
                     DNA child = parent1.Crossover(parent2);
 
                     child.Mutate(MutationRate);
@@ -117,7 +143,7 @@ namespace SNP_First_Test.Genetic_Algorithms
                     if (best.Fitness >= 1)
                     {
                         best.Genes.minifiedPrint();
-                        
+
                     }
                     Console.WriteLine("\nCurrent best fitness: {0}", best.Fitness);
                 }
