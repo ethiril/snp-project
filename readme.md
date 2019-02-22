@@ -37,3 +37,21 @@ To return to any previous menu, simply press the ESC key.
 For options 2, 3 and 6, outputs in the console will appear as a fitness of the general population increases with every generation. This will show you what the current generated network contains, including its Neuron structure, Rules per neuron and the distinct outputs that it has generated to give the network such a high fitness.
 
 For outputs 4 and 5 and 7, the screen will be filled with numbers that were generated through running the SN P network specified, as well as a message informing you how long the network took to run. To import your own network (Generated networks from options 2,3 and 6 will be saved to individual folders, as described in the message at the end of a run) simply choose option 7 and provide the correct Folder and file name from the base directory of the executable. This should look like this: `6234234242322/Network.json`, then press enter and the program will run the provided network configuration and provide an output.
+
+File Structure:
+
+Navigate to SNP_First_Test/SNP_First_Test to get to the relevant files.
+
+The Genetic Algorithms folder contains all of the code related to evolving these networks.
+    The DNA.cs file contains individual members of the population
+    The GeneticAlgorithm.cs file contains the entirety of the population, as well as data specific to the GA.
+The Network folder contains the SN P data structure.
+    The Network.cs file contains everything related to executing the SN P System
+    The Neuron.cs file contains everything related to individual neurons within a Network
+    The Rule.cs file contains everything related to individual rules within a neuron
+The Utilities folder contains three files (ClonerHelpers.cs, ICloneFactory.cs, ReflectionCloner.cs) which are a DeepCloning library I used to speed up the cloning of objects.
+    The Utils.cs file contains some parsers I use to save and read networks and data.
+The SNP_Main.cs file contains the GUI and executes the entirety of the program, it is the main file.
+Network.json is a sample network to try out with option 7.
+
+The other folders contain build, debug and publish data but should not be relevant to the marking or investigating of the code. 
