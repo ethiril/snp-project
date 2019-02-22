@@ -14,7 +14,7 @@ namespace SNP_First_Test
 {
     /// <summary>
     /// 15068126, Michael Stachowicz
-    /// Reflection Cloner provided by Nuclex and was not created by myself, you can find it at: http://blog.nuclex-games.com/mono-dotnet/fast-deep-cloning/
+    /// Reflection Cloner (ClonerHelpers.cs, ICloneFactory.cs, ReflectionCloner.cs) provided by Nuclex and was not created by myself, you can find it at: http://blog.nuclex-games.com/mono-dotnet/fast-deep-cloning/
     /// </summary>
     class SNP_Main
     {

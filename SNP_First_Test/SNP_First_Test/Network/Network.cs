@@ -27,6 +27,11 @@ namespace SNP_First_Test.Network
             IsClear = false;
             IsEngaged = false;
         }
+
+        /// <summary>
+        /// Execute a step in the network
+        /// </summary>
+        /// <param name="networkRef">Network which will be executed</param>
         public void Spike(Network networkRef)
         {
             /*
@@ -37,14 +42,6 @@ namespace SNP_First_Test.Network
              */
             List<Neuron> NeuronCopy = new List<Neuron>(this.Neurons);
             List<Neuron> NeuronAdditionCopy = ReflectionCloner.DeepFieldClone(this.Neurons);
-            //int[] activeDelays = new int[this.Neurons.Count];
-            //string[] spikes = new string[this.Neurons.Count];
-
-            /*for (int i = 0; i < this.Neurons.Count; i++)
-            {
-                activeDelays[i] = this.Neurons[i].ActiveDelay;
-                spikes[i] = this.Neurons[i].SpikeCount;
-            }*/
             Parallel.ForEach(NeuronCopy, neuron =>
             {
                 if (neuron.RemoveSpikes(networkRef, neuron.Connections) == true)
@@ -73,20 +70,14 @@ namespace SNP_First_Test.Network
                 {
                     neuron.FireSpike(networkRef, neuron.Connections);
                 }
-            });/*
-            Parallel.ForEach(activeDelays, (delay, state, index) =>
-            {
-                int curIndex = (int)index;
-                if (activeDelays[curIndex] == 0)
-                {
-                    this.Neurons[curIndex].AdditionTemp = spikes[curIndex];
-                    this.Neurons[curIndex].FireSpike(networkRef, this.Neurons[curIndex].Connections);
-                    //Console.WriteLine("Current active delay on index [" + index + "] is " + activeDelays[curIndex] + ", is it an output?: " + this.Neurons[curIndex].IsOutput + ", current spikes: " + this.Neurons[curIndex].SpikeCount);
-                    //Console.ReadLine();
-                }
-            });*/
+            });
             this.GlobalTimer++;
         }
+
+        /// <summary>
+        /// Method to print each rule across the network
+        /// </summary>
+        /// <param name="neurons"></param>
         private void PrintNetwork(List<Neuron> neurons)
         {
             int count = 0;
@@ -97,7 +88,9 @@ namespace SNP_First_Test.Network
             }
         }
 
-
+        /// <summary>
+        /// Smaller, more compact, pretty version of print();
+        /// </summary>
         public void minifiedPrint()
         {
             int count = 0;
@@ -113,6 +106,9 @@ namespace SNP_First_Test.Network
             }
         }
 
+        /// <summary>
+        /// Full print of the network
+        /// </summary>
         public void print()
         {
             int count = 0;
@@ -136,7 +132,7 @@ namespace SNP_First_Test.Network
             }
         }
 
-        // Reflection cloner thanks to http://blog.nuclex-games.com/mono-dotnet/fast-deep-cloning/
+        // Reflection cloner library thanks to http://blog.nuclex-games.com/mono-dotnet/fast-deep-cloning/ (ClonerHelpers.cs, ICloneFactory.cs, ReflectionCloner.cs)
 
     }
 }
