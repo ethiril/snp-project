@@ -2,7 +2,9 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using SNP_Network = SNP_First_Test.Network.Network;
 
 
@@ -29,12 +31,12 @@ namespace SNP_First_Test.Utilities
         {
             return JsonConvert.DeserializeObject<SNP_Network>(json);
         }
-        public static void SaveToFile(string json, string filename)
+        public static void SaveToFile(string data, string filename)
         {
             try
             {
                 string path = Directory.GetCurrentDirectory() + "/" + filename;
-                File.WriteAllText(path, json);
+                File.WriteAllText(path, data);
                 Console.WriteLine("Saved the file to: {0}", path);
             }
             catch (IOException e)
@@ -48,10 +50,17 @@ namespace SNP_First_Test.Utilities
             try
             {
                 string path = Directory.GetCurrentDirectory();
-                using (StreamReader r = new StreamReader(filename))
+                try
                 {
-                    string parsedJson = r.ReadToEnd();
-                    return ConvertJsonToNetwork(parsedJson);
+                    using (StreamReader r = new StreamReader(filename))
+                    {
+                        string parsedJson = r.ReadToEnd();
+                        return ConvertJsonToNetwork(parsedJson);
+                    }
+                } catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return null;
                 }
             }
             catch (IOException e)
@@ -67,6 +76,26 @@ namespace SNP_First_Test.Utilities
             string json = ConvertNetworkToJson(network);
             SaveToFile(json, filename);
         }
+
+        public static string ConvertToCSV(List<float> fitnessList)
+        {
+            return String.Join(",", fitnessList.Select(x => x.ToString()).ToArray());
+        }
+
+        public static void CreateFolder(string folderName)
+        {
+            Console.WriteLine("----------- Creating Folder {0} -----------", folderName);
+            Directory.CreateDirectory(Directory.GetCurrentDirectory() + "/" + folderName);
+        }
+
+        public static void SaveCSV(List<float> fitnessList, string filename)
+        {
+            Console.WriteLine("----------- Saving Data -----------");
+            string csv = ConvertToCSV(fitnessList);
+            SaveToFile(csv, filename);
+        }
+
+
 
 
     }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using SNP_First_Test.Network;
 using SNP_Network = SNP_First_Test.Network.Network;
 
@@ -15,24 +14,17 @@ namespace SNP_First_Test.Genetic_Algorithms
         private Random random;
         private Func<SNP_Network> getRandomNetwork;
         private Func<List<string>, Random, string> getModifiedRule;
+        private List<string> acceptedRegex;
         private Func<int, float> fitnessFunction;
-        static private List<string> acceptedRegex = new List<string>() {
-            "x", // direct match 
-            //"x+", // x followed by one or more
-            //"x*", // x followed by zero or more
-            //"x?", // x followed by zero or one 
-            //"x(y)+", // x followed by one or more y groupings
-            //"x(y)*", // x followed by zero or more y groupings
-            //"x(y)?", // x followed by zero or one y groupings
-        };
 
         // Gene is of type SNP_Network
-        public DNA (Random random, Func<SNP_Network> getRandomNetwork, Func<List<string>, Random, string> getModifiedRule, Func<int, float> fitnessFunction, bool init = true)
+        public DNA(Random random, Func<SNP_Network> getRandomNetwork, Func<List<string>, Random, string> getModifiedRule, List<string> acceptedRegex, Func<int, float> fitnessFunction, bool init = true)
         {
 
             this.random = random;
             this.getRandomNetwork = getRandomNetwork;
             this.getModifiedRule = getModifiedRule;
+            this.acceptedRegex = acceptedRegex;
             this.fitnessFunction = fitnessFunction;
             if (init)
             {
@@ -52,7 +44,7 @@ namespace SNP_First_Test.Genetic_Algorithms
         
         public DNA Crossover(DNA secondParent)
         {
-            DNA child = new DNA(random, getRandomNetwork, getModifiedRule, fitnessFunction, init: false);
+            DNA child = new DNA(random, getRandomNetwork, getModifiedRule, acceptedRegex, fitnessFunction, init: false);
 
             // for now crossover with always the same amount of genes and rules 
             int neuronAmount = Genes.Neurons.Count;

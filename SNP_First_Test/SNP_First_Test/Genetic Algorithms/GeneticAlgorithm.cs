@@ -11,6 +11,7 @@ namespace SNP_First_Test.Genetic_Algorithms
         public List<DNA> Population { get; private set; }
         public int Generation { get; private set; }
         public float BestFitness { get; private set; }
+        public List<float> FitnessList = new List<float>();
         public SNP_Network BestGenes { get; private set; }
 
         public int Elitism;
@@ -22,10 +23,11 @@ namespace SNP_First_Test.Genetic_Algorithms
         private float fitnessSum;
         private int erroneousNetworks;
         private Func<SNP_Network> getRandomNetwork;
+        private List<string> acceptedRegex;
         private Func<List<string>, Random, string> getModifiedRule;
         private Func<int, float> fitnessFunction;
 
-        public GeneticAlgorithm(int populationSize, Random random, Func<SNP_Network> getRandomNetwork, Func<List<string>, Random, string> getModifiedRule, Func<int, float> fitnessFunction,
+        public GeneticAlgorithm(int populationSize, Random random, Func<SNP_Network> getRandomNetwork, Func<List<string>, Random, string> getModifiedRule, List<string> acceptedRegex, Func<int, float> fitnessFunction,
             int elitism, float mutationRate = 0.01f)
         {
             Generation = 1;
@@ -38,10 +40,11 @@ namespace SNP_First_Test.Genetic_Algorithms
             this.random = random;
             this.getRandomNetwork = getRandomNetwork;
             this.getModifiedRule = getModifiedRule;
+            this.acceptedRegex = acceptedRegex;
             this.fitnessFunction = fitnessFunction;
             for (int i = 0; i < populationSize; i++)
             {
-                Population.Add(new DNA(random, getRandomNetwork, getModifiedRule, fitnessFunction, init: true));
+                Population.Add(new DNA(random, getRandomNetwork, getModifiedRule, acceptedRegex, fitnessFunction, init: true));
             }
         }
 
@@ -67,15 +70,14 @@ namespace SNP_First_Test.Genetic_Algorithms
                         // target set
                         if (Population[i].Fitness == 0 || float.IsNaN(Population[i].Fitness) || Population[i].Equals(null))
                         {
-                            Console.WriteLine("Member {0} did not live up to the standards of society and has been replaced with a new member.", i);
-                            Population[i] = new DNA(random, getRandomNetwork, getModifiedRule, fitnessFunction, init: true);
+                            Population[i] = new DNA(random, getRandomNetwork, getModifiedRule, acceptedRegex, fitnessFunction, init: true);
                         }
                         else
                         {
                             erroneousNetworks--;
                         }
                     }
-                    TestFitnesses();
+                    //TestFitnesses();
                     if (erroneousNetworks == 0)
                     {
                         break;
@@ -111,7 +113,7 @@ namespace SNP_First_Test.Genetic_Algorithms
                 }
                 else
                 {
-                    newPopulation.Add(new DNA(random, getRandomNetwork, getModifiedRule, fitnessFunction, init: true));
+                    newPopulation.Add(new DNA(random, getRandomNetwork, getModifiedRule, acceptedRegex, fitnessFunction, init: true));
                 }
             }
             List<DNA> tmpList = Population;
@@ -159,12 +161,8 @@ namespace SNP_First_Test.Genetic_Algorithms
                     best = Population[i];
                     best.Genes.minifiedPrint();
                     best.Genes.OutputSet.ForEach(x => Console.Write("{0}\t", x));
-                    if (best.Fitness >= 1)
-                    {
-                        best.Genes.minifiedPrint();
-
-                    }
                     Console.WriteLine("\nCurrent best fitness: {0}", best.Fitness);
+                    FitnessList.Add(best.Fitness);
                 }
             }
             BestFitness = best.Fitness;
@@ -179,14 +177,12 @@ namespace SNP_First_Test.Genetic_Algorithms
             {
                 if (randomNumber < Population[i].Fitness)
                 {
-                    Console.WriteLine("Chosen Population Member #{0}, Fitness: {1}", i, Population[i].Fitness);
                     return Population[i];
                 }
                 randomNumber -= Population[i].Fitness;
             }
             // if the parent could not be chosen for some reason, choose randomly from the top 10% of fittest parents
             int randomParent = random.Next(0, (Convert.ToInt32(Math.Floor(Population.Count * 0.1)) + 1));
-            Console.WriteLine("Network could not choose a suitable parent, defaulted to parent: {0}", randomParent);
             return Population[randomParent];
         }
     }
