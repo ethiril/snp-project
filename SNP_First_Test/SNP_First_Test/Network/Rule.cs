@@ -20,14 +20,15 @@ namespace SNP_First_Test.Network
             Delay = delay;
         }
 
-        /* 
-         * This method checks whether the provided regex and the provided spike input string, which should be equal to the amount of spikes within the neuron 
-         * If the input rule isn't null, append strict ruling on the rule
-         * If the rule matches directly with the given spikes, return true
-         * otherwise the rule did not match, therefore return false
-         * if the rule was empty, return an error and a false flag.
-         */
-
+        /// <summary>
+        /// This method checks whether the provided regex and the provided spike input string, which should be equal to the amount of spikes within the neuron 
+        /// If the input rule isn't null, append strict ruling on the rule
+        /// If the rule matches directly with the given spikes, return true
+        /// otherwise the rule did not match, therefore return false
+        /// if the rule was empty, return an error and a false flag.
+        /// </summary>
+        /// <param name="spikes">rule to check</param>
+        /// <returns>True Or False</returns>
         public bool RegexMatch(string spikes)
         {
             if (this.RuleExpression != null)
@@ -48,6 +49,13 @@ namespace SNP_First_Test.Network
             }
         }
 
+        /// <summary>
+        /// If a regex match occurs return true as long as the rule should spike
+        /// If a regex match does not occur return false
+        /// If a regex match occurs but the rule should wipe, return null
+        /// </summary>
+        /// <param name="currentSpikeAmount">the amount of spikes currently in the network </param>
+        /// <returns>Nullable Bool</returns>
         public bool? IsMatched(string currentSpikeAmount)
         {
             if (RegexMatch(currentSpikeAmount) == true)
