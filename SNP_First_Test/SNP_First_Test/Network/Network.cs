@@ -43,7 +43,7 @@ namespace SNP_First_Test.Network
             List<Neuron> NeuronAdditionCopy = ReflectionCloner.DeepFieldClone(this.Neurons);
             Parallel.ForEach(NeuronCopy, neuron =>
             {
-                if (neuron.RemoveSpikes(networkRef, neuron.Connections) == true)
+                if (neuron.RemoveSpikes(networkRef) == true)
                 {
                     if (neuron.IsOutput == true && this.IsEngaged == true)
                     {

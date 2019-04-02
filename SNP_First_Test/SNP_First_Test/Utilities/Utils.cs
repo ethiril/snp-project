@@ -114,9 +114,17 @@ namespace SNP_First_Test.Utilities
         /// </summary>
         /// <param name="fitnessList">List of fitnesses</param>
         /// <returns>CSV string</returns>
-        public static string ConvertToCSV(List<float> fitnessList)
+        public static string ConvertToCSV(List<List<float>> fitnessList)
         {
-            return String.Join(",", fitnessList.Select(x => x.ToString()).ToArray());
+            Console.WriteLine("----------- Saving Data -----------");
+            String lines = "";
+            foreach (List<float> list in fitnessList)
+            {
+                Console.WriteLine("Data: {0}, Count {1}", list[0], list.Count);
+                lines += String.Join(",", list.Select(x => x.ToString()).ToArray());
+                lines += "\n";
+            }
+            return lines;
         }
 
         /// <summary>
@@ -134,7 +142,7 @@ namespace SNP_First_Test.Utilities
         /// </summary>
         /// <param name="fitnessList"></param>
         /// <param name="filename"></param>
-        public static void SaveCSV(List<float> fitnessList, string filename)
+        public static void SaveCSV(List<List<float>> fitnessList, string filename)
         {
             Console.WriteLine("----------- Saving Data -----------");
             string csv = ConvertToCSV(fitnessList);

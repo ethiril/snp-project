@@ -19,11 +19,11 @@ namespace SNP_First_Test
     class SNP_Main
     {
         // maximum steps that each network will take, default value
-        static int maxSteps = 50;
+        static int maxSteps = 200;
         // amount of repetitions each network will undergo to generate an output list
         static int stepRepetition = 200;
         // population size of the Genetic Algorithm
-        static int populationSize = 50;
+        static int populationSize = 10;
         // % chance for mutation
         static float mutationRate = 0.1f;
         // max amount of generations 
@@ -63,10 +63,11 @@ namespace SNP_First_Test
             "8. Exit"
         };
         // will always keep the 4 best networks 
-        static private int elitism = 4;
+        static private int elitism = 1;
         private static GeneticAlgorithm ga;
         // seed the random func with the current time
         static private Random random = new Random((int)DateTime.Now.Ticks);
+        static private bool active = true;
 
         static void Main(string[] args)
         {
@@ -439,7 +440,7 @@ namespace SNP_First_Test
                     UpdateGA(ga);
                     Utils.CreateFolder(time.ToString());
                     string normCSVFile = "/" + time + "/NatNumsNet.csv";
-                    Utils.SaveCSV(ga.FitnessList, normCSVFile);
+                    Utils.SaveCSV(ga.GenerationList, normCSVFile);
                     Utils.SaveNetwork(ga.BestGenes, normFileName);
                     break;
                 // Evolve the Even numbers network
@@ -454,8 +455,8 @@ namespace SNP_First_Test
                     ga = new GeneticAlgorithm(populationSize, random, CreateNewRandomEvensNetwork, GenerateRandomExpression, (experimentalRules) ? acceptedRegexExperimental : acceptedRegex, FitnessFunction, elitism, mutationRate);
                     UpdateGA(ga);
                     Utils.CreateFolder(evensTime.ToString());
-                    string evensCSVFile = "/" + evensTime + "EvenNumsNet.csv";
-                    Utils.SaveCSV(ga.FitnessList, evensCSVFile);
+                    string evensCSVFile = "/" + evensTime + "/EvenNumsNet.csv";
+                    Utils.SaveCSV(ga.GenerationList, evensCSVFile);
                     Utils.SaveNetwork(ga.BestGenes, evensFileName);
                     break;
                 // Standard Nat Numbers
@@ -478,7 +479,7 @@ namespace SNP_First_Test
                     Console.WriteLine("---------- Running a standard test to get an output from an Even Numbers Network ----------");
                     Stopwatch evenStopWatch = new Stopwatch();
                     evenStopWatch.Start();
-                    List<int> evenOutputs = SNPRun(CreateNaturalNumbersNetwork());
+                    List<int> evenOutputs = SNPRun(CreateEvenNumbersNetwork());
                     evenStopWatch.Stop();
                     Console.WriteLine("Final output set: ");
                     evenOutputs.ForEach(x => Console.Write("{0}\t", x)); ;
@@ -502,7 +503,7 @@ namespace SNP_First_Test
                         Console.WriteLine("---------- Evolving a network based on the Evens Spiking Neural P System ----------");
                         ga = new GeneticAlgorithm(populationSize, random, GenerateNewRandomNetwork, GenerateRandomExpression, (experimentalRules) ? acceptedRegexExperimental : acceptedRegex, FitnessFunction, elitism, mutationRate);
                         string expCSVFile = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + "ExpNet.csv";
-                        Utils.SaveCSV(ga.FitnessList, expCSVFile);
+                        Utils.SaveCSV(ga.GenerationList, expCSVFile);
                     }
                     else
                     {
@@ -530,7 +531,7 @@ namespace SNP_First_Test
                         importedNetwork.minifiedPrint();
                         Stopwatch importStopWatch = new Stopwatch();
                         importStopWatch.Start();
-                        List<int> importOutputs = SNPRun(CreateNaturalNumbersNetwork());
+                        List<int> importOutputs = SNPRun(importedNetwork);
                         importStopWatch.Stop();
                         Console.WriteLine("Final output set: ");
                         importOutputs.ForEach(x => Console.Write("{0}\t", x)); ;
@@ -710,16 +711,18 @@ namespace SNP_First_Test
             for (int i = 0; i < maximumGenerations; i++)
             {
                 Console.WriteLine("Running Generation {0}", i);
-                ga.NewGeneration((populationSize / 10));
-                if (ga.BestFitness >= 0.985)
+                ga.NewGeneration();
+                //ga.NewGeneration((populationSize / 10));
+                if (i > 0)
                 {
-                    Console.WriteLine("Testing the best fitness for repeated success.");
-                    if (TestBestNetwork(ga.BestGenes, ga.BestFitness))
-                    {
-                        Console.WriteLine("Fitness over 0.985, stopping . . .");
-                        break;
-                    }
+                    ga.GenerationList.Add(ReflectionCloner.DeepFieldClone(ga.FitnessList));
                 }
+                ga.FitnessList.Clear();
+                if (active == false)
+                {
+                    break;
+                }
+        
             }
         }
         /// <summary>
@@ -731,12 +734,17 @@ namespace SNP_First_Test
         static bool TestBestNetwork(SNP_Network bestNetwork, float bestGAFitness)
         {
             float bestFitness = 0;
+            int count = 0;
             for (int i = 0; i <= testBestFitness; i++)
             {
                 float currentFitness = TestFitnessFunction(SNPRun(bestNetwork));
-                bestFitness = (currentFitness > bestFitness) ? currentFitness : bestFitness;
+                if (currentFitness > bestFitness)
+                {
+                    bestFitness = currentFitness;
+                    count++;
+                }
             }
-            return (bestFitness > bestGAFitness);
+            return (bestFitness >= bestGAFitness && count == testBestFitness);
         }
 
 
@@ -801,9 +809,14 @@ namespace SNP_First_Test
                 float sensitivity = (tp / (tp + fn));
                 float precision = tp / (tp + fp);
                 float fitness = ((2 * tp) / ((2 * tp) + fp + fn)) * scaledFitness;
-                if (fitness > 0.9)
+                if (fitness >= 0.985 && fitness <= 1) 
                 {
-                    output = output.Distinct().ToList();
+                    Console.WriteLine("Testing the best fitness for repeated success.");
+                    if (TestBestNetwork(ga.BestGenes, ga.BestFitness))
+                    {
+                        Console.WriteLine("Fitness over 0.985, stopping . . .");
+                        active = false;
+                    }
                 }
                 return fitness;
             }
@@ -955,7 +968,6 @@ namespace SNP_First_Test
                     new Rule(GenerateRandomExpression(acceptedRegex, random),0,false)
                 }, "aa",new List<int>() { }, true),
             });
-
         }
 
         /// <summary>

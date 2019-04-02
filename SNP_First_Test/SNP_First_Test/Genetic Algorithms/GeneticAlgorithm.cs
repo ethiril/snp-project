@@ -14,6 +14,7 @@ namespace SNP_First_Test.Genetic_Algorithms
         // Stored best current fitness for this generation
         public float BestFitness { get; private set; }
         // List of best fitnesses
+        public  List<List<float>> GenerationList = new List<List<float>>();
         public List<float> FitnessList = new List<float>();
         // Best current network
         public SNP_Network BestGenes { get; private set; }
@@ -76,6 +77,7 @@ namespace SNP_First_Test.Genetic_Algorithms
             {
                 return;
             }
+            List<DNA> tempPopulation = new List<DNA>();
             if (Generation == 1)
             {
                 CalculateFitness();
@@ -87,17 +89,21 @@ namespace SNP_First_Test.Genetic_Algorithms
                     {
                         // Eliminate the possibility of erroneous networks or 0 fitness networks. The networks should all at least provide a minimal fitness (produce one number out of the 
                         // target set
-                        if (Population[i].Fitness == 0 || float.IsNaN(Population[i].Fitness) || Population[i].Equals(null))
+                        if (Population[i].Fitness <= 0 || float.IsNaN(Population[i].Fitness) || Population[i].Equals(null) || Population[i].Fitness > 1)
                         {
                             Population[i] = new DNA(random, getRandomNetwork, getModifiedRule, acceptedRegex, fitnessFunction, init: true);
                         }
                         else
                         {
+                            tempPopulation.Add(Population[i]);
+                            Population.Remove(Population[i]);
                             erroneousNetworks--;
                         }
                     }
+                    Console.WriteLine("Removing an erroneous network and repopulating the remaining entries. Amount of networks to replace: {0}", erroneousNetworks);
                     if (erroneousNetworks == 0)
                     {
+                        Population.AddRange(tempPopulation);
                         break;
                     }
                     else
@@ -184,13 +190,18 @@ namespace SNP_First_Test.Genetic_Algorithms
             for (int i = 0; i < Population.Count; i++)
             {
                 fitnessSum += Population[i].CalculateFitness(i);
-                if (Population[i].Fitness > best.Fitness)
+                if (Generation > 1 && Population[i].Fitness >= 0 && !float.IsNaN(Population[i].Fitness) && !Population[i].Equals(null) && Generation > 1 && Population[i].Fitness <= 1)
+                {
+                    Console.WriteLine("Current Fitness: {0},", Population[i].Fitness);
+                    FitnessList.Add(Population[i].Fitness);
+                }
+                if (Population[i].Fitness >= best.Fitness && Generation > 1)
                 {
                     best = Population[i];
                     best.Genes.minifiedPrint();
                     best.Genes.OutputSet.ForEach(x => Console.Write("{0}\t", x));
                     Console.WriteLine("\nCurrent best fitness: {0}", best.Fitness);
-                    FitnessList.Add(best.Fitness);
+                   // FitnessList.Add(best.Fitness);
                 }
             }
             BestFitness = best.Fitness;
