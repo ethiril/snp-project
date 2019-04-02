@@ -85,7 +85,7 @@ namespace SNP_First_Test.Network
         /// <param name="networkRef">the network which this neuron belongs to and for which this method is being executed</param>
         /// <param name="Connections">connections that this neuron has</param>
         /// <returns></returns>
-        public bool? RemoveSpikes(SNP_Network networkRef, List<int> Connections)
+        public bool? RemoveSpikes(SNP_Network networkRef)
         {
             int index;
             if (this.ActiveDelay == 0)

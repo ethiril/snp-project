@@ -26,7 +26,6 @@ namespace SNP_First_Test.Genetic_Algorithms
         // Gene is of type SNP_Network
         public DNA(Random random, Func<SNP_Network> getRandomNetwork, Func<List<string>, Random, string> getModifiedRule, List<string> acceptedRegex, Func<int, float> fitnessFunction, bool init = true)
         {
-
             this.random = random;
             this.getRandomNetwork = getRandomNetwork;
             this.getModifiedRule = getModifiedRule;
@@ -35,10 +34,10 @@ namespace SNP_First_Test.Genetic_Algorithms
             if (init)
             {
                 // start a new random Network
-                    Genes = getRandomNetwork();
+                Genes = getRandomNetwork();
             }
         }
-        
+
         /// <summary>
         /// Use the fitness function passed through from the main file
         /// </summary>
@@ -49,9 +48,9 @@ namespace SNP_First_Test.Genetic_Algorithms
             // calculate the fitness for the current gene
             Fitness = fitnessFunction(index);
             return Fitness;
-        } 
-        
-    
+        }
+
+
         /// <summary>
         /// Combine the DNA of two parents into a child
         /// </summary>
@@ -103,13 +102,13 @@ namespace SNP_First_Test.Genetic_Algorithms
         /// <param name="mutationRate"></param>
         public void Mutate(float mutationRate)
         {
-                if (random.NextDouble() < mutationRate)
-                {
+            if (random.NextDouble() < mutationRate)
+            {
                 int neuron = random.Next(0, Genes.Neurons.Count);
                 int rule = random.Next(0, Genes.Neurons[neuron].Rules.Count);
                 // Change one of the rules at random
                 Genes.Neurons[neuron].Rules[rule] = new Rule(getModifiedRule(acceptedRegex, random), Genes.Neurons[neuron].Rules[rule].Delay, Genes.Neurons[neuron].Rules[rule].Fire);
-                }
+            }
         }
 
     }
