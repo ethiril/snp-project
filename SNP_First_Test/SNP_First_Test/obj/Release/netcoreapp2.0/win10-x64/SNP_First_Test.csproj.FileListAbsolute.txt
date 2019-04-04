@@ -11,3 +11,4 @@ E:\Projects\University\snp-project\SNP_First_Test\SNP_First_Test\obj\release\net
 E:\Projects\University\snp-project\SNP_First_Test\SNP_First_Test\obj\release\netcoreapp2.0\win10-x64\SNP_First_Test.AssemblyInfo.cs
 E:\Projects\University\snp-project\SNP_First_Test\SNP_First_Test\obj\release\netcoreapp2.0\win10-x64\SNP_First_Test.dll
 E:\Projects\University\snp-project\SNP_First_Test\SNP_First_Test\obj\release\netcoreapp2.0\win10-x64\SNP_First_Test.pdb
+E:\Projects\University\snp-project\SNP_First_Test\SNP_First_Test\obj\Release\netcoreapp2.0\win10-x64\SNP_First_Test.csprojResolveAssemblyReference.cache

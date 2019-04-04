@@ -5086,6 +5086,9 @@
   },
   "project": {
     "version": "1.0.0",
+    "restoreSettings": {
+      "hideWarningsAndErrors": true
+    },
     "restore": {
       "projectUniqueName": "E:\\Projects\\University\\snp-project\\SNP_First_Test\\SNP_First_Test\\SNP_First_Test.csproj",
       "projectName": "SNP_First_Test",

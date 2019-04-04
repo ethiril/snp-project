@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>SNP_First_Test</id>
+    <version>1.0.0</version>
+    <authors>SNP_First_Test</authors>
+    <owners>SNP_First_Test</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Package Description</description>
+    <dependencies>
+      <group targetFramework=".NETCoreApp2.0">
+        <dependency id="Microsoft.NETCore.App" version="2.0.0" exclude="Build,Analyzers" />
+        <dependency id="Newtonsoft.Json" version="12.0.1" exclude="Build,Analyzers" />
+        <dependency id="protobuf-net" version="2.4.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="E:\Projects\University\snp-project\SNP_First_Test\SNP_First_Test\bin\Release\netcoreapp2.0\SNP_First_Test.runtimeconfig.json" target="lib\netcoreapp2.0\SNP_First_Test.runtimeconfig.json" />
+    <file src="E:\Projects\University\snp-project\SNP_First_Test\SNP_First_Test\bin\Release\netcoreapp2.0\SNP_First_Test.dll" target="lib\netcoreapp2.0\SNP_First_Test.dll" />
+  </files>
+</package>
