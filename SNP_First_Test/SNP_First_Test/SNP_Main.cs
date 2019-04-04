@@ -24,7 +24,7 @@ namespace SNP_First_Test
         static int stepRepetition = 200;
         // population size of the Genetic Algorithm
         static int populationSize = 10;
-        // % chance for mutation
+        // Percentage chance for mutation
         static float mutationRate = 0.1f;
         // max amount of generations 
         static int maximumGenerations = 25;
@@ -694,7 +694,7 @@ namespace SNP_First_Test
         {
             maxSteps = 50;
             stepRepetition = 50;
-            populationSize = 50;
+            populationSize = 10;
             mutationRate = 0.1f;
             maximumGenerations = 25;
             testBestFitness = 5;
@@ -711,8 +711,8 @@ namespace SNP_First_Test
             for (int i = 0; i < maximumGenerations; i++)
             {
                 Console.WriteLine("Running Generation {0}", i);
-                ga.NewGeneration();
-                //ga.NewGeneration((populationSize / 10));
+                //ga.NewGeneration();
+                ga.NewGeneration((populationSize / 10));
                 if (i > 0)
                 {
                     ga.GenerationList.Add(ReflectionCloner.DeepFieldClone(ga.FitnessList));
